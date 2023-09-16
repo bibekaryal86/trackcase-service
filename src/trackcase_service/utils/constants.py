@@ -25,3 +25,6 @@ def get_settings():
 APP_ENV = get_settings().app_env
 BASIC_AUTH_USR = get_settings().basic_auth_usr
 BASIC_AUTH_PWD = get_settings().basic_auth_pwd
+DB_USERNAME = get_settings().db_username
+DB_PASSWORD = get_settings().db_password
+DB_HOST = get_settings().db_host
