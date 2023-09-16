@@ -43,7 +43,7 @@ def shutdown_db_client(app: FastAPI):
 
 
 def validate_http_basic_credentials(
-        request: Request, http_basic_credentials: HTTPBasicCredentials
+    request: Request, http_basic_credentials: HTTPBasicCredentials
 ):
     valid_username = constants.BASIC_AUTH_USR
     valid_password = constants.BASIC_AUTH_PWD
@@ -65,11 +65,9 @@ def validate_http_basic_credentials(
 
 
 def raise_http_exception(
-        request: Request, sts_code: http.HTTPStatus | int, msg: str, err_msg: str = ""
+    request: Request, sts_code: http.HTTPStatus | int, msg: str, err_msg: str = ""
 ):
     log.error(
-        "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(
-            request.url, sts_code
-        ),
+        "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
     )
     raise HTTPException(status_code=sts_code, detail={"msg": msg, "errMsg": err_msg})

@@ -7,7 +7,6 @@ import uvicorn
 from fastapi import Depends, FastAPI, Request
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasicCredentials
-
 from utils import commons, constants, enums, logger
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
@@ -66,10 +65,10 @@ def log_level(level: enums.LogLevelOptions):
 
 @app.get("/trackcase-service/docs", include_in_schema=False)
 async def custom_docs_url(
-        request: Request,
-        http_basic_credentials: HTTPBasicCredentials = Depends(
-            constants.http_basic_security
-        ),
+    request: Request,
+    http_basic_credentials: HTTPBasicCredentials = Depends(
+        constants.http_basic_security
+    ),
 ):
     commons.validate_http_basic_credentials(request, http_basic_credentials)
     root_path = request.scope.get("root_path", "").rstrip("/")
