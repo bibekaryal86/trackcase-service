@@ -7,6 +7,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 from src.trackcase_service.utils.constants import DB_HOST, DB_PASSWORD, DB_USERNAME
 
+# TODO ???
 os.add_dll_directory(
     "C:\\zzz_dev\\projects\\backend\\trackcase-service\\venv\\Lib\\site-packages\\clidriver\\bin"
 )
