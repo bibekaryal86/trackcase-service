@@ -1,0 +1,44 @@
+[build-system]
+requires = ['setuptools>=68.2.2', 'wheel>=0.41.2']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'trackcase-service'
+version = '1.0.1'
+description = 'Backend Service for System to Track Legal Immigration Cases'
+authors = [{name = "Bibek Aryal"}]
+readme = 'README.md'
+requires-python = ">=3.11"
+classifiers = [
+    "License :: Personal Use Only",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+]
+dynamic = ["dependencies"]
+[tool.setuptools.dynamic]
+dependencies = {file = [ "requirements.txt", "requirements-dev.txt" ]}
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+target-version = ['py311']
+
+[tool.flake8]
+max-complexity = 15
+max-line-length = 88
+exclude = ["__pycache__"]
+extend-ignore = ['E203']
+
+[tool.pytest.ini_options]
+testpaths = ['tests']
+pythonpath = [ './src/trackcase_service' ]
+addopts = '-ra --cov --cov-report=term' #html
+log_cli = 'True'
+env = [ 'IS_PYTEST = True ']
+
+[project.urls]
+Source = "https://github.com/bibekaryal86/trackcase-service"
+
+# [project.scripts]

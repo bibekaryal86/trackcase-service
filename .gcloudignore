@@ -1,0 +1,16 @@
+.git
+.github
+.idea
+.pytest_cache
+build
+src/trackcase_service.egg-info
+tests
+venv
+.coverage
+.dockerignore
+.env.example
+.gcloudignore
+.gitignore
+Dockerfile
+README.md
+requirements-dev.txt
