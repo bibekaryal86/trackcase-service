@@ -1,0 +1,6 @@
+fastapi>=0.103.1
+pydantic>=2.3.0
+pydantic_settings>=2.0.3
+pytz>=2023.3.post1
+requests>=2.31.0
+uvicorn>=0.23.2
