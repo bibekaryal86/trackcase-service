@@ -5,7 +5,7 @@ import secrets
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
 
-from src.trackcase_service.utils import constants, logger
+from . import constants, logger
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
 
@@ -34,12 +34,12 @@ def validate_input():
 
 def startup_db_client(app: FastAPI):
     # do something
-    log.info("Connected to MongoDb Client...")
+    log.info("Connected to DB Client...")
 
 
 def shutdown_db_client(app: FastAPI):
     # do something
-    log.info("Disconnected from MongoDb Client...")
+    log.info("Disconnected from DB Client...")
 
 
 def validate_http_basic_credentials(
