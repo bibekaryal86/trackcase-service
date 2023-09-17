@@ -17,6 +17,8 @@ def get_judge_service(db_session: Session) -> JudgeService:
 
 
 def get_response_single(single: JudgeSchema) -> JudgeResponse:
+    if single is None:
+        return JudgeResponse()
     return JudgeResponse(judges=[single])
 
 

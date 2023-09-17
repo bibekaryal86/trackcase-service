@@ -16,32 +16,6 @@ class ResponseBase(BaseModel):
     err_msg: Optional[str] = None
 
 
-# court
-class CourtBase:
-    name: str
-    address: str
-    dhs_address: str
-
-
-class CourtCreate(CourtBase, BaseModel):
-    pass
-
-
-class Court(CourtBase, BaseModelSchema):
-    judges: list["Judge"] = []
-
-    class Config:
-        orm_mode = True
-
-
-class CourtRequest(CourtBase, BaseModelSchema):
-    pass
-
-
-class CourtResponse(ResponseBase):
-    courts: list[Court] = []
-
-
 # judge
 class JudgeBase:
     name: str
@@ -58,9 +32,35 @@ class Judge(JudgeBase, BaseModelSchema):
         orm_mode = True
 
 
-class JudgeRequest(CourtBase, BaseModelSchema):
+class JudgeRequest(JudgeBase, BaseModelSchema):
     pass
 
 
 class JudgeResponse(ResponseBase):
     judges: list[Judge] = []
+
+
+# court
+class CourtBase:
+    name: str
+    address: str
+    dhs_address: str
+
+
+class CourtCreate(CourtBase, BaseModel):
+    pass
+
+
+class Court(CourtBase, BaseModelSchema):
+    judges: list[Judge] = []
+
+    class Config:
+        orm_mode = True
+
+
+class CourtRequest(CourtBase, BaseModelSchema):
+    pass
+
+
+class CourtResponse(ResponseBase):
+    courts: list[Court] = []

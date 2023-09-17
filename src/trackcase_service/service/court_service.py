@@ -17,6 +17,8 @@ def get_court_service(db_session: Session) -> CourtService:
 
 
 def get_response_single(single: CourtSchema) -> CourtResponse:
+    if single is None:
+        return CourtResponse()
     return CourtResponse(courts=[single])
 
 
