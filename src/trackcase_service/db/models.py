@@ -10,7 +10,7 @@ Base: Any = declarative_base()
 class TableBase:
     id = Column(Integer, primary_key=True, autoincrement=True)
     created = Column(DateTime, server_default=func.sysdate(), nullable=False)
-    modified = Column(DateTime, server_default=func.sysdate(), nullable=False)
+    modified = Column(DateTime, onupdate=func.sysdate(), nullable=False)
 
 
 class FormType(TableBase, Base):
@@ -31,7 +31,7 @@ class CollectionMethod(TableBase, Base):
     __tablename__ = "collection_method"
     name = Column(String(25), unique=True, nullable=False)
     description = Column(String(280), nullable=False)
-    collections: Mapped[List["Collection"]] = relationship(
+    cash_collections: Mapped[List["CashCollection"]] = relationship(
         back_populates="collection_method"
     )
 
@@ -121,8 +121,8 @@ class Client(TableBase, Base):
     court_cases: Mapped[List["CourtCase"]] = relationship(back_populates="client")
 
 
-class Collection(TableBase, Base):
-    __tablename__ = "collection"
+class CashCollection(TableBase, Base):
+    __tablename__ = "cash_collection"
     collection_date = Column(DateTime, nullable=False)
     quote_amount = Column(BigInteger, nullable=False)
     collected_amount = Column(BigInteger, nullable=True)
@@ -131,10 +131,10 @@ class Collection(TableBase, Base):
         nullable=False,
     )
     collection_method: Mapped["CollectionMethod"] = relationship(
-        back_populates="collections"
+        back_populates="cash_collections"
     )
-    court_case_collections: Mapped[List["CourtCaseCollection"]] = relationship(
-        back_populates="collection"
+    court_case_collections: Mapped[List["CourtCaseCashCollection"]] = relationship(
+        back_populates="cash_collection"
     )
 
 
@@ -203,7 +203,7 @@ class CourtCase(TableBase, Base):
     court_case_forms: Mapped[List["CourtCaseForm"]] = relationship(
         back_populates="court_case"
     )
-    court_case_collections: Mapped[List["CourtCaseCollection"]] = relationship(
+    court_case_cash_collections: Mapped[List["CourtCaseCashCollection"]] = relationship(
         back_populates="court_case"
     )
     court_case_task_calendars: Mapped[List["CourtCaseTaskCalendar"]] = relationship(
@@ -227,21 +227,21 @@ class CourtCaseForm(TableBase, Base):
     form: Mapped["Form"] = relationship(back_populates="court_case_forms")
 
 
-class CourtCaseCollection(TableBase, Base):
-    __tablename__ = "court_case_collection"
+class CourtCaseCashCollection(TableBase, Base):
+    __tablename__ = "court_case_cash_collection"
     case_id = Column(
         ForeignKey("court_case.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
     )
-    collection_id = Column(
-        ForeignKey("collection.id", onupdate="CASCADE", ondelete="RESTRICT"),
+    cash_collection_id = Column(
+        ForeignKey("cash_collection.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
     )
     court_case: Mapped["CourtCase"] = relationship(
-        back_populates="court_case_collections"
+        back_populates="court_case_cash_collections"
     )
-    collection: Mapped["Collection"] = relationship(
-        back_populates="court_case_collections"
+    cash_collection: Mapped["CashCollection"] = relationship(
+        back_populates="court_case_cash_collections"
     )
 
 
