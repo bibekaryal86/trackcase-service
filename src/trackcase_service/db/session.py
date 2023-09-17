@@ -1,9 +1,7 @@
 import os
-from functools import lru_cache
-from typing import Generator
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 from src.trackcase_service.utils.constants import DB_HOST, DB_PASSWORD, DB_USERNAME
 
@@ -19,17 +17,12 @@ db2_url = (
 engine = create_engine(db2_url, pool_pre_ping=True, echo=True)
 
 
-@lru_cache
-def create_session() -> scoped_session:
-    session = scoped_session(
-        sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    )
-    return session
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def get_session() -> Generator[scoped_session, None, None]:
-    session = create_session()
+def get_db_session():
+    db = SessionLocal()
     try:
-        yield session
+        yield db
     finally:
-        session.remove()
+        db.close()

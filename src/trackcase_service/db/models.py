@@ -115,9 +115,6 @@ class Client(TableBase, Base):
         ForeignKey("judge.id", onupdate="CASCADE", ondelete="RESTRICT"), nullable=False
     )
     judge: Mapped["Judge"] = relationship(back_populates="clients")
-    task_calendar_forms: Mapped[List["TaskCalendarForm"]] = relationship(
-        back_populates="task_calendar"
-    )
     court_cases: Mapped[List["CourtCase"]] = relationship(back_populates="client")
 
 
@@ -133,7 +130,7 @@ class CashCollection(TableBase, Base):
     collection_method: Mapped["CollectionMethod"] = relationship(
         back_populates="cash_collections"
     )
-    court_case_collections: Mapped[List["CourtCaseCashCollection"]] = relationship(
+    court_case_cash_collections: Mapped[List["CourtCaseCashCollection"]] = relationship(
         back_populates="cash_collection"
     )
 
