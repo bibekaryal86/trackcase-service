@@ -17,6 +17,7 @@ class Judge(SchemaBase):
 
     class Config:
         orm_mode = True
+        # from_attributes = True
 
 
 class Court(SchemaBase):
@@ -27,3 +28,4 @@ class Court(SchemaBase):
 
     class Config:
         orm_mode = True
+        # from_attributes=True
