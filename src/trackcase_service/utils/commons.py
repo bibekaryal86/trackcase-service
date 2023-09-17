@@ -1,12 +1,10 @@
 import http
 import logging
 import secrets
-from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
 
-from ..db.session import engine
 from . import constants, logger
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
