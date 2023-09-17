@@ -49,7 +49,7 @@ class CaseType(TableBase, Base):
     description = Column(String(280), nullable=False)
 
 
-class Court(TableBase):
+class Court(TableBase, Base):
     __tablename__ = "court"
     name = Column(String(25), unique=True, nullable=False)
     address = Column(String(100), unique=True, nullable=False)
@@ -57,7 +57,7 @@ class Court(TableBase):
     judges: Mapped[List["Judge"]] = relationship(back_populates="court")
 
 
-class Judge(TableBase):
+class Judge(TableBase, Base):
     __tablename__ = "judge"
     name = Column(String(25), unique=True, nullable=False)
     webex = Column(String(100), unique=True, nullable=True)

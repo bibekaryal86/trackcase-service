@@ -9,12 +9,12 @@ from src.trackcase_service.utils.constants import DB_HOST, DB_PASSWORD, DB_USERN
 
 # TODO ???
 os.add_dll_directory(
-    "C:\\zzz_dev\\projects\\backend\\trackcase-service\\venv\\Lib\\site-packages\\clidriver\\bin"
+    "C:\\zzz_dev\\projects\\backend\\trackcase-service\\venv\\Lib\\site-packages\\clidriver\\bin"  # noqa: E501
 )
 
 db2_url = (
     f"ibm_db_sa://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}"
-    f".c3n41cmd0nqnrk39u98g.databases.appdomain.cloud:30604/bludb;SECURITY=SSL;PROTOCOL=TCPIP;"
+    f".c3n41cmd0nqnrk39u98g.databases.appdomain.cloud:30604/bludb;SECURITY=SSL;PROTOCOL=TCPIP;"  # noqa: E501
 )
 engine = create_engine(db2_url, pool_pre_ping=True, echo=True)
 
