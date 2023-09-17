@@ -18,3 +18,6 @@ backend service for trackcase
 * v2
   * add user to tables
   * add history tables
+
+
+* pydantic says `from_orm` is deprecated

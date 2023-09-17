@@ -1,10 +1,12 @@
 import http
 import logging
 import secrets
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
 
+from ..db.session import engine
 from . import constants, logger
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
@@ -33,13 +35,11 @@ def validate_input():
 
 
 def startup_db_client(app: FastAPI):
-    # do something
-    log.info("Connected to DB Client...")
+    log.info("App Starting...")
 
 
 def shutdown_db_client(app: FastAPI):
-    # do something
-    log.info("Disconnected from DB Client...")
+    log.info("App Shutting Down...")
 
 
 def validate_http_basic_credentials(
@@ -65,9 +65,18 @@ def validate_http_basic_credentials(
 
 
 def raise_http_exception(
-    request: Request, sts_code: http.HTTPStatus | int, msg: str, err_msg: str = ""
+    request: Request,
+    sts_code: http.HTTPStatus | int,
+    msg: str = "",
+    err_msg: str = "",
+    detail=None,
 ):
     log.error(
         "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
     )
-    raise HTTPException(status_code=sts_code, detail={"msg": msg, "errMsg": err_msg})
+    if detail is None:
+        raise HTTPException(
+            status_code=sts_code, detail={"msg": msg, "errMsg": err_msg}
+        )
+    else:
+        raise HTTPException(status_code=sts_code, detail=detail)
