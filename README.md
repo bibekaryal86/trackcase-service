@@ -13,3 +13,8 @@ backend service for trackcase
               import sqlalchemy
               statement = sqlalchemy.text(statement)
     * If needed, the exact location of where to update will be where the error was thrown
+
+
+* v2
+  * add user to tables
+  * add history tables
