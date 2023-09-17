@@ -3,7 +3,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.trackcase_service.utils.constants import DB_HOST, DB_PASSWORD, DB_USERNAME
+from trackcase_service.utils.constants import DB_HOST, DB_PASSWORD, DB_USERNAME
 
 # TODO ???
 os.add_dll_directory(

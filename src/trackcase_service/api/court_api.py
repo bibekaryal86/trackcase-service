@@ -4,19 +4,19 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
-from src.trackcase_service.db.session import get_db_session
-from src.trackcase_service.service.court_service import (
+from trackcase_service.db.session import get_db_session
+from trackcase_service.service.court_service import (
     get_court_service,
     get_response_error,
     get_response_multiple,
     get_response_single,
 )
-from src.trackcase_service.service.schemas import Court, CourtResponse
-from src.trackcase_service.utils.commons import (
+from trackcase_service.service.schemas import Court, CourtResponse
+from trackcase_service.utils.commons import (
     raise_http_exception,
     validate_http_basic_credentials,
 )
-from src.trackcase_service.utils.constants import http_basic_security
+from trackcase_service.utils.constants import http_basic_security
 
 router = APIRouter(prefix="/trackcase-service/courts", tags=["Courts"])
 

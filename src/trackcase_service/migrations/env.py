@@ -3,8 +3,8 @@ from logging.config import fileConfig
 from alembic import context
 from ibm_db_alembic.ibm_db import IbmDbImpl  # noqa: F401
 
-from src.trackcase_service.db.models import Base
-from src.trackcase_service.db.session import engine
+from trackcase_service.db.models import Base
+from trackcase_service.db.session import engine
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

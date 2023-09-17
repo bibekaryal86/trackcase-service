@@ -9,8 +9,8 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasicCredentials
 from utils import commons, constants, enums, logger
 
-import src.trackcase_service.api.court_api as court_api
-import src.trackcase_service.api.judge_api as judge_api
+import api.court_api as court_api
+import api.judge_api as judge_api
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
 
