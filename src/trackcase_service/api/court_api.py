@@ -18,7 +18,7 @@ from trackcase_service.utils.commons import (
 )
 from trackcase_service.utils.constants import http_basic_security
 
-router = APIRouter(prefix="/trackcase-service/courts", tags=["Courts"])
+router = APIRouter(prefix="/courts", tags=["Courts"])
 
 
 @router.get("/", response_model=CourtResponse, status_code=http.HTTPStatus.OK)
