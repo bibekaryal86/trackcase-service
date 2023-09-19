@@ -38,6 +38,8 @@ app.include_router(judge_api.router)
 
 @app.middleware("http")
 async def log_request_response(request: Request, call_next):
+    # TODO check if validate credentials can be put here for all requests
+    # instead of it being placed in all methods in each api
     log.info(f"Receiving [ {request.method} ] URL [ {request.url} ]")
     start_time = time.time()
     response = await call_next(request)
