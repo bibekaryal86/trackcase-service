@@ -3,14 +3,13 @@ import os
 import time
 from contextlib import asynccontextmanager
 
+import api.court_api as court_api
+import api.judge_api as judge_api
 import uvicorn
 from fastapi import Depends, FastAPI, Request
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasicCredentials
 from utils import commons, constants, enums, logger
-
-import api.court_api as court_api
-import api.judge_api as judge_api
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
 
