@@ -1,9 +1,10 @@
 from typing import List, Type, TypeVar
 
 from pydantic import BaseModel
-from sqlalchemy.orm import Session, declarative_base
+from sqlalchemy.orm import Session
+from trackcase_service.db.models import Base
 
-ModelBase = TypeVar("ModelBase", bourn=declarative_base())
+ModelBase = TypeVar("ModelBase", bound=Base)
 SchemaBase = TypeVar("SchemaBase", bound=BaseModel)
 
 
