@@ -34,6 +34,7 @@ class CrudService:
         for key, value in model_data.dict().items():
             setattr(db_record, key, value)
         self.db_session.commit()
+        self.db_session.refresh(db_record)
         return db_record
 
     def delete(self, model_id: int) -> bool:
