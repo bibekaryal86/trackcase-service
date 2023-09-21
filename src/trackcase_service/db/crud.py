@@ -31,8 +31,7 @@ class CrudService:
     def update(self, model_id: int, model_data: ModelBase) -> ModelBase:
         db_record = self.db_session.query(self.db_model).get(model_id)
         # exists check done in controller/api for better messaging, so no need again
-        for key, value in model_data.dict().items():
-            setattr(db_record, key, value)
+        db_record = _copy_key_values(model_data, db_record)
         self.db_session.commit()
         self.db_session.refresh(db_record)
         return db_record
@@ -43,3 +42,24 @@ class CrudService:
         self.db_session.delete(db_record)
         self.db_session.commit()
         return True
+
+
+def _copy_key_values(model_data, db_record):
+    auto_generated_attributes = ["id", "created", "modified", "metadata", "registry"]
+    # Get a list of attributes for the db_record object
+    model_attributes = [
+        attr
+        for attr in dir(model_data)
+        if not callable(getattr(model_data, attr)) and not attr.startswith("_")
+    ]
+
+    for attr_name in model_attributes:
+        attr_value = getattr(model_data, attr_name)
+        if (
+            attr_value is not None
+            and hasattr(db_record, attr_name)
+            and attr_name not in auto_generated_attributes
+        ):
+            setattr(db_record, attr_name, attr_value)
+
+    return db_record
