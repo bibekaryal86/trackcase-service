@@ -3,20 +3,17 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
-from trackcase_service.db.models import Court as CourtModel
-from trackcase_service.db.session import get_db_session
-from trackcase_service.service.court_service import (
+
+from src.trackcase_service.db.session import get_db_session
+from src.trackcase_service.service.court_service import (
     get_court_service,
-    get_response_multiple,
-    get_response_single,
 )
-from trackcase_service.service.schemas import CourtResponse, CourtRequest
-from trackcase_service.utils.commons import copy_objects
-from trackcase_service.utils.commons import (
+from src.trackcase_service.service.schemas import CourtResponse, CourtRequest
+from src.trackcase_service.utils.commons import (
     raise_http_exception,
     validate_http_basic_credentials,
 )
-from trackcase_service.utils.constants import http_basic_security
+from src.trackcase_service.utils.constants import http_basic_security
 
 router = APIRouter(prefix="/courts", tags=["Courts"])
 
@@ -28,16 +25,7 @@ def find_all(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    try:
-        courts = get_court_service(db_session).read_all()
-        return get_response_multiple(courts)
-    except Exception as ex:
-        raise_http_exception(
-            request,
-            HTTPStatus.SERVICE_UNAVAILABLE,
-            "Error Retrieving Courts. Please Try Again!!!",
-            str(ex),
-        )
+    return get_court_service(db_session).read_all_courts(request)
 
 
 @router.get("/{court_id}", response_model=CourtResponse, status_code=HTTPStatus.OK)
@@ -48,23 +36,15 @@ def find_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    try:
-        court = get_court_service(db_session).read_one(court_id)
-        if court is None:
-            raise_http_exception(
-                request,
-                HTTPStatus.NOT_FOUND,
-                f"Court Not Found By Id: {court_id}!!!",
-                f"Court Not Found By Id: {court_id}!!!",
-            )
-        return get_response_single(court)
-    except Exception as ex:
+    court_response: CourtResponse = get_court_service(db_session).read_one_court(court_id, request)
+    if court_response is None:
         raise_http_exception(
             request,
-            HTTPStatus.SERVICE_UNAVAILABLE,
-            f"Error Retrieving Court By Id: {court_id}. Please Try Again!!!",
-            str(ex),
+            HTTPStatus.NOT_FOUND,
+            f"Court Not Found By Id: {court_id}!!!",
+            f"Court Not Found By Id: {court_id}!!!",
         )
+    return court_response
 
 
 @router.post("/", response_model=CourtResponse, status_code=HTTPStatus.OK)
@@ -75,14 +55,35 @@ def insert_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    try:
-        court: CourtModel = copy_objects(court_request, CourtModel)
-        court = get_court_service(db_session).create(court)
-        return get_response_single(court)
-    except Exception as ex:
+    court_model = get_court_service(db_session).create_one_court(request, court_request)
+
+    if court_model and court_model.id:
+        return get_court_service(db_session).read_one_court(court_model.id, request)
+
+    raise_http_exception(
+        request,
+        HTTPStatus.SERVICE_UNAVAILABLE,
+        "Error Inserting Court. Please Try Again!!!",
+        "Error Inserting Court. Please Try Again!!!",
+    )
+
+
+@router.delete("/{court_id}", response_model=CourtResponse, status_code=HTTPStatus.OK)
+def delete_one(
+    court_id: int,
+    request: Request,
+    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
+    db_session: Session = Depends(get_db_session),
+):
+    validate_http_basic_credentials(request, http_basic_credentials)
+    court_response = get_court_service(db_session).read_one_court(court_id, request)
+
+    if not (court_response and court_response.courts):
         raise_http_exception(
             request,
-            HTTPStatus.SERVICE_UNAVAILABLE,
-            "Error Inserting Court. Please Try Again!!!",
-            str(ex),
+            HTTPStatus.NOT_FOUND,
+            f"Court Not Found By Id: {court_id}!!!",
+            f"Court Not Found By Id: {court_id}!!!",
         )
+
+    return get_court_service(db_session).delete_one_court(court_id, request)

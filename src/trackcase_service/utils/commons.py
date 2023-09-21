@@ -80,10 +80,16 @@ def raise_http_exception(
         raise HTTPException(status_code=sts_code, detail=detail)
 
 
-def copy_objects(source_object, destination_class):
-    destination_object = destination_class()
+def copy_objects(source_object, destination_class, destination_object=None):
+    if destination_object is None:
+        destination_object = destination_class()
     common_attributes = set(dir(source_object)) & set(dir(destination_object))
     for attr in common_attributes:
-        if not callable(getattr(source_object, attr)) and not attr.startswith("__"):
+        if (
+                not callable(getattr(source_object, attr))
+                and not attr.startswith("__")
+                and hasattr(destination_object, attr)
+                and not getattr(destination_object, attr)
+        ):
             setattr(destination_object, attr, getattr(source_object, attr))
     return destination_object

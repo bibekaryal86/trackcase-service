@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from trackcase_service.db.crud import CrudService
-from trackcase_service.db.models import Judge as JudgeModel
+from src.trackcase_service.db.crud import CrudService
+from src.trackcase_service.db.models import Judge as JudgeModel
 
 from .schemas import Judge as JudgeSchema
 from .schemas import JudgeResponse

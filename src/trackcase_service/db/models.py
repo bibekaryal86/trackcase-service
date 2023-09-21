@@ -10,7 +10,7 @@ Base: Any = declarative_base()
 class TableBase:
     id = Column(Integer, primary_key=True, autoincrement=True)
     created = Column(DateTime, server_default=func.sysdate(), nullable=False)
-    modified = Column(DateTime, onupdate=func.sysdate(), nullable=False)
+    modified = Column(DateTime, server_default=func.sysdate(), nullable=False)
 
 
 class FormType(TableBase, Base):

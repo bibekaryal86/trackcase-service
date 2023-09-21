@@ -28,7 +28,7 @@ class Judge(JudgeBase, BaseModelSchema):
         orm_mode = True
 
 
-class JudgeRequest(JudgeBase, BaseModelSchema):
+class JudgeRequest(JudgeBase, BaseModel):
     pass
 
 
@@ -50,7 +50,7 @@ class Court(CourtBase, BaseModelSchema):
         orm_mode = True
 
 
-class CourtRequest(CourtBase, BaseModelSchema):
+class CourtRequest(CourtBase, BaseModel):
     pass
 
 
