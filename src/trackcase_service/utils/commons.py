@@ -86,10 +86,10 @@ def copy_objects(source_object, destination_class, destination_object=None):
     common_attributes = set(dir(source_object)) & set(dir(destination_object))
     for attr in common_attributes:
         if (
-                not callable(getattr(source_object, attr))
-                and not attr.startswith("__")
-                and hasattr(destination_object, attr)
-                and not getattr(destination_object, attr)
+            not callable(getattr(source_object, attr))
+            and not attr.startswith("__")
+            and hasattr(destination_object, attr)
+            and not getattr(destination_object, attr)
         ):
             setattr(destination_object, attr, getattr(source_object, attr))
     return destination_object

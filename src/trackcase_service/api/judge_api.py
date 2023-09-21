@@ -3,6 +3,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
+
 from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.judge_service import (
     get_judge_service,

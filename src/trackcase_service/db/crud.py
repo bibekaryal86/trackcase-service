@@ -1,6 +1,7 @@
 from typing import List, Type, TypeVar
 
 from sqlalchemy.orm import Session
+
 from src.trackcase_service.db.models import Base
 
 ModelBase = TypeVar("ModelBase", bound=Base)
@@ -27,12 +28,11 @@ class CrudService:
     def read_all(self, skip: int = 0, limit: int = 1000) -> List[ModelBase]:
         return self.db_session.query(self.db_model).offset(skip).limit(limit).all()
 
-    def update(self, model_id: int, model_data: ModelBase) -> ModelBase | None:
-        db_record = self.db_session.query(model_data).get(model_id)
-        if db_record is None:
-            return None
-
-        db_record.update(model_data)
+    def update(self, model_id: int, model_data: ModelBase) -> ModelBase:
+        db_record = self.db_session.query(self.db_model).get(model_id)
+        # exists check done in controller/api for better messaging, so no need again
+        for key, value in model_data.dict().items():
+            setattr(db_record, key, value)
         self.db_session.commit()
         return db_record
 
