@@ -3,13 +3,15 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
+from trackcase_service.db.models import Court as CourtModel
 from trackcase_service.db.session import get_db_session
 from trackcase_service.service.court_service import (
     get_court_service,
     get_response_multiple,
     get_response_single,
 )
-from trackcase_service.service.schemas import CourtResponse
+from trackcase_service.service.schemas import CourtResponse, CourtRequest
+from trackcase_service.utils.commons import copy_objects
 from trackcase_service.utils.commons import (
     raise_http_exception,
     validate_http_basic_credentials,
@@ -61,5 +63,26 @@ def find_one(
             request,
             HTTPStatus.SERVICE_UNAVAILABLE,
             f"Error Retrieving Court By Id: {court_id}. Please Try Again!!!",
+            str(ex),
+        )
+
+
+@router.post("/", response_model=CourtResponse, status_code=HTTPStatus.OK)
+def insert_one(
+    request: Request,
+    court_request: CourtRequest,
+    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
+    db_session: Session = Depends(get_db_session),
+):
+    validate_http_basic_credentials(request, http_basic_credentials)
+    try:
+        court: CourtModel = copy_objects(court_request, CourtModel)
+        court = get_court_service(db_session).create(court)
+        return get_response_single(court)
+    except Exception as ex:
+        raise_http_exception(
+            request,
+            HTTPStatus.SERVICE_UNAVAILABLE,
+            "Error Inserting Court. Please Try Again!!!",
             str(ex),
         )

@@ -5,9 +5,9 @@ from pydantic import BaseModel
 
 
 class BaseModelSchema(BaseModel):
-    id: Optional[int]
-    created: Optional[datetime.datetime]
-    modified: Optional[datetime.datetime]
+    id: Optional[int] = 0
+    created: Optional[datetime.datetime] = None
+    modified: Optional[datetime.datetime] = None
 
 
 class ResponseBase(BaseModel):
@@ -19,12 +19,8 @@ class ResponseBase(BaseModel):
 # judge
 class JudgeBase:
     name: str
-    webex: Optional[str]
+    webex: Optional[str] = None
     court_id: int
-
-
-class JudgeCreate(JudgeBase, BaseModel):
-    pass
 
 
 class Judge(JudgeBase, BaseModelSchema):
@@ -45,10 +41,6 @@ class CourtBase:
     name: str
     address: str
     dhs_address: str
-
-
-class CourtCreate(CourtBase, BaseModel):
-    pass
 
 
 class Court(CourtBase, BaseModelSchema):
