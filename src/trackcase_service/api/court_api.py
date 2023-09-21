@@ -27,7 +27,7 @@ def find_all(
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     try:
-        courts = get_court_service(db_session).get_all()
+        courts = get_court_service(db_session).read_all()
         return get_response_multiple(courts)
     except Exception as ex:
         raise_http_exception(
@@ -39,7 +39,7 @@ def find_all(
 
 
 @router.get("/{court_id}", response_model=CourtResponse, status_code=HTTPStatus.OK)
-def find(
+def find_one(
     court_id: int,
     request: Request,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
@@ -47,7 +47,7 @@ def find(
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     try:
-        court = get_court_service(db_session).get_by_id(court_id)
+        court = get_court_service(db_session).read_one(court_id)
         if court is None:
             raise_http_exception(
                 request,

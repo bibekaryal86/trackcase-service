@@ -27,7 +27,7 @@ def find_all(
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     try:
-        judges = get_judge_service(db_session).get_all()
+        judges = get_judge_service(db_session).read_all()
         return get_response_multiple(judges)
     except Exception as ex:
         raise_http_exception(
@@ -39,7 +39,7 @@ def find_all(
 
 
 @router.get("/{judge_id}", response_model=JudgeResponse, status_code=HTTPStatus.OK)
-def find(
+def find_one(
     judge_id: int,
     request: Request,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
@@ -47,13 +47,13 @@ def find(
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     try:
-        judge = get_judge_service(db_session).get_by_id(judge_id)
+        judge = get_judge_service(db_session).read_one(judge_id)
         if judge is None:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Judge Not Found By Id: {judge}!!!",
-                f"Judge Not Found By Id: {get_judge_service()}!!!",
+                f"Judge Not Found By Id: {judge_id}!!!",
+                f"Judge Not Found By Id: {judge_id}!!!",
             )
         return get_response_single(judge)
     except Exception as ex:
