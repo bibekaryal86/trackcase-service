@@ -12,11 +12,6 @@ class TableBase:
     created = Column(DateTime, server_default=func.sysdate(), nullable=False)
     modified = Column(DateTime, server_default=func.sysdate(), nullable=False)
 
-    def dict(self):
-        return {
-            key: value for key, value in self.__dict__.items() if not callable(value)
-        }
-
 
 class FormType(TableBase, Base):
     __tablename__ = "form_type"
@@ -63,6 +58,7 @@ class CaseType(TableBase, Base):
     __tablename__ = "case_type"
     name = Column(String(25), unique=True, nullable=False)
     description = Column(String(280), nullable=False)
+    court_cases: Mapped[List["CourtCase"]] = relationship(back_populates="case_type")
 
 
 class Court(TableBase, Base):
@@ -198,10 +194,14 @@ class TaskCalendarForm(TableBase, Base):
 
 class CourtCase(TableBase, Base):
     __tablename__ = "court_case"
+    case_type_id = Column(
+        ForeignKey("case_type.id", onupdate="CASCADE", ondelete="RESTRICT"), nullable=False
+    )
     client_id = Column(
         ForeignKey("client.id", onupdate="CASCADE", ondelete="RESTRICT"), nullable=False
     )
-    client: Mapped["Client"] = relationship(back_populates="court_cases")
+    case_type: Mapped[CaseType] = relationship(back_populates="court_cases")
+    client: Mapped[Client] = relationship(back_populates="court_cases")
     court_case_forms: Mapped[List["CourtCaseForm"]] = relationship(
         back_populates="court_case"
     )
