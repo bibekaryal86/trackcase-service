@@ -8,8 +8,7 @@ from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Court as CourtModel
 from src.trackcase_service.utils.commons import copy_objects, raise_http_exception
 
-from .schemas import Court as CourtSchema
-from .schemas import CourtRequest, CourtResponse
+from .schemas import Court as CourtSchema, CourtRequest, CourtResponse
 
 
 class CourtService(CrudService):
