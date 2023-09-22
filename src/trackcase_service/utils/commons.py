@@ -5,6 +5,8 @@ import secrets
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
 
+from src.trackcase_service.db.session import get_db_session
+
 from . import constants, logger
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
@@ -33,13 +35,13 @@ def validate_input():
 
 
 def startup_db_client(app: FastAPI):
-    # do something
-    log.info("Connected to DB Client...")
+    log.info("App Starting...")
+    get_db_session()
+    log.info("Created DB Session...")
 
 
 def shutdown_db_client(app: FastAPI):
-    # do something
-    log.info("Disconnected from DB Client...")
+    log.info("App Shutting Down...")
 
 
 def validate_http_basic_credentials(
@@ -65,9 +67,34 @@ def validate_http_basic_credentials(
 
 
 def raise_http_exception(
-    request: Request, sts_code: http.HTTPStatus | int, msg: str, err_msg: str = ""
+    request: Request,
+    sts_code: http.HTTPStatus | int,
+    msg: str = "",
+    err_msg: str = "",
+    detail=None,
 ):
     log.error(
         "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
     )
-    raise HTTPException(status_code=sts_code, detail={"msg": msg, "errMsg": err_msg})
+    if detail is None:
+        raise HTTPException(
+            status_code=sts_code, detail={"msg": msg, "errMsg": err_msg}
+        )
+    else:
+        raise HTTPException(status_code=sts_code, detail=detail)
+
+
+def copy_objects(
+    source_object, destination_class, destination_object=None, is_copy_all=False
+):
+    if destination_object is None:
+        destination_object = destination_class()
+    common_attributes = set(dir(source_object)) & set(dir(destination_object))
+    for attr in common_attributes:
+        if (
+            not callable(getattr(source_object, attr))
+            and not attr.startswith("_")
+            and (is_copy_all or not getattr(destination_object, attr))
+        ):
+            setattr(destination_object, attr, getattr(source_object, attr))
+    return destination_object
