@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
 
 from . import constants, logger
+from src.trackcase_service.db.session import get_db_session
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
 
@@ -34,6 +35,8 @@ def validate_input():
 
 def startup_db_client(app: FastAPI):
     log.info("App Starting...")
+    get_db_session()
+    log.info("Created DB Session...")
 
 
 def shutdown_db_client(app: FastAPI):
