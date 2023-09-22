@@ -5,8 +5,9 @@ import secrets
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
 
-from . import constants, logger
 from src.trackcase_service.db.session import get_db_session
+
+from . import constants, logger
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
 
