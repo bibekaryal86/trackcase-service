@@ -125,8 +125,8 @@ def get_response_multiple(multiple: list[JudgeSchema]) -> JudgeResponse:
 def _convert_model_to_schema(data_model: JudgeModel) -> JudgeSchema:
     data_schema = JudgeSchema(
         name=data_model.name,
-        address=data_model.address,
-        dhs_address=data_model.dhs_address,
+        webex=data_model.webex,
+        court_id=data_model.court_id,
     )
     data_schema = copy_objects(data_model, JudgeSchema, data_schema)
     return data_schema

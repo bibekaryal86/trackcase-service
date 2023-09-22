@@ -24,6 +24,8 @@ class JudgeBase:
 
 
 class Judge(JudgeBase, BaseModelSchema):
+    court: Optional["Court"] = None
+
     class Config:
         orm_mode = True
 
