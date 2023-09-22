@@ -1,14 +1,7 @@
-import os
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from src.trackcase_service.utils.constants import DB_HOST, DB_PASSWORD, DB_USERNAME
-
-# TODO ???
-os.add_dll_directory(
-    "C:\\zzz_dev\\projects\\backend\\trackcase-service\\venv\\Lib\\site-packages\\clidriver\\bin"  # noqa: E501
-)
 
 db2_url = (
     f"ibm_db_sa://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}"
