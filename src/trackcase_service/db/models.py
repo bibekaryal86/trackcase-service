@@ -113,7 +113,7 @@ class Client(TableBase, Base):
     phone = Column(String(10), unique=True, nullable=False)
     email = Column(DateTime, unique=True, nullable=True)
     judge_id = Column(
-        ForeignKey("judge.id", onupdate="CASCADE", ondelete="RESTRICT"), nullable=False
+        ForeignKey("judge.id", onupdate="CASCADE", ondelete="RESTRICT"), nullable=True
     )
     judge: Mapped["Judge"] = relationship(back_populates="clients")
     court_cases: Mapped[List["CourtCase"]] = relationship(back_populates="client")
@@ -195,7 +195,8 @@ class TaskCalendarForm(TableBase, Base):
 class CourtCase(TableBase, Base):
     __tablename__ = "court_case"
     case_type_id = Column(
-        ForeignKey("case_type.id", onupdate="CASCADE", ondelete="RESTRICT"), nullable=False
+        ForeignKey("case_type.id", onupdate="CASCADE", ondelete="RESTRICT"),
+        nullable=False,
     )
     client_id = Column(
         ForeignKey("client.id", onupdate="CASCADE", ondelete="RESTRICT"), nullable=False
