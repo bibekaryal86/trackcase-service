@@ -33,13 +33,13 @@ class TaskTypeService(CrudService):
             )
 
     def read_one_task_type(
-        self, model_id: int, request: Request, is_include_task_calendars: bool
+        self, model_id: int, request: Request, is_include_extras: bool
     ) -> TaskTypeResponse:
         try:
             data_model: TaskTypeModel = super().read_one(model_id)
             if data_model:
                 schema_model: TaskTypeSchema = _convert_model_to_schema(
-                    data_model, is_include_task_calendars
+                    data_model, is_include_extras
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -51,13 +51,12 @@ class TaskTypeService(CrudService):
             )
 
     def read_all_task_types(
-        self, request: Request, is_include_task_calendars: bool
+        self, request: Request, is_include_extras: bool
     ) -> TaskTypeResponse:
         try:
             data_models: List[TaskTypeModel] = super().read_all()
             schema_models: List[TaskTypeSchema] = [
-                _convert_model_to_schema(c_m, is_include_task_calendars)
-                for c_m in data_models
+                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -130,12 +129,12 @@ def get_response_multiple(multiple: list[TaskTypeSchema]) -> TaskTypeResponse:
 
 
 def _convert_model_to_schema(
-    data_model: TaskTypeModel, is_include_task_calendars: bool = False
+    data_model: TaskTypeModel, is_include_extras: bool = False
 ) -> TaskTypeSchema:
     data_schema = TaskTypeSchema(
         name=data_model.name,
         description=data_model.description,
     )
-    if is_include_task_calendars:
+    if is_include_extras:
         data_schema.task_calendars = data_model.task_calendars
     return data_schema

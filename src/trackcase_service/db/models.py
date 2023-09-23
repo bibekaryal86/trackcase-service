@@ -74,7 +74,8 @@ class Judge(TableBase, Base):
     name = Column(String(25), unique=True, nullable=False)
     webex = Column(String(100), unique=True, nullable=True)
     court_id = Column(
-        ForeignKey("court.id", onupdate="NO ACTION", ondelete="RESTRICT"), nullable=False
+        ForeignKey("court.id", onupdate="NO ACTION", ondelete="RESTRICT"),
+        nullable=False,
     )
     court: Mapped[Court] = relationship(back_populates="judges")
     clients: Mapped[List["Client"]] = relationship(back_populates="judge")
@@ -101,7 +102,8 @@ class CourtCase(TableBase, Base):
         nullable=False,
     )
     client_id = Column(
-        ForeignKey("client.id", onupdate="NO ACTION", ondelete="RESTRICT"), nullable=False
+        ForeignKey("client.id", onupdate="NO ACTION", ondelete="RESTRICT"),
+        nullable=False,
     )
     case_type: Mapped[CaseType] = relationship(back_populates="court_cases")
     client: Mapped[Client] = relationship(back_populates="court_cases")

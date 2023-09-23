@@ -35,13 +35,13 @@ class HearingTypeService(CrudService):
             )
 
     def read_one_hearing_type(
-        self, model_id: int, request: Request, is_include_hearing_calendars: bool
+        self, model_id: int, request: Request, is_include_extras: bool
     ) -> HearingTypeResponse:
         try:
             data_model: HearingTypeModel = super().read_one(model_id)
             if data_model:
                 schema_model: HearingTypeSchema = _convert_model_to_schema(
-                    data_model, is_include_hearing_calendars
+                    data_model, is_include_extras
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -53,13 +53,12 @@ class HearingTypeService(CrudService):
             )
 
     def read_all_hearing_types(
-        self, request: Request, is_include_hearing_calendars: bool
+        self, request: Request, is_include_extras: bool
     ) -> HearingTypeResponse:
         try:
             data_models: List[HearingTypeModel] = super().read_all()
             schema_models: List[HearingTypeSchema] = [
-                _convert_model_to_schema(c_m, is_include_hearing_calendars)
-                for c_m in data_models
+                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -136,12 +135,12 @@ def get_response_multiple(multiple: list[HearingTypeSchema]) -> HearingTypeRespo
 
 
 def _convert_model_to_schema(
-    data_model: HearingTypeModel, is_include_hearing_calendars: bool = False
+    data_model: HearingTypeModel, is_include_extras: bool = False
 ) -> HearingTypeSchema:
     data_schema = HearingTypeSchema(
         name=data_model.name,
         description=data_model.description,
     )
-    if is_include_hearing_calendars:
+    if is_include_extras:
         data_schema.hearing_calendars = data_model.hearing_calendars
     return data_schema

@@ -35,13 +35,13 @@ class CollectionMethodService(CrudService):
             )
 
     def read_one_collection_method(
-        self, model_id: int, request: Request, is_include_cash_collections: bool
+        self, model_id: int, request: Request, is_include_extras: bool
     ) -> CollectionMethodResponse:
         try:
             data_model: CollectionMethodModel = super().read_one(model_id)
             if data_model:
                 schema_model: CollectionMethodSchema = _convert_model_to_schema(
-                    data_model, is_include_cash_collections
+                    data_model, is_include_extras
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -53,13 +53,12 @@ class CollectionMethodService(CrudService):
             )
 
     def read_all_collection_methods(
-        self, request: Request, is_include_cash_collections: bool
+        self, request: Request, is_include_extras: bool
     ) -> CollectionMethodResponse:
         try:
             data_models: List[CollectionMethodModel] = super().read_all()
             schema_models: List[CollectionMethodSchema] = [
-                _convert_model_to_schema(c_m, is_include_cash_collections)
-                for c_m in data_models
+                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -146,12 +145,12 @@ def get_response_multiple(
 
 
 def _convert_model_to_schema(
-    data_model: CollectionMethodModel, is_include_cash_collections: bool = False
+    data_model: CollectionMethodModel, is_include_extras: bool = False
 ) -> CollectionMethodSchema:
     data_schema = CollectionMethodSchema(
         name=data_model.name,
         description=data_model.description,
     )
-    if is_include_cash_collections:
+    if is_include_extras:
         data_schema.cash_collections = data_model.cash_collections
     return data_schema

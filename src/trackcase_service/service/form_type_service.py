@@ -33,13 +33,13 @@ class FormTypeService(CrudService):
             )
 
     def read_one_form_type(
-        self, model_id: int, request: Request, is_include_forms: bool
+        self, model_id: int, request: Request, is_include_extras: bool
     ) -> FormTypeResponse:
         try:
             data_model: FormTypeModel = super().read_one(model_id)
             if data_model:
                 schema_model: FormTypeSchema = _convert_model_to_schema(
-                    data_model, is_include_forms
+                    data_model, is_include_extras
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -51,12 +51,12 @@ class FormTypeService(CrudService):
             )
 
     def read_all_form_types(
-        self, request: Request, is_include_forms: bool
+        self, request: Request, is_include_extras: bool
     ) -> FormTypeResponse:
         try:
             data_models: List[FormTypeModel] = super().read_all()
             schema_models: List[FormTypeSchema] = [
-                _convert_model_to_schema(c_m, is_include_forms) for c_m in data_models
+                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -129,12 +129,12 @@ def get_response_multiple(multiple: list[FormTypeSchema]) -> FormTypeResponse:
 
 
 def _convert_model_to_schema(
-    data_model: FormTypeModel, is_include_forms: bool = False
+    data_model: FormTypeModel, is_include_extras: bool = False
 ) -> FormTypeSchema:
     data_schema = FormTypeSchema(
         name=data_model.name,
         description=data_model.description,
     )
-    if is_include_forms:
+    if is_include_extras:
         data_schema.forms = data_model.forms
     return data_schema

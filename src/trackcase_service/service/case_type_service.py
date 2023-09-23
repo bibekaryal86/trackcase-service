@@ -33,13 +33,13 @@ class CaseTypeService(CrudService):
             )
 
     def read_one_case_type(
-        self, model_id: int, request: Request, is_include_court_cases: bool
+        self, model_id: int, request: Request, is_include_extras: bool
     ) -> CaseTypeResponse:
         try:
             data_model: CaseTypeModel = super().read_one(model_id)
             if data_model:
                 schema_model: CaseTypeSchema = _convert_model_to_schema(
-                    data_model, is_include_court_cases
+                    data_model, is_include_extras
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -51,13 +51,12 @@ class CaseTypeService(CrudService):
             )
 
     def read_all_case_types(
-        self, request: Request, is_include_court_cases: bool
+        self, request: Request, is_include_extras: bool
     ) -> CaseTypeResponse:
         try:
             data_models: List[CaseTypeModel] = super().read_all()
             schema_models: List[CaseTypeSchema] = [
-                _convert_model_to_schema(c_m, is_include_court_cases)
-                for c_m in data_models
+                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -130,12 +129,12 @@ def get_response_multiple(multiple: list[CaseTypeSchema]) -> CaseTypeResponse:
 
 
 def _convert_model_to_schema(
-    data_model: CaseTypeModel, is_include_court_cases: bool = False
+    data_model: CaseTypeModel, is_include_extras: bool = False
 ) -> CaseTypeSchema:
     data_schema = CaseTypeSchema(
         name=data_model.name,
         description=data_model.description,
     )
-    if is_include_court_cases:
+    if is_include_extras:
         data_schema.court_cases = data_model.court_cases
     return data_schema

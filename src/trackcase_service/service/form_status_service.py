@@ -33,13 +33,13 @@ class FormStatusService(CrudService):
             )
 
     def read_one_form_status(
-        self, model_id: int, request: Request, is_include_forms: bool
+        self, model_id: int, request: Request, is_include_extras: bool
     ) -> FormStatusResponse:
         try:
             data_model: FormStatusModel = super().read_one(model_id)
             if data_model:
                 schema_model: FormStatusSchema = _convert_model_to_schema(
-                    data_model, is_include_forms
+                    data_model, is_include_extras
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -51,12 +51,12 @@ class FormStatusService(CrudService):
             )
 
     def read_all_form_statuses(
-        self, request: Request, is_include_forms: bool
+        self, request: Request, is_include_extras: bool
     ) -> FormStatusResponse:
         try:
             data_models: List[FormStatusModel] = super().read_all()
             schema_models: List[FormStatusSchema] = [
-                _convert_model_to_schema(c_m, is_include_forms) for c_m in data_models
+                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -131,12 +131,12 @@ def get_response_multiple(multiple: list[FormStatusSchema]) -> FormStatusRespons
 
 
 def _convert_model_to_schema(
-    data_model: FormStatusModel, is_include_forms: bool = False
+    data_model: FormStatusModel, is_include_extras: bool = False
 ) -> FormStatusSchema:
     data_schema = FormStatusSchema(
         name=data_model.name,
         description=data_model.description,
     )
-    if is_include_forms:
+    if is_include_extras:
         data_schema.forms = data_model.forms
     return data_schema

@@ -32,11 +32,15 @@ class JudgeService(CrudService):
                 str(ex),
             )
 
-    def read_one_judge(self, model_id: int, request: Request) -> JudgeResponse:
+    def read_one_judge(
+        self, model_id: int, request: Request, is_include_extras: bool
+    ) -> JudgeResponse:
         try:
             data_model: JudgeModel = super().read_one(model_id)
             if data_model:
-                schema_model: JudgeSchema = _convert_model_to_schema(data_model)
+                schema_model: JudgeSchema = _convert_model_to_schema(
+                    data_model, is_include_extras
+                )
                 return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
@@ -46,11 +50,13 @@ class JudgeService(CrudService):
                 str(ex),
             )
 
-    def read_all_judges(self, request: Request) -> JudgeResponse:
+    def read_all_judges(
+        self, request: Request, is_include_extras: bool
+    ) -> JudgeResponse:
         try:
             data_models: List[JudgeModel] = super().read_all()
             schema_models: List[JudgeSchema] = [
-                _convert_model_to_schema(c_m) for c_m in data_models
+                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -64,7 +70,7 @@ class JudgeService(CrudService):
     def update_one_judge(
         self, model_id: int, request: Request, request_object: JudgeRequest
     ) -> JudgeResponse:
-        judge_response = self.read_one_judge(model_id, request)
+        judge_response = self.read_one_judge(model_id, request, False)
 
         if not (judge_response and judge_response.judges):
             raise_http_exception(
@@ -88,7 +94,7 @@ class JudgeService(CrudService):
             )
 
     def delete_one_judge(self, model_id: int, request: Request) -> JudgeResponse:
-        judge_response = self.read_one_judge(model_id, request)
+        judge_response = self.read_one_judge(model_id, request, False)
 
         if not (judge_response and judge_response.judges):
             raise_http_exception(
@@ -122,11 +128,15 @@ def get_response_multiple(multiple: list[JudgeSchema]) -> JudgeResponse:
     return JudgeResponse(judges=multiple)
 
 
-def _convert_model_to_schema(data_model: JudgeModel) -> JudgeSchema:
+def _convert_model_to_schema(
+    data_model: JudgeModel, is_include_extras: bool = False
+) -> JudgeSchema:
     data_schema = JudgeSchema(
         name=data_model.name,
         webex=data_model.webex,
         court_id=data_model.court_id,
     )
-    data_schema = copy_objects(data_model, JudgeSchema, data_schema)
+    if is_include_extras:
+        data_schema.court = data_model.court
+        data_schema.clients = data_model.clients
     return data_schema
