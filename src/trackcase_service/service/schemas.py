@@ -107,7 +107,7 @@ class TaskTypeBase(NameDescBase):
 
 
 class TaskType(TaskTypeBase, BaseModelSchema):
-    task_types: Optional["TaskCalendar"] = []
+    task_calendars: Optional["TaskCalendar"] = []
 
     class Config:
         orm_mode = True
