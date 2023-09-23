@@ -20,7 +20,9 @@ class HearingTypeService(CrudService):
         self, request: Request, request_object: HearingTypeRequest
     ) -> HearingTypeResponse:
         try:
-            data_model: HearingTypeModel = copy_objects(request_object, HearingTypeModel)
+            data_model: HearingTypeModel = copy_objects(
+                request_object, HearingTypeModel
+            )
             data_model = super().create(data_model)
             schema_model = _convert_model_to_schema(data_model)
             return get_response_single(schema_model)
@@ -56,7 +58,8 @@ class HearingTypeService(CrudService):
         try:
             data_models: List[HearingTypeModel] = super().read_all()
             schema_models: List[HearingTypeSchema] = [
-                _convert_model_to_schema(c_m, is_include_hearing_calendars) for c_m in data_models
+                _convert_model_to_schema(c_m, is_include_hearing_calendars)
+                for c_m in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -81,7 +84,9 @@ class HearingTypeService(CrudService):
             )
 
         try:
-            data_model: HearingTypeModel = copy_objects(request_object, HearingTypeModel)
+            data_model: HearingTypeModel = copy_objects(
+                request_object, HearingTypeModel
+            )
             data_model = super().update(model_id, data_model)
             schema_model = _convert_model_to_schema(data_model)
             return get_response_single(schema_model)
@@ -93,7 +98,9 @@ class HearingTypeService(CrudService):
                 str(ex),
             )
 
-    def delete_one_hearing_type(self, model_id: int, request: Request) -> HearingTypeResponse:
+    def delete_one_hearing_type(
+        self, model_id: int, request: Request
+    ) -> HearingTypeResponse:
         hearing_type_response = self.read_one_hearing_type(model_id, request, False)
 
         if not (hearing_type_response and hearing_type_response.hearing_types):

@@ -5,7 +5,7 @@ from pydantic import BaseModel, condecimal
 
 
 class BaseModelSchema(BaseModel):
-    id: Optional[int] = 0
+    id: Optional[int] = None
     created: Optional[datetime] = None
     modified: Optional[datetime] = None
 
@@ -27,7 +27,7 @@ class FormTypeBase(NameDescBase):
 
 
 class FormType(FormTypeBase, BaseModelSchema):
-    forms: Optional["Form"] = []
+    forms: list["Form"] = []
 
     class Config:
         orm_mode = True
@@ -47,7 +47,7 @@ class FormStatusBase(NameDescBase):
 
 
 class FormStatus(FormStatusBase, BaseModelSchema):
-    forms: Optional["Form"] = []
+    forms: list["Form"] = []
 
     class Config:
         orm_mode = True
@@ -67,7 +67,7 @@ class CollectionMethodBase(NameDescBase):
 
 
 class CollectionMethod(CollectionMethodBase, BaseModelSchema):
-    cash_collections: Optional["CashCollection"] = []
+    cash_collections: list["CashCollection"] = []
 
     class Config:
         orm_mode = True
@@ -87,7 +87,7 @@ class HearingTypeBase(NameDescBase):
 
 
 class HearingType(HearingTypeBase, BaseModelSchema):
-    hearing_calendars: Optional["HearingCalendar"] = []
+    hearing_calendars: list["HearingCalendar"] = []
 
     class Config:
         orm_mode = True
@@ -107,7 +107,7 @@ class TaskTypeBase(NameDescBase):
 
 
 class TaskType(TaskTypeBase, BaseModelSchema):
-    task_calendars: Optional["TaskCalendar"] = []
+    task_calendars: list["TaskCalendar"] = []
 
     class Config:
         orm_mode = True
@@ -127,7 +127,7 @@ class CaseTypeBase(NameDescBase):
 
 
 class CaseType(CaseTypeBase, BaseModelSchema):
-    court_cases: Optional[list["CourtCase"]] = []
+    court_cases: list["CourtCase"] = []
 
     class Config:
         orm_mode = True
@@ -145,7 +145,7 @@ class CaseTypeResponse(ResponseBase):
 class CourtBase:
     name: str
     address: str
-    dhs_address: str
+    dhs_address: Optional[str] = None
 
 
 class Court(CourtBase, BaseModelSchema):
@@ -186,39 +186,10 @@ class JudgeResponse(ResponseBase):
     judges: list[Judge] = []
 
 
-# form
-class FormBase:
-    submit_date: datetime
-    form_status_id: int
-    form_type_id: int
-    receipt_date: Optional[datetime] = None
-    rfe_date: Optional[datetime] = None
-    rfe_submit_date: Optional[datetime] = None
-    decision_date: Optional[datetime] = None
-
-
-class Form(FormBase, BaseModelSchema):
-    form_status: Optional[FormStatus] = None
-    form_type: Optional[FormType] = None
-    task_calendar_forms: list["TaskCalendarForm"] = []
-    court_case_forms: list["CourtCaseForm"] = []
-
-    class Config:
-        orm_mode = True
-
-
-class FormRequest(Form, BaseModel):
-    pass
-
-
-class FormResponse(ResponseBase):
-    forms: list[Form] = []
-
-
 # client
 class ClientBase:
     name: str
-    a_number: str
+    a_number: Optional[str] = None
     address: str
     phone: str
     email: Optional[str] = None
@@ -227,7 +198,7 @@ class ClientBase:
 
 class Client(ClientBase, BaseModelSchema):
     judge: Optional[Judge] = None
-    court_cases: Optional["CourtCase"] = None
+    court_cases: list["CourtCase"] = []
 
     class Config:
         orm_mode = True
@@ -241,40 +212,43 @@ class ClientResponse(ResponseBase):
     clients: list[Client] = []
 
 
-# cash_collection
-class CashCollectionBase:
-    collection_date: datetime
-    quote_amount: condecimal(max_digits=6, decimal_places=2)
-    collected_amount: condecimal(max_digits=6, decimal_places=2)
-    collection_method_id: int
+# court_case
+class CourtCaseBase:
+    case_type_id: int
+    client_id: int
 
 
-class CashCollection(CashCollectionBase, BaseModelSchema):
-    collection_method: Optional[CollectionMethod] = None
-    court_case_cash_collections: list["CourtCaseCashCollection"] = []
+class CourtCase(CourtCaseBase, BaseModelSchema):
+    case_type: Optional[CaseType] = None
+    client: Optional[Client] = None
+    forms: list["Form"] = []
+    cash_collections: list["CashCollection"] = None
+    hearing_calendars: list["HearingCalendar"] = None
+    task_calendars: list["TaskCalendar"] = None
 
     class Config:
         orm_mode = True
 
 
-class CashCollectionRequest(CashCollectionBase, BaseModel):
+class CourtCaseRequest(CourtCaseBase, BaseModel):
     pass
 
 
-class CashCollectionResponse(ResponseBase):
-    cash_collections: list[CashCollection] = []
+class CourtCaseResponse(ResponseBase):
+    court_cases: list[CourtCase] = []
 
 
 # hearing_calendar
 class HearingCalendarBase:
     hearing_date: datetime
     hearing_type_id: int
+    court_case_id: int
 
 
 class HearingCalendar(HearingCalendarBase, BaseModelSchema):
     hearing_type: Optional[HearingType] = None
+    court_case: Optional[CourtCase] = None
     task_calendars: list["TaskCalendar"] = []
-    court_case_hearing_calendars: list["CourtCaseHearingCalendar"] = []
 
     class Config:
         orm_mode = True
@@ -292,14 +266,15 @@ class HearingCalendarResponse(ResponseBase):
 class TaskCalendarBase:
     task_date: datetime
     task_type_id: int
+    court_case_id: int
     hearing_calendar_id: Optional[int] = None
 
 
 class TaskCalendar(TaskCalendarBase, BaseModelSchema):
     task_type: Optional[TaskType] = None
+    court_case: Optional[CourtCase] = None
     hearing_calendar: Optional[HearingCalendar] = None
-    task_calendar_forms: list["TaskCalendarForm"] = []
-    court_case_task_calendars: list["CourtCaseTaskCalendar"] = []
+    forms: list["Form"] = []
 
     class Config:
         orm_mode = True
@@ -313,62 +288,50 @@ class TaskCalendarResponse(ResponseBase):
     task_calendars: list[TaskCalendar] = []
 
 
-# task_calendar_form
-class TaskCalendarFormBase:
-    form_id: int
-    task_type_id: int
-    hearing_calendar_id: Optional[int] = None
+# form
+class FormBase:
+    form_type_id: int
+    form_status_id: int
+    court_case_id: int
+    submit_date: Optional[datetime] = None
+    receipt_date: Optional[datetime] = None
+    rfe_date: Optional[datetime] = None
+    rfe_submit_date: Optional[datetime] = None
+    decision_date: Optional[datetime] = None
+    task_calendar_id: Optional[int] = None
 
 
-class TaskCalendarForm(TaskCalendarBase, BaseModelSchema):
-    form: Optional[Form] = None
+class Form(FormBase, BaseModelSchema):
+    form_status: Optional[FormStatus] = None
+    form_type: Optional[FormType] = None
     task_calendar: Optional[TaskCalendar] = None
+    court_case: Optional[CourtCase] = None
+    cash_collections: list["CashCollection"] = []
 
     class Config:
         orm_mode = True
 
 
-class TaskCalendarFormRequest(TaskCalendarFormBase, BaseModel):
+class FormRequest(Form, BaseModel):
     pass
 
 
-class TaskCalendarFormResponse(ResponseBase):
-    task_calendar_forms: list[TaskCalendarForm] = []
+class FormResponse(ResponseBase):
+    forms: list[Form] = []
 
 
-# court_case
-class CourtCaseBase:
-    case_type_id: int
-    client_id: int
+# cash_collection
+class CashCollectionBase:
+    collection_date: datetime
+    quote_amount: condecimal(max_digits=6, decimal_places=2)
+    collected_amount: condecimal(max_digits=6, decimal_places=2)
+    collection_method_id: int
+    court_case_id: int
+    form_id: Optional[int] = None
 
 
-class CourtCase(CourtCaseBase, BaseModelSchema):
-    case_type: Optional[CaseType] = None
-    client: Optional[Client] = None
-    court_case_forms: list["CourtCaseForm"] = []
-    court_case_cash_collections: list["CourtCaseCashCollection"] = None
-    court_case_task_calendars: list["CourtCaseTaskCalendar"] = None
-    court_case_hearing_calendars: list["CourtCaseHearingCalendar"] = None
-
-    class Config:
-        orm_mode = True
-
-
-class CourtCaseRequest(CourtCaseBase, BaseModel):
-    pass
-
-
-class CourtCaseResponse(ResponseBase):
-    court_cases: list[CourtCase] = []
-
-
-# court_case_form
-class CourtCaseFormBase:
-    case_id: int
-    form_id: int
-
-
-class CourtCaseForm(CourtCaseFormBase, BaseModelSchema):
+class CashCollection(CashCollectionBase, BaseModelSchema):
+    collection_method: Optional[CollectionMethod] = None
     court_case: Optional[CourtCase] = None
     form: Optional[Form] = None
 
@@ -376,75 +339,9 @@ class CourtCaseForm(CourtCaseFormBase, BaseModelSchema):
         orm_mode = True
 
 
-class CourtCaseFormRequest(CourtCaseFormBase, BaseModel):
+class CashCollectionRequest(CashCollectionBase, BaseModel):
     pass
 
 
-class CourtCaseFormResponse(ResponseBase):
-    court_case_forms: list[CourtCaseForm] = []
-
-
-# court_case_cash_collection
-class CourtCaseCashCollectionBase:
-    case_id: int
-    cash_collection_id: int
-
-
-class CourtCaseCashCollection(CourtCaseCashCollectionBase, BaseModelSchema):
-    court_case: Optional[CourtCase] = None
-    cash_collection: Optional[CashCollection] = None
-
-    class Config:
-        orm_mode = True
-
-
-class CourtCaseCashCollectionRequest(CourtCaseCashCollectionBase, BaseModel):
-    pass
-
-
-class CourtCaseCashCollectionResponse(ResponseBase):
-    court_case_cash_collections: list[CourtCaseCashCollection] = []
-
-
-# court_case_task_calendar
-class CourtCaseTaskCalendarBase:
-    case_id: int
-    task_calendar_id: int
-
-
-class CourtCaseTaskCalendar(CourtCaseTaskCalendarBase, BaseModelSchema):
-    court_case: Optional[CourtCase] = None
-    task_calendar: Optional[TaskCalendar] = None
-
-    class Config:
-        orm_mode = True
-
-
-class CourtCaseTaskCalendarRequest(CourtCaseTaskCalendarBase, BaseModel):
-    pass
-
-
-class CourtCaseTaskCalendarResponse(ResponseBase):
-    court_case_task_calendars: list[CourtCaseTaskCalendar] = []
-
-
-# court_case_hearing_calendar
-class CourtCaseHearingCalendarBase:
-    case_id: int
-    hearing_calendar_id: int
-
-
-class CourtCaseHearingCalendar(CourtCaseHearingCalendarBase, BaseModelSchema):
-    court_case: Optional[CourtCase] = None
-    hearing_calendar: Optional[HearingCalendar] = None
-
-    class Config:
-        orm_mode = True
-
-
-class CourtCaseHearingCalendarRequest(CourtCaseHearingCalendarBase, BaseModel):
-    pass
-
-
-class CourtCaseHearingCalendarResponse(ResponseBase):
-    court_case_hearing_calendars: list[CourtCaseHearingCalendar] = []
+class CashCollectionResponse(ResponseBase):
+    cash_collections: list[CashCollection] = []

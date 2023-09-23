@@ -20,7 +20,9 @@ class CollectionMethodService(CrudService):
         self, request: Request, request_object: CollectionMethodRequest
     ) -> CollectionMethodResponse:
         try:
-            data_model: CollectionMethodModel = copy_objects(request_object, CollectionMethodModel)
+            data_model: CollectionMethodModel = copy_objects(
+                request_object, CollectionMethodModel
+            )
             data_model = super().create(data_model)
             schema_model = _convert_model_to_schema(data_model)
             return get_response_single(schema_model)
@@ -56,7 +58,8 @@ class CollectionMethodService(CrudService):
         try:
             data_models: List[CollectionMethodModel] = super().read_all()
             schema_models: List[CollectionMethodSchema] = [
-                _convert_model_to_schema(c_m, is_include_cash_collections) for c_m in data_models
+                _convert_model_to_schema(c_m, is_include_cash_collections)
+                for c_m in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -70,9 +73,13 @@ class CollectionMethodService(CrudService):
     def update_one_collection_method(
         self, model_id: int, request: Request, request_object: CollectionMethodRequest
     ) -> CollectionMethodResponse:
-        collection_method_response = self.read_one_collection_method(model_id, request, False)
+        collection_method_response = self.read_one_collection_method(
+            model_id, request, False
+        )
 
-        if not (collection_method_response and collection_method_response.collection_methods):
+        if not (
+            collection_method_response and collection_method_response.collection_methods
+        ):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -81,7 +88,9 @@ class CollectionMethodService(CrudService):
             )
 
         try:
-            data_model: CollectionMethodModel = copy_objects(request_object, CollectionMethodModel)
+            data_model: CollectionMethodModel = copy_objects(
+                request_object, CollectionMethodModel
+            )
             data_model = super().update(model_id, data_model)
             schema_model = _convert_model_to_schema(data_model)
             return get_response_single(schema_model)
@@ -93,10 +102,16 @@ class CollectionMethodService(CrudService):
                 str(ex),
             )
 
-    def delete_one_collection_method(self, model_id: int, request: Request) -> CollectionMethodResponse:
-        collection_method_response = self.read_one_collection_method(model_id, request, False)
+    def delete_one_collection_method(
+        self, model_id: int, request: Request
+    ) -> CollectionMethodResponse:
+        collection_method_response = self.read_one_collection_method(
+            model_id, request, False
+        )
 
-        if not (collection_method_response and collection_method_response.collection_methods):
+        if not (
+            collection_method_response and collection_method_response.collection_methods
+        ):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -124,7 +139,9 @@ def get_response_single(single: CollectionMethodSchema) -> CollectionMethodRespo
     return CollectionMethodResponse(collection_methods=[single])
 
 
-def get_response_multiple(multiple: list[CollectionMethodSchema]) -> CollectionMethodResponse:
+def get_response_multiple(
+    multiple: list[CollectionMethodSchema],
+) -> CollectionMethodResponse:
     return CollectionMethodResponse(collection_methods=multiple)
 
 

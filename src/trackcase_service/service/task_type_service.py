@@ -56,7 +56,8 @@ class TaskTypeService(CrudService):
         try:
             data_models: List[TaskTypeModel] = super().read_all()
             schema_models: List[TaskTypeSchema] = [
-                _convert_model_to_schema(c_m, is_include_task_calendars) for c_m in data_models
+                _convert_model_to_schema(c_m, is_include_task_calendars)
+                for c_m in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
