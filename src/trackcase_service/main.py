@@ -4,6 +4,7 @@ import time
 from contextlib import asynccontextmanager
 
 import api.case_type_api as case_type_api
+import api.case_collection_api as case_collection_api
 import api.cash_collection_api as cash_collection_api
 import api.client_api as client_api
 import api.collection_method_api as collection_method_api
@@ -57,6 +58,7 @@ def user_name_header(
 
 
 app.include_router(case_type_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(case_collection_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(cash_collection_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(client_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(
