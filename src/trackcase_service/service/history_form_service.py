@@ -167,6 +167,9 @@ def _convert_model_to_schema(
     data_model: HistoryFormModel, is_include_extras: bool = False
 ) -> HistoryFormSchema:
     data_schema = HistoryFormSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         user_name=data_model.user_name,
         form_id=data_model.form_id,
         form_type_id=data_model.form_type_id,

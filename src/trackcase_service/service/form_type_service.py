@@ -132,6 +132,9 @@ def _convert_model_to_schema(
     data_model: FormTypeModel, is_include_extras: bool = False
 ) -> FormTypeSchema:
     data_schema = FormTypeSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         name=data_model.name,
         description=data_model.description,
     )

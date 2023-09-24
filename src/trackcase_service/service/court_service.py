@@ -132,6 +132,9 @@ def _convert_model_to_schema(
     data_model: CourtModel, is_include_extras: bool = False
 ) -> CourtSchema:
     data_schema = CourtSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         name=data_model.name,
         address=data_model.address,
         dhs_address=data_model.dhs_address,

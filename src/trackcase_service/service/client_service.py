@@ -132,6 +132,9 @@ def _convert_model_to_schema(
     data_model: ClientModel, is_include_extras: bool = False
 ) -> ClientSchema:
     data_schema = ClientSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         name=data_model.name,
         a_number=data_model.a_number,
         address=data_model.address,

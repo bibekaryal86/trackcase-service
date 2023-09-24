@@ -144,6 +144,9 @@ def _convert_model_to_schema(
     data_model: CashCollectionModel, is_include_extras: bool = False
 ) -> CashCollectionSchema:
     data_schema = CashCollectionSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         collection_date=data_model.collection_date,
         collected_amount=data_model.collected_amount,
         waived_amount=data_model.waived_amount,

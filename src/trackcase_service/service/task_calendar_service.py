@@ -138,6 +138,9 @@ def _convert_model_to_schema(
     data_model: TaskCalendarModel, is_include_extras: bool = False
 ) -> TaskCalendarSchema:
     data_schema = TaskCalendarSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         task_date=data_model.hearing_date,
         task_type_id=data_model.hearing_type_id,
         court_case_id=data_model.court_case_id,

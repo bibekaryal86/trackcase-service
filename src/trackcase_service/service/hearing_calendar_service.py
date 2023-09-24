@@ -148,6 +148,9 @@ def _convert_model_to_schema(
     data_model: HearingCalendarModel, is_include_extras: bool = False
 ) -> HearingCalendarSchema:
     data_schema = HearingCalendarSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         hearing_date=data_model.hearing_date,
         hearing_type_id=data_model.hearing_type_id,
         court_case_id=data_model.court_case_id,

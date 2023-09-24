@@ -25,4 +25,5 @@ backend service for trackcase
   * case complete when all collections balance zero
 
 
+* add check to make sure coming from authenv_service
 * pydantic says `from_orm` is deprecated

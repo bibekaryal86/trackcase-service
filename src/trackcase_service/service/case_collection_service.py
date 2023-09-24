@@ -165,6 +165,9 @@ def _convert_model_to_schema(
     data_model: CaseCollectionModel, is_include_extras: bool = False
 ) -> CaseCollectionSchema:
     data_schema = CaseCollectionSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         quote_date=data_model.quote_date,
         quote_amount=data_model.quote_amount,
         initial_payment=data_model.initial_payment,

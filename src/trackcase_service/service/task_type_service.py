@@ -132,6 +132,9 @@ def _convert_model_to_schema(
     data_model: TaskTypeModel, is_include_extras: bool = False
 ) -> TaskTypeSchema:
     data_schema = TaskTypeSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         name=data_model.name,
         description=data_model.description,
     )

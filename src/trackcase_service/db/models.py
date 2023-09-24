@@ -171,7 +171,7 @@ class TaskCalendar(TableBase, Base):
     )
     forms: Mapped["Form"] = relationship(back_populates="task_calendar")
     history_forms: Mapped[List["HistoryForm"]] = relationship(
-        back_populates="form_type"
+        back_populates="task_calendar"
     )
 
 

@@ -132,6 +132,9 @@ def _convert_model_to_schema(
     data_model: JudgeModel, is_include_extras: bool = False
 ) -> JudgeSchema:
     data_schema = JudgeSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         name=data_model.name,
         webex=data_model.webex,
         court_id=data_model.court_id,

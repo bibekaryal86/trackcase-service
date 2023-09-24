@@ -134,6 +134,9 @@ def _convert_model_to_schema(
     data_model: FormStatusModel, is_include_extras: bool = False
 ) -> FormStatusSchema:
     data_schema = FormStatusSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         name=data_model.name,
         description=data_model.description,
     )
