@@ -19,7 +19,7 @@ import api.judge_api as judge_api
 import api.task_calendar_api as task_calendar_api
 import api.task_type_api as task_type_api
 import uvicorn
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Header, Request
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasicCredentials
 from utils import commons, constants, enums, logger
@@ -44,21 +44,37 @@ app = FastAPI(
     docs_url=None,
     redoc_url=None,
 )
-app.include_router(case_type_api.router)
-app.include_router(cash_collection_api.router)
-app.include_router(client_api.router)
-app.include_router(collection_method_api.router)
-app.include_router(court_api.router)
-app.include_router(court_case_api.router)
-app.include_router(form_api.router)
-app.include_router(form_status_api.router)
-app.include_router(form_type_api.router)
-app.include_router(hearing_calendar_api.router)
-app.include_router(hearing_type_api.router)
-app.include_router(history_form_api.router)
-app.include_router(judge_api.router)
-app.include_router(task_calendar_api.router)
-app.include_router(task_type_api.router)
+
+
+def user_name_header(
+    usernameheader: str = Header(
+        title="User Name in Header",
+        description="To be included with every request",
+        convert_underscores=False,
+    )
+):
+    return usernameheader
+
+
+app.include_router(case_type_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(cash_collection_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(client_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(
+    collection_method_api.router, dependencies=[Depends(user_name_header)]
+)
+app.include_router(court_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(court_case_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(form_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(form_status_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(form_type_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(
+    hearing_calendar_api.router, dependencies=[Depends(user_name_header)]
+)
+app.include_router(hearing_type_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(history_form_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(judge_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(task_calendar_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(task_type_api.router, dependencies=[Depends(user_name_header)])
 
 
 @app.middleware("http")
