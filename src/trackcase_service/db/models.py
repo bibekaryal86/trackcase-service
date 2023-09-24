@@ -37,6 +37,9 @@ class CollectionMethod(TableBase, Base):
     __tablename__ = "collection_method"
     name = Column(String(25), unique=True, nullable=False)
     description = Column(String(280), nullable=False)
+    case_collections: Mapped[List["CaseCollection"]] = relationship(
+        back_populates="collection_method"
+    )
     cash_collections: Mapped[List["CashCollection"]] = relationship(
         back_populates="collection_method"
     )
@@ -114,7 +117,7 @@ class CourtCase(TableBase, Base):
     case_type: Mapped[CaseType] = relationship(back_populates="court_cases")
     client: Mapped[Client] = relationship(back_populates="court_cases")
     forms: Mapped[List["Form"]] = relationship(back_populates="court_case")
-    cash_collections: Mapped[List["CashCollection"]] = relationship(
+    case_collections: Mapped[List["CaseCollection"]] = relationship(
         back_populates="court_case"
     )
     hearing_calendars: Mapped[List["HearingCalendar"]] = relationship(
@@ -199,18 +202,17 @@ class Form(TableBase, Base):
     form_type: Mapped[FormType] = relationship(back_populates="forms")
     task_calendar: Mapped[TaskCalendar] = relationship(back_populates="forms")
     court_case: Mapped[CourtCase] = relationship(back_populates="forms")
-    cash_collections: Mapped[List["CashCollection"]] = relationship(
+    case_collections: Mapped[List["CaseCollection"]] = relationship(
         back_populates="form"
     )
     history_forms: Mapped[List["HistoryForm"]] = relationship(back_populates="form")
 
 
-class CashCollection(TableBase, Base):
-    __tablename__ = "cash_collection"
-    collection_date = Column(DateTime, nullable=False)
+class CaseCollection(TableBase, Base):
+    __tablename__ = "case_collection"
+    quote_date = Column(DateTime, nullable=False)
     quote_amount = Column(BigInteger, nullable=False)
-    collected_amount = Column(BigInteger, nullable=True)
-    waived_amount = Column(BigInteger, nullable=True)
+    initial_payment = Column(BigInteger, nullable=False)
     collection_method_id = Column(
         ForeignKey("collection_method.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=False,
@@ -224,12 +226,35 @@ class CashCollection(TableBase, Base):
         nullable=True,
     )
     collection_method: Mapped[CollectionMethod] = relationship(
+        back_populates="case_collections"
+    )
+    court_case: Mapped[CourtCase] = relationship(
+        back_populates="case_collections"
+    )
+    form: Mapped[Form] = relationship(back_populates="case_collections")
+    cash_collections: Mapped[List["CashCollection"]] = relationship(back_populates="case_collection")
+
+
+class CashCollection(TableBase, Base):
+    __tablename__ = "cash_collection"
+    collection_date = Column(DateTime, nullable=False)
+    collected_amount = Column(BigInteger, nullable=False)
+    waived_amount = Column(BigInteger, nullable=False)
+    memo = Column(String(280), nullable=True)
+    case_collection_id = Column(
+        ForeignKey("case_collection.id", onupdate="NO ACTION", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    collection_method_id = Column(
+        ForeignKey("collection_method.id", onupdate="NO ACTION", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    collection_method: Mapped[CollectionMethod] = relationship(
         back_populates="cash_collections"
     )
-    court_case: Mapped[List[CourtCase]] = relationship(
+    case_collection: Mapped[CaseCollection] = relationship(
         back_populates="cash_collections"
     )
-    form: Mapped[List[Form]] = relationship(back_populates="cash_collections")
 
 
 class HistoryForm(TableBase, Base):

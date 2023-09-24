@@ -5,23 +5,23 @@ from fastapi import Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
-from src.trackcase_service.db.models import CollectionMethod as CollectionMethodModel
+from src.trackcase_service.db.models import CaseCollection as CaseCollectionModel
 from src.trackcase_service.utils.commons import copy_objects, raise_http_exception
 
-from .schemas import CollectionMethod as CollectionMethodSchema
-from .schemas import CollectionMethodRequest, CollectionMethodResponse
+from .schemas import CaseCollection as CaseCollectionSchema
+from .schemas import CaseCollectionRequest, CaseCollectionResponse
 
 
-class CollectionMethodService(CrudService):
+class CaseCollectionService(CrudService):
     def __init__(self, db_session: Session):
-        super(CollectionMethodService, self).__init__(db_session, CollectionMethodModel)
+        super(CaseCollectionService, self).__init__(db_session, CaseCollectionModel)
 
-    def create_one_collection_method(
-        self, request: Request, request_object: CollectionMethodRequest
-    ) -> CollectionMethodResponse:
+    def create_one_case_collection(
+        self, request: Request, request_object: CaseCollectionRequest
+    ) -> CaseCollectionResponse:
         try:
-            data_model: CollectionMethodModel = copy_objects(
-                request_object, CollectionMethodModel
+            data_model: CaseCollectionModel = copy_objects(
+                request_object, CaseCollectionModel
             )
             data_model = super().create(data_model)
             schema_model = _convert_model_to_schema(data_model)
@@ -30,17 +30,17 @@ class CollectionMethodService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Inserting CollectionMethod. Please Try Again!!!",
+                "Error Inserting CaseCollection. Please Try Again!!!",
                 str(ex),
             )
 
-    def read_one_collection_method(
+    def read_one_case_collection(
         self, model_id: int, request: Request, is_include_extras: bool
-    ) -> CollectionMethodResponse:
+    ) -> CaseCollectionResponse:
         try:
-            data_model: CollectionMethodModel = super().read_one(model_id)
+            data_model: CaseCollectionModel = super().read_one(model_id)
             if data_model:
-                schema_model: CollectionMethodSchema = _convert_model_to_schema(
+                schema_model: CaseCollectionSchema = _convert_model_to_schema(
                     data_model, is_include_extras
                 )
                 return get_response_single(schema_model)
@@ -52,12 +52,12 @@ class CollectionMethodService(CrudService):
                 str(ex),
             )
 
-    def read_all_collection_methods(
+    def read_all_case_collections(
         self, request: Request, is_include_extras: bool
-    ) -> CollectionMethodResponse:
+    ) -> CaseCollectionResponse:
         try:
-            data_models: List[CollectionMethodModel] = super().read_all()
-            schema_models: List[CollectionMethodSchema] = [
+            data_models: List[CaseCollectionModel] = super().read_all()
+            schema_models: List[CaseCollectionSchema] = [
                 _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
             ]
             return get_response_multiple(schema_models)
@@ -65,20 +65,18 @@ class CollectionMethodService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Retrieving CollectionMethods. Please Try Again!!!",
+                "Error Retrieving CaseCollections. Please Try Again!!!",
                 str(ex),
             )
 
-    def update_one_collection_method(
-        self, model_id: int, request: Request, request_object: CollectionMethodRequest
-    ) -> CollectionMethodResponse:
-        collection_method_response = self.read_one_collection_method(
+    def update_one_case_collection(
+        self, model_id: int, request: Request, request_object: CaseCollectionRequest
+    ) -> CaseCollectionResponse:
+        case_collection_response = self.read_one_case_collection(
             model_id, request, False
         )
 
-        if not (
-            collection_method_response and collection_method_response.collection_methods
-        ):
+        if not (case_collection_response and case_collection_response.case_collections):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -87,8 +85,8 @@ class CollectionMethodService(CrudService):
             )
 
         try:
-            data_model: CollectionMethodModel = copy_objects(
-                request_object, CollectionMethodModel
+            data_model: CaseCollectionModel = copy_objects(
+                request_object, CaseCollectionModel
             )
             data_model = super().update(model_id, data_model)
             schema_model = _convert_model_to_schema(data_model)
@@ -101,16 +99,14 @@ class CollectionMethodService(CrudService):
                 str(ex),
             )
 
-    def delete_one_collection_method(
+    def delete_one_case_collection(
         self, model_id: int, request: Request
-    ) -> CollectionMethodResponse:
-        collection_method_response = self.read_one_collection_method(
+    ) -> CaseCollectionResponse:
+        case_collection_response = self.read_one_case_collection(
             model_id, request, False
         )
 
-        if not (
-            collection_method_response and collection_method_response.collection_methods
-        ):
+        if not (case_collection_response and case_collection_response.case_collections):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -120,7 +116,7 @@ class CollectionMethodService(CrudService):
 
         try:
             super().delete(model_id)
-            return CollectionMethodResponse(delete_count=1)
+            return CaseCollectionResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
                 request,
@@ -130,28 +126,33 @@ class CollectionMethodService(CrudService):
             )
 
 
-def get_collection_method_service(db_session: Session) -> CollectionMethodService:
-    return CollectionMethodService(db_session)
+def get_case_collection_service(db_session: Session) -> CaseCollectionService:
+    return CaseCollectionService(db_session)
 
 
-def get_response_single(single: CollectionMethodSchema) -> CollectionMethodResponse:
-    return CollectionMethodResponse(collection_methods=[single])
+def get_response_single(single: CaseCollectionSchema) -> CaseCollectionResponse:
+    return CaseCollectionResponse(case_collections=[single])
 
 
 def get_response_multiple(
-    multiple: list[CollectionMethodSchema],
-) -> CollectionMethodResponse:
-    return CollectionMethodResponse(collection_methods=multiple)
+    multiple: list[CaseCollectionSchema],
+) -> CaseCollectionResponse:
+    return CaseCollectionResponse(case_collections=multiple)
 
 
 def _convert_model_to_schema(
-    data_model: CollectionMethodModel, is_include_extras: bool = False
-) -> CollectionMethodSchema:
-    data_schema = CollectionMethodSchema(
-        name=data_model.name,
-        description=data_model.description,
+    data_model: CaseCollectionModel, is_include_extras: bool = False
+) -> CaseCollectionSchema:
+    data_schema = CaseCollectionSchema(
+        quote_date=data_model.quote_date,
+        quote_amount=data_model.quote_amount,
+        initial_payment=data_model.initial_payment,
+        collection_method_id=data_model.collection_method_id,
+        court_case_id=data_model.court_case_id,
+        form_id=data_model.form_id
     )
     if is_include_extras:
-        data_schema.cash_collections = data_model.cash_collections
-        data_schema.case_collections = data_model.case_collections
+        data_schema.collection_method = data_model.collection_method
+        data_schema.court_case = data_model.court_case
+        data_schema.form = data_model.form
     return data_schema

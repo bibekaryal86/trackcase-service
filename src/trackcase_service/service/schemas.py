@@ -68,6 +68,7 @@ class CollectionMethodBase(NameDescBase):
 
 class CollectionMethod(CollectionMethodBase, BaseModelSchema):
     cash_collections: list["CashCollection"] = []
+    case_collections: list["CaseCollection"] = []
 
     class Config:
         orm_mode = True
@@ -222,9 +223,10 @@ class CourtCase(CourtCaseBase, BaseModelSchema):
     case_type: Optional[CaseType] = None
     client: Optional[Client] = None
     forms: list["Form"] = []
-    cash_collections: list["CashCollection"] = None
-    hearing_calendars: list["HearingCalendar"] = None
-    task_calendars: list["TaskCalendar"] = None
+    cash_collections: list["CashCollection"] = []
+    case_collections: list["CaseCollection"] = []
+    hearing_calendars: list["HearingCalendar"] = []
+    task_calendars: list["TaskCalendar"] = []
 
     class Config:
         orm_mode = True
@@ -288,32 +290,7 @@ class TaskCalendarResponse(ResponseBase):
     task_calendars: list[TaskCalendar] = []
 
 
-# cash_collection
-class CashCollectionBase:
-    collection_date: datetime
-    quote_amount: condecimal(max_digits=5, decimal_places=2)
-    collected_amount: condecimal(max_digits=5, decimal_places=2)
-    waived_amount = condecimal(max_digits=5, decimal_places=2)
-    collection_method_id: int
-    court_case_id: int
-    form_id: Optional[int] = None
 
-
-class CashCollection(CashCollectionBase, BaseModelSchema):
-    collection_method: Optional[CollectionMethod] = None
-    court_case: Optional[CourtCase] = None
-    form: Optional["Form"] = None
-
-    class Config:
-        orm_mode = True
-
-
-class CashCollectionRequest(CashCollectionBase, BaseModel):
-    pass
-
-
-class CashCollectionResponse(ResponseBase):
-    cash_collections: list[CashCollection] = []
 
 
 # form
@@ -334,7 +311,9 @@ class Form(FormBase, BaseModelSchema):
     form_type: Optional[FormType] = None
     task_calendar: Optional[TaskCalendar] = None
     court_case: Optional[CourtCase] = None
-    cash_collections: list[CashCollection] = []
+    case_collections: list["CaseCollection"] = []
+    cash_collections: list["CashCollection"] = []
+    history_forms: list["HistoryForm"] = []
 
     class Config:
         orm_mode = True
@@ -380,3 +359,57 @@ class HistoryFormRequest(HistoryFormBase, BaseModel):
 
 class HistoryFormResponse(ResponseBase):
     forms: list[HistoryForm] = []
+
+
+# case_collection
+class CaseCollectionBase:
+    quote_date: datetime
+    quote_amount: condecimal(max_digits=5, decimal_places=2)
+    initial_payment: condecimal(max_digits=5, decimal_places=2)
+    collection_method_id: int
+    court_case_id: int
+    form_id: Optional[int] = None
+
+
+class CaseCollection(CaseCollectionBase, BaseModelSchema):
+    collection_method: Optional[CollectionMethod] = None
+    court_case: Optional[CourtCase] = None
+    form: Optional["Form"] = None
+    cash_collections: list["CashCollection"] = []
+
+    class Config:
+        orm_mode = True
+
+
+class CaseCollectionRequest(CaseCollectionBase, BaseModel):
+    pass
+
+
+class CaseCollectionResponse(ResponseBase):
+    cash_collections: list[CaseCollection] = []
+
+
+# cash_collection
+class CashCollectionBase:
+    collection_date: datetime
+    collected_amount: condecimal(max_digits=5, decimal_places=2)
+    waived_amount = condecimal(max_digits=5, decimal_places=2)
+    memo: Optional[str] = None
+    case_collection_id: int
+    collection_method_id: int
+
+
+class CashCollection(CashCollectionBase, BaseModelSchema):
+    collection_method: Optional[CollectionMethod] = None
+    case_collection: Optional[CaseCollection] = None
+
+    class Config:
+        orm_mode = True
+
+
+class CashCollectionRequest(CashCollectionBase, BaseModel):
+    pass
+
+
+class CashCollectionResponse(ResponseBase):
+    cash_collections: list[CashCollection] = []

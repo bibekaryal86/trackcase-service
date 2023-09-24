@@ -145,15 +145,13 @@ def _convert_model_to_schema(
 ) -> CashCollectionSchema:
     data_schema = CashCollectionSchema(
         collection_date=data_model.collection_date,
-        quote_amount=data_model.quote_amount,
         collected_amount=data_model.collected_amount,
         waived_amount=data_model.waived_amount,
+        memo=data_model.memo,
         collection_method_id=data_model.collection_method_id,
-        court_case_id=data_model.court_case_id,
-        form_id=data_model.form_id,
+        case_collection_id=data_model.case_collection_id,
     )
     if is_include_extras:
         data_schema.collection_method = data_model.collection_method
-        data_schema.court_case = data_model.court_case
-        data_schema.form = data_model.form
+        data_schema.case_collection = data_model.case_collection
     return data_schema

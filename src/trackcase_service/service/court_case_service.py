@@ -142,6 +142,7 @@ def _convert_model_to_schema(
         data_schema.client = data_model.client
         data_schema.forms = data_model.forms
         data_schema.cash_collections = data_model.cash_collections
+        data_schema.case_collections = data_model.case_collections
         data_schema.hearing_calendars = data_model.hearing_calendars
         data_schema.task_calendars = data_model.task_calendars
     return data_schema

@@ -165,13 +165,14 @@ def _convert_model_to_schema(
         data_schema.task_calendar = data_model.task_calendar
         data_schema.court_case = data_model.court_case
         data_schema.cash_collections = data_model.cash_collections
+        data_schema.case_collections = data_model.case_collections
     return data_schema
 
 
 def _convert_to_history_form(
     request: Request, form_request: FormRequest, form_id: int
 ) -> HistoryFormRequest:
-    user_name = request.headers.get("user_name")
+    user_name = request.headers.get("usernameheader")
     return HistoryFormRequest(
         user_name=user_name,
         form_id=form_id,
