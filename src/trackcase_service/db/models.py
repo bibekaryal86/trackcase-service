@@ -210,6 +210,7 @@ class CashCollection(TableBase, Base):
     collection_date = Column(DateTime, nullable=False)
     quote_amount = Column(BigInteger, nullable=False)
     collected_amount = Column(BigInteger, nullable=True)
+    waived_amount = Column(BigInteger, nullable=True)
     collection_method_id = Column(
         ForeignKey("collection_method.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=False,

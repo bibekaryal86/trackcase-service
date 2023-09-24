@@ -147,6 +147,7 @@ def _convert_model_to_schema(
         collection_date=data_model.collection_date,
         quote_amount=data_model.quote_amount,
         collected_amount=data_model.collected_amount,
+        waived_amount=data_model.waived_amount,
         collection_method_id=data_model.collection_method_id,
         court_case_id=data_model.court_case_id,
         form_id=data_model.form_id,

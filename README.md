@@ -18,9 +18,11 @@ backend service for trackcase
     * If needed, the exact location of where to update will be where the error was thrown
 
 
-* v2
-  * add user to tables (who made change, maybe not needed if adding history)
-  * add history tables
+* don't allow deleting form, case, anything
+  * allow status of deleted
+* case status tied with form status and collections
+  * case complete when all forms complete
+  * case complete when all collections balance zero
 
 
 * pydantic says `from_orm` is deprecated

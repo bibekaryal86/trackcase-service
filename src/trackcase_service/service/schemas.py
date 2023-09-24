@@ -291,8 +291,9 @@ class TaskCalendarResponse(ResponseBase):
 # cash_collection
 class CashCollectionBase:
     collection_date: datetime
-    quote_amount: condecimal(max_digits=6, decimal_places=2)
-    collected_amount: condecimal(max_digits=6, decimal_places=2)
+    quote_amount: condecimal(max_digits=5, decimal_places=2)
+    collected_amount: condecimal(max_digits=5, decimal_places=2)
+    waived_amount = condecimal(max_digits=5, decimal_places=2)
     collection_method_id: int
     court_case_id: int
     form_id: Optional[int] = None
