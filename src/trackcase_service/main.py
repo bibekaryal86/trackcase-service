@@ -23,6 +23,7 @@ import uvicorn
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasicCredentials
+from sqlalchemy.orm import Session
 from utils import commons, constants, enums, logger
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
@@ -101,6 +102,19 @@ def ping():
 @app.get("/tests/reset", tags=["Main"], summary="Reset Cache")
 def reset(request: Request):
     return {"reset": "successful"}
+
+
+@app.get("/tests/reorg", tags=["Main"], summary="Reset Reorg Tables")
+def reorg(
+    request: Request,
+    http_basic_credentials: HTTPBasicCredentials = Depends(
+        constants.http_basic_security
+    ),
+    db_session: Session = Depends(commons.get_db_session),
+):
+    commons.validate_http_basic_credentials(request, http_basic_credentials, True)
+    commons.reorg_tables(db_session)
+    return {"reorg": "successful"}
 
 
 @app.get("/tests/log-level", tags=["Main"], summary="Set Log Level")

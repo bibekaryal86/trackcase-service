@@ -4,6 +4,8 @@ import secrets
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
 
@@ -110,3 +112,20 @@ def copy_objects(
         ):
             setattr(destination_object, attr, getattr(source_object, attr))
     return destination_object
+
+
+def reorg_tables(db_session: Session):
+    check_reorg_sql = text(
+        "SELECT TABSCHEMA, TABNAME FROM SYSIBMADM.ADMINTABINFO WHERE REORG_PENDING = 'Y'"
+    )
+    result = db_session.execute(check_reorg_sql)
+    result_rows = result.fetchall()
+
+    reorg_sqls = []
+    for row in result_rows:
+        reorg_sqls.append(
+            text(f"""CALL SYSPROC.ADMIN_CMD('REORG TABLE "{row[0]}"."{row[1]}"')""")
+        )
+
+    for reorg_sql in reorg_sqls:
+        db_session.execute(reorg_sql)
