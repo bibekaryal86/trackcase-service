@@ -45,7 +45,7 @@ def shutdown_db_client(app: FastAPI):
 
 
 def validate_http_basic_credentials(
-    request: Request, http_basic_credentials: HTTPBasicCredentials
+    request: Request, http_basic_credentials: HTTPBasicCredentials, is_ignore_username: bool = False
 ):
     valid_username = constants.BASIC_AUTH_USR
     valid_password = constants.BASIC_AUTH_PWD
@@ -63,6 +63,15 @@ def validate_http_basic_credentials(
             sts_code=http.HTTPStatus.UNAUTHORIZED,
             msg="Invalid Credentials",
             err_msg="Basic Credentials",
+        )
+    # also check if user_name present in request headers or not
+    user_name = request.headers.get('user_name')
+    if not is_ignore_username and not user_name:
+        raise_http_exception(
+            request=request,
+            sts_code=http.HTTPStatus.BAD_REQUEST,
+            msg="Missing Username with Request",
+            err_msg="Missing Username with Request",
         )
 
 

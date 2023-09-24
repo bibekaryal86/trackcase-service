@@ -8,8 +8,9 @@ from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Form as FormModel
 from src.trackcase_service.utils.commons import copy_objects, raise_http_exception
 
+from .history_form_service import get_history_form_service
 from .schemas import Form as FormSchema
-from .schemas import FormRequest, FormResponse
+from .schemas import FormRequest, FormResponse, HistoryFormRequest
 
 
 class FormService(CrudService):
@@ -22,6 +23,15 @@ class FormService(CrudService):
         try:
             data_model: FormModel = copy_objects(request_object, FormModel)
             data_model = super().create(data_model)
+
+            # add to history_forms
+            history_form_request: HistoryFormRequest = _convert_to_history_form(
+                request, request_object, data_model.id
+            )
+            get_history_form_service(self.db_session).create_one_history_form(
+                request, history_form_request, True
+            )
+
             schema_model = _convert_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -81,6 +91,15 @@ class FormService(CrudService):
         try:
             data_model: FormModel = copy_objects(request_object, FormModel)
             data_model = super().update(model_id, data_model)
+
+            # add to history_forms
+            history_form_request: HistoryFormRequest = _convert_to_history_form(
+                request, request_object, model_id
+            )
+            get_history_form_service(self.db_session).create_one_history_form(
+                request, history_form_request, True
+            )
+
             schema_model = _convert_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -147,3 +166,22 @@ def _convert_model_to_schema(
         data_schema.court_case = data_model.court_case
         data_schema.cash_collections = data_model.cash_collections
     return data_schema
+
+
+def _convert_to_history_form(
+    request: Request, form_request: FormRequest, form_id: int
+) -> HistoryFormRequest:
+    user_name = request.headers.get("user_name")
+    return HistoryFormRequest(
+        user_name=user_name,
+        form_id=form_id,
+        form_type_id=form_request.form_type_id,
+        form_status_id=form_request.form_status_id,
+        court_case_id=form_request.court_case_id,
+        submit_date=form_request.submit_date,
+        receipt_date=form_request.receipt_date,
+        rfe_date=form_request.rfe_date,
+        rfe_submit_date=form_request.rfe_submit_date,
+        decision_date=form_request.decision_date,
+        task_calendar_id=form_request.task_calendar_id,
+    )

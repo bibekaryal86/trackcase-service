@@ -17,7 +17,10 @@ class HistoryFormService(CrudService):
         super(HistoryFormService, self).__init__(db_session, HistoryFormModel)
 
     def create_one_history_form(
-        self, request: Request, request_object: HistoryFormRequest
+        self,
+        request: Request,
+        request_object: HistoryFormRequest,
+        is_form_service_request: bool = False,
     ) -> HistoryFormResponse:
         try:
             data_model: HistoryFormModel = copy_objects(
@@ -27,12 +30,17 @@ class HistoryFormService(CrudService):
             schema_model = _convert_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
-            raise_http_exception(
-                request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Inserting HistoryForm. Please Try Again!!!",
-                str(ex),
-            )
+            if is_form_service_request:
+                raise Exception(
+                    "Form Action Successful! BUT!! Something went wrong inserting FormHistory!!!"
+                )
+            else:
+                raise_http_exception(
+                    request,
+                    HTTPStatus.SERVICE_UNAVAILABLE,
+                    "Error Inserting HistoryForm. Please Try Again!!!",
+                    str(ex),
+                )
 
     def read_one_history_form(
         self, model_id: int, request: Request, is_include_extras: bool

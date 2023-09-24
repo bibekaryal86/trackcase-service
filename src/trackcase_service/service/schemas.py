@@ -340,7 +340,7 @@ class Form(FormBase, BaseModelSchema):
         orm_mode = True
 
 
-class FormRequest(Form, BaseModel):
+class FormRequest(FormBase, BaseModel):
     pass
 
 
@@ -374,7 +374,7 @@ class HistoryForm(HistoryFormBase, BaseModelSchema):
         orm_mode = True
 
 
-class HistoryFormRequest(Form, BaseModel):
+class HistoryFormRequest(HistoryFormBase, BaseModel):
     pass
 
 

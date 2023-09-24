@@ -100,7 +100,7 @@ async def custom_docs_url(
         constants.http_basic_security
     ),
 ):
-    commons.validate_http_basic_credentials(request, http_basic_credentials)
+    commons.validate_http_basic_credentials(request, http_basic_credentials, True)
     root_path = request.scope.get("root_path", "").rstrip("/")
     openapi_url = root_path + app.openapi_url
     return get_swagger_ui_html(openapi_url=openapi_url, title=app.title)
