@@ -290,9 +290,6 @@ class TaskCalendarResponse(ResponseBase):
     task_calendars: list[TaskCalendar] = []
 
 
-
-
-
 # form
 class FormBase:
     form_type_id: int

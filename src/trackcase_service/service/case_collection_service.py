@@ -149,7 +149,7 @@ def _convert_model_to_schema(
         initial_payment=data_model.initial_payment,
         collection_method_id=data_model.collection_method_id,
         court_case_id=data_model.court_case_id,
-        form_id=data_model.form_id
+        form_id=data_model.form_id,
     )
     if is_include_extras:
         data_schema.collection_method = data_model.collection_method

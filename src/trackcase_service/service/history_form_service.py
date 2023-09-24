@@ -32,7 +32,8 @@ class HistoryFormService(CrudService):
         except Exception as ex:
             if is_form_service_request:
                 raise Exception(
-                    "Form Action Successful! BUT!! Something went wrong inserting FormHistory!!!"
+                    "Form Action Successful! BUT!! "
+                    "Something went wrong inserting FormHistory!!!"
                 )
             else:
                 raise_http_exception(
@@ -92,7 +93,8 @@ class HistoryFormService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Retrieving HistoryForms by form_id: {form_id}. Please Try Again!!!",
+                f"Error Retrieving HistoryForms by form_id: "
+                f"{form_id}. Please Try Again!!!",
                 str(ex),
             )
 

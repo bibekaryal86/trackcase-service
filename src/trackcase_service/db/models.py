@@ -228,11 +228,11 @@ class CaseCollection(TableBase, Base):
     collection_method: Mapped[CollectionMethod] = relationship(
         back_populates="case_collections"
     )
-    court_case: Mapped[CourtCase] = relationship(
-        back_populates="case_collections"
-    )
+    court_case: Mapped[CourtCase] = relationship(back_populates="case_collections")
     form: Mapped[Form] = relationship(back_populates="case_collections")
-    cash_collections: Mapped[List["CashCollection"]] = relationship(back_populates="case_collection")
+    cash_collections: Mapped[List["CashCollection"]] = relationship(
+        back_populates="case_collection"
+    )
 
 
 class CashCollection(TableBase, Base):
