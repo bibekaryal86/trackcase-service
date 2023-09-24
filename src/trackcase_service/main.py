@@ -3,8 +3,20 @@ import os
 import time
 from contextlib import asynccontextmanager
 
+import api.case_type_api as case_type_api
+import api.cash_collection_api as cash_collection_api
+import api.client_api as client_api
+import api.collection_method_api as collection_method_api
 import api.court_api as court_api
+import api.court_case_api as court_case_api
+import api.form_api as form_api
+import api.form_status_api as form_status_api
+import api.form_type_api as form_type_api
+import api.hearing_calendar_api as hearing_calendar_api
+import api.hearing_type_api as hearing_type_api
 import api.judge_api as judge_api
+import api.task_calendar_api as task_calendar_api
+import api.task_type_api as task_type_api
 import uvicorn
 from fastapi import Depends, FastAPI, Request
 from fastapi.openapi.docs import get_swagger_ui_html
@@ -31,8 +43,20 @@ app = FastAPI(
     docs_url=None,
     redoc_url=None,
 )
+app.include_router(case_type_api.router)
+app.include_router(cash_collection_api.router)
+app.include_router(client_api.router)
+app.include_router(collection_method_api.router)
 app.include_router(court_api.router)
+app.include_router(court_case_api.router)
+app.include_router(form_api.router)
+app.include_router(form_status_api.router)
+app.include_router(form_type_api.router)
+app.include_router(hearing_calendar_api.router)
+app.include_router(hearing_type_api.router)
 app.include_router(judge_api.router)
+app.include_router(task_calendar_api.router)
+app.include_router(task_type_api.router)
 
 
 @app.middleware("http")

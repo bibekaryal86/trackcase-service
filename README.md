@@ -19,7 +19,7 @@ backend service for trackcase
 
 
 * v2
-  * add user to tables
+  * add user to tables (who made change, maybe not needed if adding history)
   * add history tables
 
 

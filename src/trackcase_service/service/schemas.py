@@ -301,25 +301,6 @@ class FormBase:
     task_calendar_id: Optional[int] = None
 
 
-class Form(FormBase, BaseModelSchema):
-    form_status: Optional[FormStatus] = None
-    form_type: Optional[FormType] = None
-    task_calendar: Optional[TaskCalendar] = None
-    court_case: Optional[CourtCase] = None
-    cash_collections: list["CashCollection"] = []
-
-    class Config:
-        orm_mode = True
-
-
-class FormRequest(Form, BaseModel):
-    pass
-
-
-class FormResponse(ResponseBase):
-    forms: list[Form] = []
-
-
 # cash_collection
 class CashCollectionBase:
     collection_date: datetime
@@ -333,7 +314,7 @@ class CashCollectionBase:
 class CashCollection(CashCollectionBase, BaseModelSchema):
     collection_method: Optional[CollectionMethod] = None
     court_case: Optional[CourtCase] = None
-    form: Optional[Form] = None
+    form: Optional["Form"] = None
 
     class Config:
         orm_mode = True
@@ -345,3 +326,22 @@ class CashCollectionRequest(CashCollectionBase, BaseModel):
 
 class CashCollectionResponse(ResponseBase):
     cash_collections: list[CashCollection] = []
+
+
+class Form(FormBase, BaseModelSchema):
+    form_status: Optional[FormStatus] = None
+    form_type: Optional[FormType] = None
+    task_calendar: Optional[TaskCalendar] = None
+    court_case: Optional[CourtCase] = None
+    cash_collections: list[CashCollection] = []
+
+    class Config:
+        orm_mode = True
+
+
+class FormRequest(Form, BaseModel):
+    pass
+
+
+class FormResponse(ResponseBase):
+    forms: list[Form] = []
