@@ -13,30 +13,29 @@ class TableBase:
     modified = Column(DateTime, server_default=func.sysdate(), nullable=False)
 
 
-class FormType(TableBase, Base):
+class NameDescBase:
+    name = Column(String(100), unique=True, nullable=False)
+    description = Column(String(3000), nullable=False)
+
+
+class FormType(TableBase, NameDescBase, Base):
     __tablename__ = "form_type"
-    name = Column(String(25), unique=True, nullable=False)
-    description = Column(String(280), nullable=False)
     forms: Mapped[List["Form"]] = relationship(back_populates="form_type")
     history_forms: Mapped[List["HistoryForm"]] = relationship(
         back_populates="form_type"
     )
 
 
-class FormStatus(TableBase, Base):
+class FormStatus(TableBase, NameDescBase, Base):
     __tablename__ = "form_status"
-    name: str = Column(String(25), unique=True, nullable=False)
-    description: str = Column(String(280), nullable=False)
     forms: Mapped[List["Form"]] = relationship(back_populates="form_status")
     history_forms: Mapped[List["HistoryForm"]] = relationship(
         back_populates="form_status"
     )
 
 
-class CollectionMethod(TableBase, Base):
+class CollectionMethod(TableBase, NameDescBase, Base):
     __tablename__ = "collection_method"
-    name = Column(String(25), unique=True, nullable=False)
-    description = Column(String(280), nullable=False)
     case_collections: Mapped[List["CaseCollection"]] = relationship(
         back_populates="collection_method"
     )
@@ -45,43 +44,37 @@ class CollectionMethod(TableBase, Base):
     )
 
 
-class HearingType(TableBase, Base):
+class HearingType(TableBase, NameDescBase, Base):
     __tablename__ = "hearing_type"
-    name = Column(String(25), unique=True, nullable=False)
-    description = Column(String(280), nullable=False)
     hearing_calendars: Mapped[List["HearingCalendar"]] = relationship(
         back_populates="hearing_type"
     )
 
 
-class TaskType(TableBase, Base):
+class TaskType(TableBase, NameDescBase, Base):
     __tablename__ = "task_type"
-    name = Column(String(25), unique=True, nullable=False)
-    description = Column(String(280), nullable=False)
     task_calendars: Mapped[List["TaskCalendar"]] = relationship(
         back_populates="task_type"
     )
 
 
-class CaseType(TableBase, Base):
+class CaseType(TableBase, NameDescBase, Base):
     __tablename__ = "case_type"
-    name = Column(String(25), unique=True, nullable=False)
-    description = Column(String(280), nullable=False)
     court_cases: Mapped[List["CourtCase"]] = relationship(back_populates="case_type")
 
 
 class Court(TableBase, Base):
     __tablename__ = "court"
-    name = Column(String(25), unique=True, nullable=False)
-    address = Column(String(100), unique=True, nullable=False)
-    dhs_address = Column(String(100), unique=True, nullable=True)
+    name = Column(String(100), unique=True, nullable=False)
+    address = Column(String(1000), unique=True, nullable=False)
+    dhs_address = Column(String(1000), unique=True, nullable=True)
     judges: Mapped[List["Judge"]] = relationship(back_populates="court")
 
 
 class Judge(TableBase, Base):
     __tablename__ = "judge"
-    name = Column(String(25), unique=True, nullable=False)
-    webex = Column(String(100), unique=True, nullable=True)
+    name = Column(String(100), unique=True, nullable=False)
+    webex = Column(String(1000), unique=True, nullable=True)
     court_id = Column(
         ForeignKey("court.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=False,
@@ -92,11 +85,11 @@ class Judge(TableBase, Base):
 
 class Client(TableBase, Base):
     __tablename__ = "client"
-    name = Column(String(50), unique=True, nullable=False)
-    a_number = Column(String(10), unique=True, nullable=True)
-    address = Column(String(100), nullable=False)
-    phone = Column(String(10), unique=True, nullable=False)
-    email = Column(DateTime, unique=True, nullable=True)
+    name = Column(String(100), unique=True, nullable=False)
+    a_number = Column(String(100), unique=True, nullable=True)
+    address = Column(String(1000), nullable=False)
+    phone = Column(String(100), unique=True, nullable=False)
+    email = Column(String(100), unique=True, nullable=True)
     judge_id = Column(
         ForeignKey("judge.id", onupdate="NO ACTION", ondelete="RESTRICT"), nullable=True
     )
@@ -240,7 +233,7 @@ class CashCollection(TableBase, Base):
     collection_date = Column(DateTime, nullable=False)
     collected_amount = Column(BigInteger, nullable=False)
     waived_amount = Column(BigInteger, nullable=False)
-    memo = Column(String(280), nullable=True)
+    memo = Column(String(3000), nullable=True)
     case_collection_id = Column(
         ForeignKey("case_collection.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=False,
@@ -259,7 +252,7 @@ class CashCollection(TableBase, Base):
 
 class HistoryForm(TableBase, Base):
     __tablename__ = "history_form"
-    user_name = Column(String(25), nullable=False)
+    user_name = Column(String(100), nullable=False)
     submit_date = Column(DateTime, nullable=True)
     receipt_date = Column(DateTime, nullable=True)
     rfe_date = Column(DateTime, nullable=True)
