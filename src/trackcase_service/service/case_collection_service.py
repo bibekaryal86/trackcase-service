@@ -9,7 +9,11 @@ from src.trackcase_service.db.models import CaseCollection as CaseCollectionMode
 from src.trackcase_service.utils.commons import copy_objects, raise_http_exception
 
 from .schemas import CaseCollection as CaseCollectionSchema
-from .schemas import CaseCollectionRequest, CaseCollectionResponse
+from .schemas import (
+    CaseCollectionRequest,
+    CaseCollectionResponse,
+    CaseCollectionRetrieveRequest,
+)
 
 
 class CaseCollectionService(CrudService):
@@ -68,6 +72,23 @@ class CaseCollectionService(CrudService):
                 "Error Retrieving CaseCollections. Please Try Again!!!",
                 str(ex),
             )
+
+    def read_many_case_collections(
+        self,
+        request: Request,
+        case_collection_retrieve_request: CaseCollectionRetrieveRequest,
+        is_include_extras: bool,
+    ):
+        filters = case_collection_retrieve_request.to_dict()
+
+        if filters:
+            data_models: List[CaseCollectionModel] = super().read_many(**filters)
+            schema_models: List[CaseCollectionSchema] = [
+                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
+            ]
+            return get_response_multiple(schema_models)
+        else:
+            self.read_all_case_collections(request, is_include_extras)
 
     def update_one_case_collection(
         self, model_id: int, request: Request, request_object: CaseCollectionRequest

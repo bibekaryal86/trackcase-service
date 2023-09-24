@@ -11,6 +11,7 @@ from src.trackcase_service.service.case_collection_service import (
 from src.trackcase_service.service.schemas import (
     CaseCollectionRequest,
     CaseCollectionResponse,
+    CaseCollectionRetrieveRequest,
 )
 from src.trackcase_service.utils.commons import (
     raise_http_exception,
@@ -24,14 +25,20 @@ router = APIRouter(prefix="/case_collections", tags=["CaseCollections"])
 @router.get("/", response_model=CaseCollectionResponse, status_code=HTTPStatus.OK)
 def find_all(
     request: Request,
+    case_collection_retrieve_request: CaseCollectionRetrieveRequest = None,
     is_include_extras: bool = True,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_case_collection_service(db_session).read_all_case_collections(
-        request, is_include_extras
-    )
+    if case_collection_retrieve_request is None:
+        return get_case_collection_service(db_session).read_all_case_collections(
+            request, is_include_extras
+        )
+    else:
+        return get_case_collection_service(db_session).read_many_case_collections(
+            request, case_collection_retrieve_request, is_include_extras
+        )
 
 
 @router.get(
