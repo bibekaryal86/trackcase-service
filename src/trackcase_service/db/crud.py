@@ -1,4 +1,4 @@
-from typing import List, Type, TypeVar
+from typing import Any, Dict, List, Type, TypeVar
 
 from sqlalchemy.orm import Session
 
@@ -27,6 +27,14 @@ class CrudService:
 
     def read_all(self, skip: int = 0, limit: int = 1000) -> List[ModelBase]:
         return self.db_session.query(self.db_model).offset(skip).limit(limit).all()
+
+    def read_many(self, **kwargs: Dict[str, Any]) -> List[ModelBase]:
+        query = self.db_session.query(self.db_model)
+
+        for column, value in kwargs.items():
+            query = query.filter(getattr(self.db_model, column) == value)
+
+        return query.all()
 
     def update(self, model_id: int, model_data: ModelBase) -> ModelBase:
         db_record = self.db_session.query(self.db_model).get(model_id)

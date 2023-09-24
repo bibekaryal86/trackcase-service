@@ -5,8 +5,8 @@ from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
-from src.trackcase_service.service.task_type_service import get_task_type_service
 from src.trackcase_service.service.schemas import TaskTypeRequest, TaskTypeResponse
+from src.trackcase_service.service.task_type_service import get_task_type_service
 from src.trackcase_service.utils.commons import (
     raise_http_exception,
     validate_http_basic_credentials,
@@ -24,10 +24,14 @@ def find_all(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_task_type_service(db_session).read_all_task_types(request, is_include_extras)
+    return get_task_type_service(db_session).read_all_task_types(
+        request, is_include_extras
+    )
 
 
-@router.get("/{task_type_id}", response_model=TaskTypeResponse, status_code=HTTPStatus.OK)
+@router.get(
+    "/{task_type_id}", response_model=TaskTypeResponse, status_code=HTTPStatus.OK
+)
 def find_one(
     task_type_id: int,
     request: Request,
@@ -36,9 +40,9 @@ def find_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    task_type_response: TaskTypeResponse = get_task_type_service(db_session).read_one_task_type(
-        task_type_id, request, is_include_extras
-    )
+    task_type_response: TaskTypeResponse = get_task_type_service(
+        db_session
+    ).read_one_task_type(task_type_id, request, is_include_extras)
     if task_type_response is None:
         raise_http_exception(
             request,
@@ -57,10 +61,14 @@ def insert_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_task_type_service(db_session).create_one_task_type(request, task_type_request)
+    return get_task_type_service(db_session).create_one_task_type(
+        request, task_type_request
+    )
 
 
-@router.delete("/{task_type_id}", response_model=TaskTypeResponse, status_code=HTTPStatus.OK)
+@router.delete(
+    "/{task_type_id}", response_model=TaskTypeResponse, status_code=HTTPStatus.OK
+)
 def delete_one(
     task_type_id: int,
     request: Request,
@@ -71,7 +79,9 @@ def delete_one(
     return get_task_type_service(db_session).delete_one_task_type(task_type_id, request)
 
 
-@router.put("/{task_type_id}", response_model=TaskTypeResponse, status_code=HTTPStatus.OK)
+@router.put(
+    "/{task_type_id}", response_model=TaskTypeResponse, status_code=HTTPStatus.OK
+)
 def update_one(
     task_type_id: int,
     request: Request,

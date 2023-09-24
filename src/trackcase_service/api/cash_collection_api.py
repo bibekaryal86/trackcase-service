@@ -5,8 +5,13 @@ from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
-from src.trackcase_service.service.cash_collection_service import get_cash_collection_service
-from src.trackcase_service.service.schemas import CashCollectionRequest, CashCollectionResponse
+from src.trackcase_service.service.cash_collection_service import (
+    get_cash_collection_service,
+)
+from src.trackcase_service.service.schemas import (
+    CashCollectionRequest,
+    CashCollectionResponse,
+)
 from src.trackcase_service.utils.commons import (
     raise_http_exception,
     validate_http_basic_credentials,
@@ -24,10 +29,16 @@ def find_all(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_cash_collection_service(db_session).read_all_cash_collections(request, is_include_extras)
+    return get_cash_collection_service(db_session).read_all_cash_collections(
+        request, is_include_extras
+    )
 
 
-@router.get("/{cash_collection_id}", response_model=CashCollectionResponse, status_code=HTTPStatus.OK)
+@router.get(
+    "/{cash_collection_id}",
+    response_model=CashCollectionResponse,
+    status_code=HTTPStatus.OK,
+)
 def find_one(
     cash_collection_id: int,
     request: Request,
@@ -36,9 +47,9 @@ def find_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    cash_collection_response: CashCollectionResponse = get_cash_collection_service(db_session).read_one_cash_collection(
-        cash_collection_id, request, is_include_extras
-    )
+    cash_collection_response: CashCollectionResponse = get_cash_collection_service(
+        db_session
+    ).read_one_cash_collection(cash_collection_id, request, is_include_extras)
     if cash_collection_response is None:
         raise_http_exception(
             request,
@@ -57,10 +68,16 @@ def insert_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_cash_collection_service(db_session).create_one_cash_collection(request, cash_collection_request)
+    return get_cash_collection_service(db_session).create_one_cash_collection(
+        request, cash_collection_request
+    )
 
 
-@router.delete("/{cash_collection_id}", response_model=CashCollectionResponse, status_code=HTTPStatus.OK)
+@router.delete(
+    "/{cash_collection_id}",
+    response_model=CashCollectionResponse,
+    status_code=HTTPStatus.OK,
+)
 def delete_one(
     cash_collection_id: int,
     request: Request,
@@ -68,10 +85,16 @@ def delete_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_cash_collection_service(db_session).delete_one_cash_collection(cash_collection_id, request)
+    return get_cash_collection_service(db_session).delete_one_cash_collection(
+        cash_collection_id, request
+    )
 
 
-@router.put("/{cash_collection_id}", response_model=CashCollectionResponse, status_code=HTTPStatus.OK)
+@router.put(
+    "/{cash_collection_id}",
+    response_model=CashCollectionResponse,
+    status_code=HTTPStatus.OK,
+)
 def update_one(
     cash_collection_id: int,
     request: Request,

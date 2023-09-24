@@ -24,10 +24,14 @@ def find_all(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_form_status_service(db_session).read_all_form_statuses(request, is_include_extras)
+    return get_form_status_service(db_session).read_all_form_statuses(
+        request, is_include_extras
+    )
 
 
-@router.get("/{form_status_id}", response_model=FormStatusResponse, status_code=HTTPStatus.OK)
+@router.get(
+    "/{form_status_id}", response_model=FormStatusResponse, status_code=HTTPStatus.OK
+)
 def find_one(
     form_status_id: int,
     request: Request,
@@ -36,9 +40,9 @@ def find_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    form_status_response: FormStatusResponse = get_form_status_service(db_session).read_one_form_status(
-        form_status_id, request, is_include_extras
-    )
+    form_status_response: FormStatusResponse = get_form_status_service(
+        db_session
+    ).read_one_form_status(form_status_id, request, is_include_extras)
     if form_status_response is None:
         raise_http_exception(
             request,
@@ -57,10 +61,14 @@ def insert_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_form_status_service(db_session).create_one_form_status(request, form_status_request)
+    return get_form_status_service(db_session).create_one_form_status(
+        request, form_status_request
+    )
 
 
-@router.delete("/{form_status_id}", response_model=FormStatusResponse, status_code=HTTPStatus.OK)
+@router.delete(
+    "/{form_status_id}", response_model=FormStatusResponse, status_code=HTTPStatus.OK
+)
 def delete_one(
     form_status_id: int,
     request: Request,
@@ -68,10 +76,14 @@ def delete_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_form_status_service(db_session).delete_one_form_status(form_status_id, request)
+    return get_form_status_service(db_session).delete_one_form_status(
+        form_status_id, request
+    )
 
 
-@router.put("/{form_status_id}", response_model=FormStatusResponse, status_code=HTTPStatus.OK)
+@router.put(
+    "/{form_status_id}", response_model=FormStatusResponse, status_code=HTTPStatus.OK
+)
 def update_one(
     form_status_id: int,
     request: Request,

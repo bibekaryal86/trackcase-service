@@ -14,6 +14,7 @@ import api.form_status_api as form_status_api
 import api.form_type_api as form_type_api
 import api.hearing_calendar_api as hearing_calendar_api
 import api.hearing_type_api as hearing_type_api
+import api.history_form_api as history_form_api
 import api.judge_api as judge_api
 import api.task_calendar_api as task_calendar_api
 import api.task_type_api as task_type_api
@@ -54,6 +55,7 @@ app.include_router(form_status_api.router)
 app.include_router(form_type_api.router)
 app.include_router(hearing_calendar_api.router)
 app.include_router(hearing_type_api.router)
+app.include_router(history_form_api.router)
 app.include_router(judge_api.router)
 app.include_router(task_calendar_api.router)
 app.include_router(task_type_api.router)

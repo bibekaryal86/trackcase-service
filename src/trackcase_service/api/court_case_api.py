@@ -24,10 +24,14 @@ def find_all(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_court_case_service(db_session).read_all_court_cases(request, is_include_extras)
+    return get_court_case_service(db_session).read_all_court_cases(
+        request, is_include_extras
+    )
 
 
-@router.get("/{court_case_id}", response_model=CourtCaseResponse, status_code=HTTPStatus.OK)
+@router.get(
+    "/{court_case_id}", response_model=CourtCaseResponse, status_code=HTTPStatus.OK
+)
 def find_one(
     court_case_id: int,
     request: Request,
@@ -36,9 +40,9 @@ def find_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    court_case_response: CourtCaseResponse = get_court_case_service(db_session).read_one_court_case(
-        court_case_id, request, is_include_extras
-    )
+    court_case_response: CourtCaseResponse = get_court_case_service(
+        db_session
+    ).read_one_court_case(court_case_id, request, is_include_extras)
     if court_case_response is None:
         raise_http_exception(
             request,
@@ -57,10 +61,14 @@ def insert_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_court_case_service(db_session).create_one_court_case(request, court_case_request)
+    return get_court_case_service(db_session).create_one_court_case(
+        request, court_case_request
+    )
 
 
-@router.delete("/{court_case_id}", response_model=CourtCaseResponse, status_code=HTTPStatus.OK)
+@router.delete(
+    "/{court_case_id}", response_model=CourtCaseResponse, status_code=HTTPStatus.OK
+)
 def delete_one(
     court_case_id: int,
     request: Request,
@@ -68,10 +76,14 @@ def delete_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_court_case_service(db_session).delete_one_court_case(court_case_id, request)
+    return get_court_case_service(db_session).delete_one_court_case(
+        court_case_id, request
+    )
 
 
-@router.put("/{court_case_id}", response_model=CourtCaseResponse, status_code=HTTPStatus.OK)
+@router.put(
+    "/{court_case_id}", response_model=CourtCaseResponse, status_code=HTTPStatus.OK
+)
 def update_one(
     court_case_id: int,
     request: Request,

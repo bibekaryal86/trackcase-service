@@ -6,7 +6,10 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.hearing_type_service import get_hearing_type_service
-from src.trackcase_service.service.schemas import HearingTypeRequest, HearingTypeResponse
+from src.trackcase_service.service.schemas import (
+    HearingTypeRequest,
+    HearingTypeResponse,
+)
 from src.trackcase_service.utils.commons import (
     raise_http_exception,
     validate_http_basic_credentials,
@@ -24,10 +27,14 @@ def find_all(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_hearing_type_service(db_session).read_all_hearing_types(request, is_include_extras)
+    return get_hearing_type_service(db_session).read_all_hearing_types(
+        request, is_include_extras
+    )
 
 
-@router.get("/{hearing_type_id}", response_model=HearingTypeResponse, status_code=HTTPStatus.OK)
+@router.get(
+    "/{hearing_type_id}", response_model=HearingTypeResponse, status_code=HTTPStatus.OK
+)
 def find_one(
     hearing_type_id: int,
     request: Request,
@@ -36,9 +43,9 @@ def find_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    hearing_type_response: HearingTypeResponse = get_hearing_type_service(db_session).read_one_hearing_type(
-        hearing_type_id, request, is_include_extras
-    )
+    hearing_type_response: HearingTypeResponse = get_hearing_type_service(
+        db_session
+    ).read_one_hearing_type(hearing_type_id, request, is_include_extras)
     if hearing_type_response is None:
         raise_http_exception(
             request,
@@ -57,10 +64,14 @@ def insert_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_hearing_type_service(db_session).create_one_hearing_type(request, hearing_type_request)
+    return get_hearing_type_service(db_session).create_one_hearing_type(
+        request, hearing_type_request
+    )
 
 
-@router.delete("/{hearing_type_id}", response_model=HearingTypeResponse, status_code=HTTPStatus.OK)
+@router.delete(
+    "/{hearing_type_id}", response_model=HearingTypeResponse, status_code=HTTPStatus.OK
+)
 def delete_one(
     hearing_type_id: int,
     request: Request,
@@ -68,10 +79,14 @@ def delete_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_hearing_type_service(db_session).delete_one_hearing_type(hearing_type_id, request)
+    return get_hearing_type_service(db_session).delete_one_hearing_type(
+        hearing_type_id, request
+    )
 
 
-@router.put("/{hearing_type_id}", response_model=HearingTypeResponse, status_code=HTTPStatus.OK)
+@router.put(
+    "/{hearing_type_id}", response_model=HearingTypeResponse, status_code=HTTPStatus.OK
+)
 def update_one(
     hearing_type_id: int,
     request: Request,

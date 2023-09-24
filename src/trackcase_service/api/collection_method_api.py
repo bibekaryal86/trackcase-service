@@ -5,8 +5,13 @@ from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
-from src.trackcase_service.service.collection_method_service import get_collection_method_service
-from src.trackcase_service.service.schemas import CollectionMethodRequest, CollectionMethodResponse
+from src.trackcase_service.service.collection_method_service import (
+    get_collection_method_service,
+)
+from src.trackcase_service.service.schemas import (
+    CollectionMethodRequest,
+    CollectionMethodResponse,
+)
 from src.trackcase_service.utils.commons import (
     raise_http_exception,
     validate_http_basic_credentials,
@@ -24,10 +29,16 @@ def find_all(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_collection_method_service(db_session).read_all_collection_methods(request, is_include_extras)
+    return get_collection_method_service(db_session).read_all_collection_methods(
+        request, is_include_extras
+    )
 
 
-@router.get("/{collection_method_id}", response_model=CollectionMethodResponse, status_code=HTTPStatus.OK)
+@router.get(
+    "/{collection_method_id}",
+    response_model=CollectionMethodResponse,
+    status_code=HTTPStatus.OK,
+)
 def find_one(
     collection_method_id: int,
     request: Request,
@@ -36,8 +47,10 @@ def find_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    collection_method_response: CollectionMethodResponse = get_collection_method_service(db_session).read_one_collection_method(
-        collection_method_id, request, is_include_extras
+    collection_method_response: CollectionMethodResponse = (
+        get_collection_method_service(db_session).read_one_collection_method(
+            collection_method_id, request, is_include_extras
+        )
     )
     if collection_method_response is None:
         raise_http_exception(
@@ -57,10 +70,16 @@ def insert_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_collection_method_service(db_session).create_one_collection_method(request, collection_method_request)
+    return get_collection_method_service(db_session).create_one_collection_method(
+        request, collection_method_request
+    )
 
 
-@router.delete("/{collection_method_id}", response_model=CollectionMethodResponse, status_code=HTTPStatus.OK)
+@router.delete(
+    "/{collection_method_id}",
+    response_model=CollectionMethodResponse,
+    status_code=HTTPStatus.OK,
+)
 def delete_one(
     collection_method_id: int,
     request: Request,
@@ -68,10 +87,16 @@ def delete_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_collection_method_service(db_session).delete_one_collection_method(collection_method_id, request)
+    return get_collection_method_service(db_session).delete_one_collection_method(
+        collection_method_id, request
+    )
 
 
-@router.put("/{collection_method_id}", response_model=CollectionMethodResponse, status_code=HTTPStatus.OK)
+@router.put(
+    "/{collection_method_id}",
+    response_model=CollectionMethodResponse,
+    status_code=HTTPStatus.OK,
+)
 def update_one(
     collection_method_id: int,
     request: Request,

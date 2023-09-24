@@ -288,19 +288,6 @@ class TaskCalendarResponse(ResponseBase):
     task_calendars: list[TaskCalendar] = []
 
 
-# form
-class FormBase:
-    form_type_id: int
-    form_status_id: int
-    court_case_id: int
-    submit_date: Optional[datetime] = None
-    receipt_date: Optional[datetime] = None
-    rfe_date: Optional[datetime] = None
-    rfe_submit_date: Optional[datetime] = None
-    decision_date: Optional[datetime] = None
-    task_calendar_id: Optional[int] = None
-
-
 # cash_collection
 class CashCollectionBase:
     collection_date: datetime
@@ -328,6 +315,19 @@ class CashCollectionResponse(ResponseBase):
     cash_collections: list[CashCollection] = []
 
 
+# form
+class FormBase:
+    form_type_id: int
+    form_status_id: int
+    court_case_id: int
+    submit_date: Optional[datetime] = None
+    receipt_date: Optional[datetime] = None
+    rfe_date: Optional[datetime] = None
+    rfe_submit_date: Optional[datetime] = None
+    decision_date: Optional[datetime] = None
+    task_calendar_id: Optional[int] = None
+
+
 class Form(FormBase, BaseModelSchema):
     form_status: Optional[FormStatus] = None
     form_type: Optional[FormType] = None
@@ -345,3 +345,37 @@ class FormRequest(Form, BaseModel):
 
 class FormResponse(ResponseBase):
     forms: list[Form] = []
+
+
+# history_form
+class HistoryFormBase:
+    user_name: str
+    form_id: int
+    form_type_id: int
+    form_status_id: int
+    court_case_id: int
+    submit_date: Optional[datetime] = None
+    receipt_date: Optional[datetime] = None
+    rfe_date: Optional[datetime] = None
+    rfe_submit_date: Optional[datetime] = None
+    decision_date: Optional[datetime] = None
+    task_calendar_id: Optional[int] = None
+
+
+class HistoryForm(HistoryFormBase, BaseModelSchema):
+    form: Optional[Form] = None
+    form_status: Optional[FormStatus] = None
+    form_type: Optional[FormType] = None
+    task_calendar: Optional[TaskCalendar] = None
+    court_case: Optional[CourtCase] = None
+
+    class Config:
+        orm_mode = True
+
+
+class HistoryFormRequest(Form, BaseModel):
+    pass
+
+
+class HistoryFormResponse(ResponseBase):
+    forms: list[HistoryForm] = []

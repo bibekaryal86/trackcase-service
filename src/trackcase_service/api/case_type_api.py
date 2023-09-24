@@ -24,10 +24,14 @@ def find_all(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_case_type_service(db_session).read_all_case_types(request, is_include_extras)
+    return get_case_type_service(db_session).read_all_case_types(
+        request, is_include_extras
+    )
 
 
-@router.get("/{case_type_id}", response_model=CaseTypeResponse, status_code=HTTPStatus.OK)
+@router.get(
+    "/{case_type_id}", response_model=CaseTypeResponse, status_code=HTTPStatus.OK
+)
 def find_one(
     case_type_id: int,
     request: Request,
@@ -36,9 +40,9 @@ def find_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    case_type_response: CaseTypeResponse = get_case_type_service(db_session).read_one_case_type(
-        case_type_id, request, is_include_extras
-    )
+    case_type_response: CaseTypeResponse = get_case_type_service(
+        db_session
+    ).read_one_case_type(case_type_id, request, is_include_extras)
     if case_type_response is None:
         raise_http_exception(
             request,
@@ -57,10 +61,14 @@ def insert_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_case_type_service(db_session).create_one_case_type(request, case_type_request)
+    return get_case_type_service(db_session).create_one_case_type(
+        request, case_type_request
+    )
 
 
-@router.delete("/{case_type_id}", response_model=CaseTypeResponse, status_code=HTTPStatus.OK)
+@router.delete(
+    "/{case_type_id}", response_model=CaseTypeResponse, status_code=HTTPStatus.OK
+)
 def delete_one(
     case_type_id: int,
     request: Request,
@@ -71,7 +79,9 @@ def delete_one(
     return get_case_type_service(db_session).delete_one_case_type(case_type_id, request)
 
 
-@router.put("/{case_type_id}", response_model=CaseTypeResponse, status_code=HTTPStatus.OK)
+@router.put(
+    "/{case_type_id}", response_model=CaseTypeResponse, status_code=HTTPStatus.OK
+)
 def update_one(
     case_type_id: int,
     request: Request,

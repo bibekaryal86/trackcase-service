@@ -80,6 +80,4 @@ def update_one(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_form_service(db_session).update_one_form(
-        form_id, request, form_request
-    )
+    return get_form_service(db_session).update_one_form(form_id, request, form_request)
