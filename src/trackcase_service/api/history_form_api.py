@@ -16,7 +16,7 @@ from src.trackcase_service.utils.commons import (
 )
 from src.trackcase_service.utils.constants import http_basic_security
 
-router = APIRouter(prefix="/history_forms", tags=["HistoryForms"])
+router = APIRouter(prefix="/trackcase-service/history_forms", tags=["HistoryForms"])
 
 
 @router.get("/", response_model=HistoryFormResponse, status_code=HTTPStatus.OK)

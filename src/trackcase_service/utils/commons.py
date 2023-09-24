@@ -116,7 +116,8 @@ def copy_objects(
 
 def reorg_tables(db_session: Session):
     check_reorg_sql = text(
-        "SELECT TABSCHEMA, TABNAME FROM SYSIBMADM.ADMINTABINFO WHERE REORG_PENDING = 'Y'"
+        "SELECT TABSCHEMA, TABNAME FROM "
+        "SYSIBMADM.ADMINTABINFO WHERE REORG_PENDING = 'Y'"
     )
     result = db_session.execute(check_reorg_sql)
     result_rows = result.fetchall()

@@ -388,7 +388,6 @@ class CaseCollectionRetrieveRequest(BaseModel):
     form_id: Optional[int] = None
 
     def to_dict(self) -> dict:
-        """Returns a dict from a RequestObject, including only the keys that are not None."""
         return {key: value for key, value in self.__dict__.items() if value is not None}
 
 

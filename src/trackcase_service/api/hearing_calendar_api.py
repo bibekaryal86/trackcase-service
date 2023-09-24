@@ -18,7 +18,9 @@ from src.trackcase_service.utils.commons import (
 )
 from src.trackcase_service.utils.constants import http_basic_security
 
-router = APIRouter(prefix="/hearing_calendars", tags=["HearingCalendars"])
+router = APIRouter(
+    prefix="/trackcase-service/hearing_calendars", tags=["HearingCalendars"]
+)
 
 
 @router.get("/", response_model=HearingCalendarResponse, status_code=HTTPStatus.OK)

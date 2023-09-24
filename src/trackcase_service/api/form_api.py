@@ -13,7 +13,7 @@ from src.trackcase_service.utils.commons import (
 )
 from src.trackcase_service.utils.constants import http_basic_security
 
-router = APIRouter(prefix="/forms", tags=["Forms"])
+router = APIRouter(prefix="/trackcase-service/forms", tags=["Forms"])
 
 
 @router.get("/", response_model=FormResponse, status_code=HTTPStatus.OK)

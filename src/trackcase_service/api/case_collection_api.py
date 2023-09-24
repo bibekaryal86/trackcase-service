@@ -19,7 +19,9 @@ from src.trackcase_service.utils.commons import (
 )
 from src.trackcase_service.utils.constants import http_basic_security
 
-router = APIRouter(prefix="/case_collections", tags=["CaseCollections"])
+router = APIRouter(
+    prefix="/trackcase-service/case_collections", tags=["CaseCollections"]
+)
 
 
 @router.get("/", response_model=CaseCollectionResponse, status_code=HTTPStatus.OK)

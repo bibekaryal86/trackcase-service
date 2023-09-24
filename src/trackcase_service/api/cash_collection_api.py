@@ -18,7 +18,9 @@ from src.trackcase_service.utils.commons import (
 )
 from src.trackcase_service.utils.constants import http_basic_security
 
-router = APIRouter(prefix="/cash_collections", tags=["CashCollections"])
+router = APIRouter(
+    prefix="/trackcase-service/cash_collections", tags=["CashCollections"]
+)
 
 
 @router.get("/", response_model=CashCollectionResponse, status_code=HTTPStatus.OK)

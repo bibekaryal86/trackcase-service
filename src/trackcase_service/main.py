@@ -42,7 +42,7 @@ app = FastAPI(
     description="Backend service for processing and tracking immigration cases",
     version="1.0.1",
     lifespan=lifespan,
-    openapi_url=None if commons.is_production() else "/openapi.json",
+    openapi_url=None if commons.is_production() else "/trackcase-service/openapi.json",
     docs_url=None,
     redoc_url=None,
 )
@@ -94,17 +94,17 @@ async def log_request_response(request: Request, call_next):
     return response
 
 
-@app.get("/tests/ping", tags=["Main"], summary="Ping Application")
+@app.get("/trackcase-service/tests/ping", tags=["Main"], summary="Ping Application")
 def ping():
     return {"test": "successful"}
 
 
-@app.get("/tests/reset", tags=["Main"], summary="Reset Cache")
+@app.get("/trackcase-service/tests/reset", tags=["Main"], summary="Reset Cache")
 def reset(request: Request):
     return {"reset": "successful"}
 
 
-@app.get("/tests/reorg", tags=["Main"], summary="Reset Reorg Tables")
+@app.get("/trackcase-service/tests/reorg", tags=["Main"], summary="Reset Reorg Tables")
 def reorg(
     request: Request,
     http_basic_credentials: HTTPBasicCredentials = Depends(
@@ -117,7 +117,7 @@ def reorg(
     return {"reorg": "successful"}
 
 
-@app.get("/tests/log-level", tags=["Main"], summary="Set Log Level")
+@app.get("/trackcase-service/tests/log-level", tags=["Main"], summary="Set Log Level")
 def log_level(level: enums.LogLevelOptions):
     log_level_to_set = logging.getLevelNamesMapping().get(level)
     log.set_level(log_level_to_set)
@@ -125,7 +125,7 @@ def log_level(level: enums.LogLevelOptions):
     return {"set": "successful"}
 
 
-@app.get("/docs", include_in_schema=False)
+@app.get("/trackcase-service/docs", include_in_schema=False)
 async def custom_docs_url(
     request: Request,
     http_basic_credentials: HTTPBasicCredentials = Depends(
