@@ -3,28 +3,29 @@ import os
 import time
 from contextlib import asynccontextmanager
 
-import api.case_collection_api as case_collection_api
-import api.case_type_api as case_type_api
-import api.cash_collection_api as cash_collection_api
-import api.client_api as client_api
-import api.collection_method_api as collection_method_api
-import api.court_api as court_api
-import api.court_case_api as court_case_api
-import api.form_api as form_api
-import api.form_status_api as form_status_api
-import api.form_type_api as form_type_api
-import api.hearing_calendar_api as hearing_calendar_api
-import api.hearing_type_api as hearing_type_api
-import api.history_form_api as history_form_api
-import api.judge_api as judge_api
-import api.task_calendar_api as task_calendar_api
-import api.task_type_api as task_type_api
 import uvicorn
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
-from utils import commons, constants, enums, logger
+
+import src.trackcase_service.api.case_collection_api as case_collection_api
+import src.trackcase_service.api.case_type_api as case_type_api
+import src.trackcase_service.api.cash_collection_api as cash_collection_api
+import src.trackcase_service.api.client_api as client_api
+import src.trackcase_service.api.collection_method_api as collection_method_api
+import src.trackcase_service.api.court_api as court_api
+import src.trackcase_service.api.court_case_api as court_case_api
+import src.trackcase_service.api.form_api as form_api
+import src.trackcase_service.api.form_status_api as form_status_api
+import src.trackcase_service.api.form_type_api as form_type_api
+import src.trackcase_service.api.hearing_calendar_api as hearing_calendar_api
+import src.trackcase_service.api.hearing_type_api as hearing_type_api
+import src.trackcase_service.api.history_form_api as history_form_api
+import src.trackcase_service.api.judge_api as judge_api
+import src.trackcase_service.api.task_calendar_api as task_calendar_api
+import src.trackcase_service.api.task_type_api as task_type_api
+from src.trackcase_service.utils import commons, constants, enums, logger
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
 

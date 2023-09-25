@@ -27,3 +27,8 @@ backend service for trackcase
 
 * add check to make sure coming from authenv_service
 * pydantic says `from_orm` is deprecated
+
+
+
+* run as module
+  * python -m src.trackcase_service.main
