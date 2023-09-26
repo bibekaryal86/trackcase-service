@@ -70,7 +70,7 @@ def validate_http_basic_credentials(
         )
     # also check if user_name present in request headers or not
     # username header is sent from authenv_gateway after validation
-    user_name = request.headers.get("usernameheader")
+    user_name = request.headers.get("x-user-name")
     if not is_ignore_username and not user_name:
         raise_http_exception(
             request=request,

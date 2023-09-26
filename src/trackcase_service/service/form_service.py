@@ -175,7 +175,7 @@ def _convert_model_to_schema(
 def _convert_to_history_form(
     request: Request, form_request: FormRequest, form_id: int
 ) -> HistoryFormRequest:
-    user_name = request.headers.get("usernameheader")
+    user_name = request.headers.get("x-user-name")
     return HistoryFormRequest(
         user_name=user_name,
         form_id=form_id,

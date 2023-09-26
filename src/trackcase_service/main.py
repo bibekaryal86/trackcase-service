@@ -50,13 +50,12 @@ app = FastAPI(
 
 
 def user_name_header(
-    usernameheader: str = Header(
+    x_user_name: str = Header(
         title="User Name in Header",
         description="To be included with every request",
-        convert_underscores=False,
     )
 ):
-    return usernameheader
+    return x_user_name
 
 
 app.include_router(case_type_api.router, dependencies=[Depends(user_name_header)])
