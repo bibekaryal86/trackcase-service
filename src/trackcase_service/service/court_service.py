@@ -32,11 +32,15 @@ class CourtService(CrudService):
                 str(ex),
             )
 
-    def read_one_court(self, model_id: int, request: Request) -> CourtResponse:
+    def read_one_court(
+        self, model_id: int, request: Request, is_include_extras: bool
+    ) -> CourtResponse:
         try:
             data_model: CourtModel = super().read_one(model_id)
             if data_model:
-                schema_model: CourtSchema = _convert_model_to_schema(data_model)
+                schema_model: CourtSchema = _convert_model_to_schema(
+                    data_model, is_include_extras
+                )
                 return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
@@ -46,11 +50,13 @@ class CourtService(CrudService):
                 str(ex),
             )
 
-    def read_all_courts(self, request: Request) -> CourtResponse:
+    def read_all_courts(
+        self, request: Request, is_include_extras: bool
+    ) -> CourtResponse:
         try:
             data_models: List[CourtModel] = super().read_all()
             schema_models: List[CourtSchema] = [
-                _convert_model_to_schema(c_m) for c_m in data_models
+                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -64,7 +70,7 @@ class CourtService(CrudService):
     def update_one_court(
         self, model_id: int, request: Request, request_object: CourtRequest
     ) -> CourtResponse:
-        court_response = self.read_one_court(model_id, request)
+        court_response = self.read_one_court(model_id, request, False)
 
         if not (court_response and court_response.courts):
             raise_http_exception(
@@ -88,7 +94,7 @@ class CourtService(CrudService):
             )
 
     def delete_one_court(self, model_id: int, request: Request) -> CourtResponse:
-        court_response = self.read_one_court(model_id, request)
+        court_response = self.read_one_court(model_id, request, False)
 
         if not (court_response and court_response.courts):
             raise_http_exception(
@@ -122,11 +128,17 @@ def get_response_multiple(multiple: list[CourtSchema]) -> CourtResponse:
     return CourtResponse(courts=multiple)
 
 
-def _convert_model_to_schema(data_model: CourtModel) -> CourtSchema:
+def _convert_model_to_schema(
+    data_model: CourtModel, is_include_extras: bool = False
+) -> CourtSchema:
     data_schema = CourtSchema(
+        id=data_model.id,
+        created=data_model.created,
+        modified=data_model.modified,
         name=data_model.name,
         address=data_model.address,
         dhs_address=data_model.dhs_address,
     )
-    data_schema = copy_objects(data_model, CourtSchema, data_schema)
+    if is_include_extras:
+        data_schema.judges = data_model.judges
     return data_schema

@@ -4,6 +4,8 @@ import secrets
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
 
@@ -45,7 +47,9 @@ def shutdown_db_client(app: FastAPI):
 
 
 def validate_http_basic_credentials(
-    request: Request, http_basic_credentials: HTTPBasicCredentials
+    request: Request,
+    http_basic_credentials: HTTPBasicCredentials,
+    is_ignore_username: bool = False,
 ):
     valid_username = constants.BASIC_AUTH_USR
     valid_password = constants.BASIC_AUTH_PWD
@@ -63,6 +67,16 @@ def validate_http_basic_credentials(
             sts_code=http.HTTPStatus.UNAUTHORIZED,
             msg="Invalid Credentials",
             err_msg="Basic Credentials",
+        )
+    # also check if user_name present in request headers or not
+    # username header is sent from authenv_gateway after validation
+    user_name = request.headers.get("x-user-name")
+    if not is_ignore_username and not user_name:
+        raise_http_exception(
+            request=request,
+            sts_code=http.HTTPStatus.BAD_REQUEST,
+            msg="Missing Username",
+            err_msg="Missing Username",
         )
 
 
@@ -98,3 +112,21 @@ def copy_objects(
         ):
             setattr(destination_object, attr, getattr(source_object, attr))
     return destination_object
+
+
+def reorg_tables(db_session: Session):
+    check_reorg_sql = text(
+        "SELECT TABSCHEMA, TABNAME FROM "
+        "SYSIBMADM.ADMINTABINFO WHERE REORG_PENDING = 'Y'"
+    )
+    result = db_session.execute(check_reorg_sql)
+    result_rows = result.fetchall()
+
+    reorg_sqls = []
+    for row in result_rows:
+        reorg_sqls.append(
+            text(f"""CALL SYSPROC.ADMIN_CMD('REORG TABLE "{row[0]}"."{row[1]}"')""")
+        )
+
+    for reorg_sql in reorg_sqls:
+        db_session.execute(reorg_sql)

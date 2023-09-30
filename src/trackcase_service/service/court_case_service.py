@@ -5,22 +5,22 @@ from fastapi import Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
-from src.trackcase_service.db.models import Judge as JudgeModel
+from src.trackcase_service.db.models import CourtCase as CourtCaseModel
 from src.trackcase_service.utils.commons import copy_objects, raise_http_exception
 
-from .schemas import Judge as JudgeSchema
-from .schemas import JudgeRequest, JudgeResponse
+from .schemas import CourtCase as CourtCaseSchema
+from .schemas import CourtCaseRequest, CourtCaseResponse
 
 
-class JudgeService(CrudService):
+class CourtCaseService(CrudService):
     def __init__(self, db_session: Session):
-        super(JudgeService, self).__init__(db_session, JudgeModel)
+        super(CourtCaseService, self).__init__(db_session, CourtCaseModel)
 
-    def create_one_judge(
-        self, request: Request, request_object: JudgeRequest
-    ) -> JudgeResponse:
+    def create_one_court_case(
+        self, request: Request, request_object: CourtCaseRequest
+    ) -> CourtCaseResponse:
         try:
-            data_model: JudgeModel = copy_objects(request_object, JudgeModel)
+            data_model: CourtCaseModel = copy_objects(request_object, CourtCaseModel)
             data_model = super().create(data_model)
             schema_model = _convert_model_to_schema(data_model)
             return get_response_single(schema_model)
@@ -28,17 +28,17 @@ class JudgeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Inserting Judge. Please Try Again!!!",
+                "Error Inserting CourtCase. Please Try Again!!!",
                 str(ex),
             )
 
-    def read_one_judge(
+    def read_one_court_case(
         self, model_id: int, request: Request, is_include_extras: bool
-    ) -> JudgeResponse:
+    ) -> CourtCaseResponse:
         try:
-            data_model: JudgeModel = super().read_one(model_id)
+            data_model: CourtCaseModel = super().read_one(model_id)
             if data_model:
-                schema_model: JudgeSchema = _convert_model_to_schema(
+                schema_model: CourtCaseSchema = _convert_model_to_schema(
                     data_model, is_include_extras
                 )
                 return get_response_single(schema_model)
@@ -50,12 +50,12 @@ class JudgeService(CrudService):
                 str(ex),
             )
 
-    def read_all_judges(
+    def read_all_court_cases(
         self, request: Request, is_include_extras: bool
-    ) -> JudgeResponse:
+    ) -> CourtCaseResponse:
         try:
-            data_models: List[JudgeModel] = super().read_all()
-            schema_models: List[JudgeSchema] = [
+            data_models: List[CourtCaseModel] = super().read_all()
+            schema_models: List[CourtCaseSchema] = [
                 _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
             ]
             return get_response_multiple(schema_models)
@@ -63,16 +63,16 @@ class JudgeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Retrieving Judges. Please Try Again!!!",
+                "Error Retrieving CourtCases. Please Try Again!!!",
                 str(ex),
             )
 
-    def update_one_judge(
-        self, model_id: int, request: Request, request_object: JudgeRequest
-    ) -> JudgeResponse:
-        judge_response = self.read_one_judge(model_id, request, False)
+    def update_one_court_case(
+        self, model_id: int, request: Request, request_object: CourtCaseRequest
+    ) -> CourtCaseResponse:
+        court_case_response = self.read_one_court_case(model_id, request, False)
 
-        if not (judge_response and judge_response.judges):
+        if not (court_case_response and court_case_response.court_cases):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -81,7 +81,7 @@ class JudgeService(CrudService):
             )
 
         try:
-            data_model: JudgeModel = copy_objects(request_object, JudgeModel)
+            data_model: CourtCaseModel = copy_objects(request_object, CourtCaseModel)
             data_model = super().update(model_id, data_model)
             schema_model = _convert_model_to_schema(data_model)
             return get_response_single(schema_model)
@@ -93,10 +93,12 @@ class JudgeService(CrudService):
                 str(ex),
             )
 
-    def delete_one_judge(self, model_id: int, request: Request) -> JudgeResponse:
-        judge_response = self.read_one_judge(model_id, request, False)
+    def delete_one_court_case(
+        self, model_id: int, request: Request
+    ) -> CourtCaseResponse:
+        court_case_response = self.read_one_court_case(model_id, request, False)
 
-        if not (judge_response and judge_response.judges):
+        if not (court_case_response and court_case_response.court_cases):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -106,7 +108,7 @@ class JudgeService(CrudService):
 
         try:
             super().delete(model_id)
-            return JudgeResponse(delete_count=1)
+            return CourtCaseResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
                 request,
@@ -116,30 +118,34 @@ class JudgeService(CrudService):
             )
 
 
-def get_judge_service(db_session: Session) -> JudgeService:
-    return JudgeService(db_session)
+def get_court_case_service(db_session: Session) -> CourtCaseService:
+    return CourtCaseService(db_session)
 
 
-def get_response_single(single: JudgeSchema) -> JudgeResponse:
-    return JudgeResponse(judges=[single])
+def get_response_single(single: CourtCaseSchema) -> CourtCaseResponse:
+    return CourtCaseResponse(court_cases=[single])
 
 
-def get_response_multiple(multiple: list[JudgeSchema]) -> JudgeResponse:
-    return JudgeResponse(judges=multiple)
+def get_response_multiple(multiple: list[CourtCaseSchema]) -> CourtCaseResponse:
+    return CourtCaseResponse(court_cases=multiple)
 
 
 def _convert_model_to_schema(
-    data_model: JudgeModel, is_include_extras: bool = False
-) -> JudgeSchema:
-    data_schema = JudgeSchema(
+    data_model: CourtCaseModel, is_include_extras: bool = False
+) -> CourtCaseSchema:
+    data_schema = CourtCaseSchema(
         id=data_model.id,
         created=data_model.created,
         modified=data_model.modified,
-        name=data_model.name,
-        webex=data_model.webex,
-        court_id=data_model.court_id,
+        case_type_id=data_model.case_type_id,
+        client_id=data_model.client_id,
     )
     if is_include_extras:
-        data_schema.court = data_model.court
-        data_schema.clients = data_model.clients
+        data_schema.case_type = data_model.case_type
+        data_schema.client = data_model.client
+        data_schema.forms = data_model.forms
+        data_schema.cash_collections = data_model.cash_collections
+        data_schema.case_collections = data_model.case_collections
+        data_schema.hearing_calendars = data_model.hearing_calendars
+        data_schema.task_calendars = data_model.task_calendars
     return data_schema
