@@ -6,7 +6,11 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import CaseCollection as CaseCollectionModel
-from src.trackcase_service.utils.commons import copy_objects, raise_http_exception
+from src.trackcase_service.utils.commons import (
+    copy_objects,
+    get_err_msg,
+    raise_http_exception,
+)
 
 from .schemas import CaseCollection as CaseCollectionSchema
 from .schemas import (
@@ -34,8 +38,9 @@ class CaseCollectionService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Inserting CaseCollection. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    "Error Inserting CaseCollection. Please Try Again!!!", str(ex)
+                ),
             )
 
     def read_one_case_collection(
@@ -52,8 +57,9 @@ class CaseCollectionService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Retrieving By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Retrieving By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
     def read_all_case_collections(
@@ -69,8 +75,9 @@ class CaseCollectionService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Retrieving CaseCollections. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    "Error Retrieving CaseCollections. Please Try Again!!!", str(ex)
+                ),
             )
 
     def read_many_case_collections(
@@ -102,7 +109,6 @@ class CaseCollectionService(CrudService):
                 request,
                 HTTPStatus.NOT_FOUND,
                 f"Not Found By Id: {model_id}!!!",
-                f"Not Found By Id: {model_id}!!!",
             )
 
         try:
@@ -116,8 +122,9 @@ class CaseCollectionService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Updating By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Updating By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
     def delete_one_case_collection(
@@ -132,7 +139,6 @@ class CaseCollectionService(CrudService):
                 request,
                 HTTPStatus.NOT_FOUND,
                 f"Not Found By Id: {model_id}!!!",
-                f"Not Found By Id: {model_id}!!!",
             )
 
         try:
@@ -142,8 +148,9 @@ class CaseCollectionService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Deleting By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Deleting By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
 

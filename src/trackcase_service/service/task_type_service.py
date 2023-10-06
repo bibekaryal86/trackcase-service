@@ -6,7 +6,11 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import TaskType as TaskTypeModel
-from src.trackcase_service.utils.commons import copy_objects, raise_http_exception
+from src.trackcase_service.utils.commons import (
+    copy_objects,
+    get_err_msg,
+    raise_http_exception,
+)
 
 from .schemas import TaskType as TaskTypeSchema
 from .schemas import TaskTypeRequest, TaskTypeResponse
@@ -28,8 +32,7 @@ class TaskTypeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Inserting TaskType. Please Try Again!!!",
-                str(ex),
+                get_err_msg("Error Inserting TaskType. Please Try Again!!!", str(ex)),
             )
 
     def read_one_task_type(
@@ -46,8 +49,9 @@ class TaskTypeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Retrieving By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Retrieving By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
     def read_all_task_types(
@@ -63,8 +67,7 @@ class TaskTypeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Retrieving TaskTypes. Please Try Again!!!",
-                str(ex),
+                get_err_msg("Error Retrieving TaskTypes. Please Try Again!!!", str(ex)),
             )
 
     def update_one_task_type(
@@ -77,7 +80,6 @@ class TaskTypeService(CrudService):
                 request,
                 HTTPStatus.NOT_FOUND,
                 f"Not Found By Id: {model_id}!!!",
-                f"Not Found By Id: {model_id}!!!",
             )
 
         try:
@@ -89,8 +91,9 @@ class TaskTypeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Updating By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Updating By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
     def delete_one_task_type(self, model_id: int, request: Request) -> TaskTypeResponse:
@@ -101,7 +104,6 @@ class TaskTypeService(CrudService):
                 request,
                 HTTPStatus.NOT_FOUND,
                 f"Not Found By Id: {model_id}!!!",
-                f"Not Found By Id: {model_id}!!!",
             )
 
         try:
@@ -111,8 +113,9 @@ class TaskTypeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Deleting By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Deleting By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
 

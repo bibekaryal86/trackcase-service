@@ -65,8 +65,7 @@ def validate_http_basic_credentials(
         raise_http_exception(
             request=request,
             sts_code=http.HTTPStatus.UNAUTHORIZED,
-            msg="Invalid Credentials",
-            err_msg="Basic Credentials",
+            error="Invalid Credentials",
         )
     # also check if user_name present in request headers or not
     # username header is sent from authenv_gateway after validation
@@ -75,27 +74,19 @@ def validate_http_basic_credentials(
         raise_http_exception(
             request=request,
             sts_code=http.HTTPStatus.BAD_REQUEST,
-            msg="Missing Username",
-            err_msg="Missing Username",
+            error="Missing Username",
         )
 
 
 def raise_http_exception(
     request: Request,
     sts_code: http.HTTPStatus | int,
-    msg: str = "",
-    err_msg: str = "",
-    detail=None,
+    error: str = "",
 ):
     log.error(
         "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
     )
-    if detail is None:
-        raise HTTPException(
-            status_code=sts_code, detail={"msg": msg, "errMsg": err_msg}
-        )
-    else:
-        raise HTTPException(status_code=sts_code, detail=detail)
+    raise HTTPException(status_code=sts_code, detail={"error": error})
 
 
 def copy_objects(
@@ -130,3 +121,7 @@ def reorg_tables(db_session: Session):
 
     for reorg_sql in reorg_sqls:
         db_session.execute(reorg_sql)
+
+
+def get_err_msg(msg: str, err_msg: str = ""):
+    return msg + "\n" + err_msg

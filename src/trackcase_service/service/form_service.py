@@ -6,7 +6,11 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Form as FormModel
-from src.trackcase_service.utils.commons import copy_objects, raise_http_exception
+from src.trackcase_service.utils.commons import (
+    copy_objects,
+    get_err_msg,
+    raise_http_exception,
+)
 
 from .history_form_service import get_history_form_service
 from .schemas import Form as FormSchema
@@ -38,8 +42,7 @@ class FormService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Inserting Form. Please Try Again!!!",
-                str(ex),
+                get_err_msg("Error Inserting Form. Please Try Again!!!", str(ex)),
             )
 
     def read_one_form(
@@ -56,8 +59,9 @@ class FormService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Retrieving By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Retrieving By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
     def read_all_forms(self, request: Request, is_include_extras: bool) -> FormResponse:
@@ -71,8 +75,7 @@ class FormService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Retrieving Forms. Please Try Again!!!",
-                str(ex),
+                get_err_msg("Error Retrieving Forms. Please Try Again!!!", str(ex)),
             )
 
     def update_one_form(
@@ -84,7 +87,6 @@ class FormService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
                 f"Not Found By Id: {model_id}!!!",
             )
 
@@ -106,8 +108,9 @@ class FormService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Updating By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Updating By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
     def delete_one_form(self, model_id: int, request: Request) -> FormResponse:
@@ -118,7 +121,6 @@ class FormService(CrudService):
                 request,
                 HTTPStatus.NOT_FOUND,
                 f"Not Found By Id: {model_id}!!!",
-                f"Not Found By Id: {model_id}!!!",
             )
 
         try:
@@ -128,8 +130,9 @@ class FormService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Deleting By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Deleting By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
 

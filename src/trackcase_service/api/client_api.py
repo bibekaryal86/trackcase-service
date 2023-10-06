@@ -44,7 +44,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"Client Not Found By Id: {client_id}!!!",
-            f"Client Not Found By Id: {client_id}!!!",
         )
     return client_response
 

@@ -57,7 +57,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"HearingCalendar Not Found By Id: {hearing_calendar_id}!!!",
-            f"HearingCalendar Not Found By Id: {hearing_calendar_id}!!!",
         )
     return hearing_calendar_response
 

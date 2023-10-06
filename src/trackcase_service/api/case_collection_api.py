@@ -64,7 +64,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"CaseCollection Not Found By Id: {case_collection_id}!!!",
-            f"CaseCollection Not Found By Id: {case_collection_id}!!!",
         )
     return case_collection_response
 

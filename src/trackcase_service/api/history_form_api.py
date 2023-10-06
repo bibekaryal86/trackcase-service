@@ -51,7 +51,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"HistoryForm Not Found By Id: {history_form_id}!!!",
-            f"HistoryForm Not Found By Id: {history_form_id}!!!",
         )
     return history_form_response
 

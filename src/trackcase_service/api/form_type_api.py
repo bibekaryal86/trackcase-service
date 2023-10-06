@@ -48,7 +48,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"FormType Not Found By Id: {form_type_id}!!!",
-            f"FormType Not Found By Id: {form_type_id}!!!",
         )
     return form_type_response
 

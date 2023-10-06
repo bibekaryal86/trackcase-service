@@ -55,7 +55,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"TaskCalendar Not Found By Id: {task_calendar_id}!!!",
-            f"TaskCalendar Not Found By Id: {task_calendar_id}!!!",
         )
     return task_calendar_response
 
