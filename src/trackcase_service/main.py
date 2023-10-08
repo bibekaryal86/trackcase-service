@@ -104,6 +104,19 @@ def reset(request: Request):
     return {"reset": "successful"}
 
 
+@app.get("/trackcase-service/tests/database", tags=["Main"], summary="Ping Database")
+def test_database(
+    request: Request,
+    http_basic_credentials: HTTPBasicCredentials = Depends(
+        constants.http_basic_security
+    ),
+    db_session: Session = Depends(commons.get_db_session),
+):
+    commons.validate_http_basic_credentials(request, http_basic_credentials, True)
+    commons.test_database(db_session)
+    return {"test_db": "successful"}
+
+
 @app.get("/trackcase-service/tests/reorg", tags=["Main"], summary="Reset Reorg Tables")
 def reorg(
     request: Request,

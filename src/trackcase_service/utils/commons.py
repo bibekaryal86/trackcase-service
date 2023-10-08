@@ -105,6 +105,15 @@ def copy_objects(
     return destination_object
 
 
+def test_database(db_session: Session):
+    test_database_sql = text(
+        "SELECT * FROM ZEST_TABLE"
+    )
+    result = db_session.execute(test_database_sql)
+    result_rows = result.fetchall()
+    log.info(result_rows)
+
+
 def reorg_tables(db_session: Session):
     check_reorg_sql = text(
         "SELECT TABSCHEMA, TABNAME FROM "
