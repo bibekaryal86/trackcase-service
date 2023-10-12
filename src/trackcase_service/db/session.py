@@ -3,7 +3,8 @@ from sqlalchemy.orm import sessionmaker
 
 from src.trackcase_service.utils.constants import DB_PASSWORD, DB_USERNAME
 
-url = f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@bubble.db.elephantsql.com/{DB_USERNAME}"
+url = f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}" \
+      f"@bubble.db.elephantsql.com/{DB_USERNAME}"
 engine = create_engine(url, echo=False)  # use echo=True to show log in SysOut
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
