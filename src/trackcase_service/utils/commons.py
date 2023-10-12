@@ -106,9 +106,7 @@ def copy_objects(
 
 
 def test_database(db_session: Session):
-    test_database_sql = text(
-        "SELECT * FROM ZEST_TABLE"
-    )
+    test_database_sql = text("SELECT * FROM ZEST_TABLE")
     result = db_session.execute(test_database_sql)
     result_rows = result.fetchall()
     log.info(result_rows)
