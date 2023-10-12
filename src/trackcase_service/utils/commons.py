@@ -112,23 +112,5 @@ def test_database(db_session: Session):
     log.info(result_rows)
 
 
-def reorg_tables(db_session: Session):
-    check_reorg_sql = text(
-        "SELECT TABSCHEMA, TABNAME FROM "
-        "SYSIBMADM.ADMINTABINFO WHERE REORG_PENDING = 'Y'"
-    )
-    result = db_session.execute(check_reorg_sql)
-    result_rows = result.fetchall()
-
-    reorg_sqls = []
-    for row in result_rows:
-        reorg_sqls.append(
-            text(f"""CALL SYSPROC.ADMIN_CMD('REORG TABLE "{row[0]}"."{row[1]}"')""")
-        )
-
-    for reorg_sql in reorg_sqls:
-        db_session.execute(reorg_sql)
-
-
 def get_err_msg(msg: str, err_msg: str = ""):
     return msg + "\n" + err_msg

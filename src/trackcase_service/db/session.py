@@ -1,16 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.trackcase_service.utils.constants import DB_HOST, DB_PASSWORD, DB_USERNAME
+from src.trackcase_service.utils.constants import DB_PASSWORD, DB_USERNAME
 
-db2_url = (
-    f"ibm_db_sa://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}"
-    f".c3n41cmd0nqnrk39u98g.databases.appdomain.cloud:30604"
-    f"/bludb;SECURITY=SSL;PROTOCOL=TCPIP;"
+url = (
+    f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}"
+    f"@bubble.db.elephantsql.com/{DB_USERNAME}"
 )
-engine = create_engine(db2_url, echo=False)  # use echo=True to show log in SysOut
-
-
+engine = create_engine(url, echo=False)  # use echo=True to show log in SysOut
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
