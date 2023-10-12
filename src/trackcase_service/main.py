@@ -117,19 +117,6 @@ def test_database(
     return {"test_db": "successful"}
 
 
-@app.get("/trackcase-service/tests/reorg", tags=["Main"], summary="Reset Reorg Tables")
-def reorg(
-    request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(
-        constants.http_basic_security
-    ),
-    db_session: Session = Depends(commons.get_db_session),
-):
-    commons.validate_http_basic_credentials(request, http_basic_credentials, True)
-    commons.reorg_tables(db_session)
-    return {"reorg": "successful"}
-
-
 @app.get("/trackcase-service/tests/log-level", tags=["Main"], summary="Set Log Level")
 def log_level(level: enums.LogLevelOptions):
     log_level_to_set = logging.getLevelNamesMapping().get(level)

@@ -9,8 +9,8 @@ Base: Any = declarative_base()
 
 class TableBase:
     id = Column(Integer, primary_key=True, autoincrement=True)
-    created = Column(DateTime, server_default=func.sysdate(), nullable=False)
-    modified = Column(DateTime, server_default=func.sysdate(), nullable=False)
+    created = Column(DateTime, server_default=func.now(), nullable=False)
+    modified = Column(DateTime, server_default=func.now(), nullable=False)
 
 
 class NameDescBase:
@@ -283,3 +283,8 @@ class HistoryForm(TableBase, Base):
     form_type: Mapped[FormType] = relationship(back_populates="history_forms")
     task_calendar: Mapped[TaskCalendar] = relationship(back_populates="history_forms")
     court_case: Mapped[CourtCase] = relationship(back_populates="history_forms")
+
+
+class ZestTable(Base):
+    __tablename__ = "zest_table"
+    test = Column(String(100), primary_key=True, nullable=False)
