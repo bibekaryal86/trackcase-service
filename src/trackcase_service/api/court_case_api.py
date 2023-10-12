@@ -48,7 +48,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"CourtCase Not Found By Id: {court_case_id}!!!",
-            f"CourtCase Not Found By Id: {court_case_id}!!!",
         )
     return court_case_response
 

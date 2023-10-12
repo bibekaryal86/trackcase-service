@@ -51,7 +51,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"HearingType Not Found By Id: {hearing_type_id}!!!",
-            f"HearingType Not Found By Id: {hearing_type_id}!!!",
         )
     return hearing_type_response
 

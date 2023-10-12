@@ -57,7 +57,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"CashCollection Not Found By Id: {cash_collection_id}!!!",
-            f"CashCollection Not Found By Id: {cash_collection_id}!!!",
         )
     return cash_collection_response
 

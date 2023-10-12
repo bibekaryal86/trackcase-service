@@ -6,7 +6,11 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import HearingType as HearingTypeModel
-from src.trackcase_service.utils.commons import copy_objects, raise_http_exception
+from src.trackcase_service.utils.commons import (
+    copy_objects,
+    get_err_msg,
+    raise_http_exception,
+)
 
 from .schemas import HearingType as HearingTypeSchema
 from .schemas import HearingTypeRequest, HearingTypeResponse
@@ -30,8 +34,9 @@ class HearingTypeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Inserting HearingType. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    "Error Inserting HearingType. Please Try Again!!!", str(ex)
+                ),
             )
 
     def read_one_hearing_type(
@@ -48,8 +53,9 @@ class HearingTypeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Retrieving By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Retrieving By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
     def read_all_hearing_types(
@@ -65,8 +71,9 @@ class HearingTypeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                "Error Retrieving HearingTypes. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    "Error Retrieving HearingTypes. Please Try Again!!!", str(ex)
+                ),
             )
 
     def update_one_hearing_type(
@@ -78,7 +85,6 @@ class HearingTypeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
                 f"Not Found By Id: {model_id}!!!",
             )
 
@@ -93,8 +99,9 @@ class HearingTypeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Updating By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Updating By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
     def delete_one_hearing_type(
@@ -107,7 +114,6 @@ class HearingTypeService(CrudService):
                 request,
                 HTTPStatus.NOT_FOUND,
                 f"Not Found By Id: {model_id}!!!",
-                f"Not Found By Id: {model_id}!!!",
             )
 
         try:
@@ -117,8 +123,9 @@ class HearingTypeService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                f"Error Deleting By Id: {model_id}. Please Try Again!!!",
-                str(ex),
+                get_err_msg(
+                    f"Error Deleting By Id: {model_id}. Please Try Again!!!", str(ex)
+                ),
             )
 
 

@@ -59,7 +59,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"CollectionMethod Not Found By Id: {collection_method_id}!!!",
-            f"CollectionMethod Not Found By Id: {collection_method_id}!!!",
         )
     return collection_method_response
 

@@ -48,7 +48,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"TaskType Not Found By Id: {task_type_id}!!!",
-            f"TaskType Not Found By Id: {task_type_id}!!!",
         )
     return task_type_response
 

@@ -48,7 +48,6 @@ def find_one(
             request,
             HTTPStatus.NOT_FOUND,
             f"CaseType Not Found By Id: {case_type_id}!!!",
-            f"CaseType Not Found By Id: {case_type_id}!!!",
         )
     return case_type_response
 

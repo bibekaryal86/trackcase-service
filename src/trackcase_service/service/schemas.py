@@ -10,10 +10,13 @@ class BaseModelSchema(BaseModel):
     modified: Optional[datetime] = None
 
 
+class ErrorDetail(BaseModel):
+    error: Optional[str] = None
+
+
 class ResponseBase(BaseModel):
     delete_count: Optional[int] = 0
-    msg: Optional[str] = None
-    err_msg: Optional[str] = None
+    detail: Optional[ErrorDetail] = None
 
 
 class NameDescBase:
@@ -294,7 +297,7 @@ class TaskCalendarResponse(ResponseBase):
 class FormBase:
     form_type_id: int
     form_status_id: int
-    court_case_id: int
+    court_case_id: Optional[int] = None
     submit_date: Optional[datetime] = None
     receipt_date: Optional[datetime] = None
     rfe_date: Optional[datetime] = None
@@ -330,7 +333,7 @@ class HistoryFormBase:
     form_id: int
     form_type_id: int
     form_status_id: int
-    court_case_id: int
+    court_case_id: Optional[int] = None
     submit_date: Optional[datetime] = None
     receipt_date: Optional[datetime] = None
     rfe_date: Optional[datetime] = None
@@ -355,7 +358,7 @@ class HistoryFormRequest(HistoryFormBase, BaseModel):
 
 
 class HistoryFormResponse(ResponseBase):
-    forms: list[HistoryForm] = []
+    history_forms: list[HistoryForm] = []
 
 
 # case_collection
