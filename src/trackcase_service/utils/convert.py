@@ -143,7 +143,11 @@ def convert_case_collection_model_to_schema(
         )
         data_schema.form = convert_form_model_to_schema(data_model.form)
     if is_include_extra_lists:
-        print("extra lists")
+        if data_model.cash_collections and len(data_model.cash_collections) > 0:
+            data_schema.cash_collections = [
+                convert_cash_collection_model_to_schema(cash_collection)
+                for cash_collection in data_model.cash_collections
+            ]
     if is_include_history:
         print("history")
     return data_schema
@@ -159,15 +163,15 @@ def convert_case_type_model_to_schema(
         data_model, CaseTypeSchema
     )
     if is_include_extra_objects:
-        print("extra objects")
+        pass
     if is_include_extra_lists:
-        if data_schema.court_cases and len(data_schema.court_cases) > 0:
+        if data_model.court_cases and len(data_model.court_cases) > 0:
             data_schema.court_cases = [
                 convert_court_case_model_to_schema(court_case)
                 for court_case in data_model.court_cases
             ]
     if is_include_history:
-        print("history")
+        pass
     return data_schema
 
 
@@ -191,9 +195,9 @@ def convert_cash_collection_model_to_schema(
             data_model.case_collection
         )
     if is_include_extra_lists:
-        print("extra lists")
+        pass
     if is_include_history:
-        print("history")
+        pass
     return data_schema
 
 
@@ -230,7 +234,7 @@ def convert_collection_method_model_to_schema(
         data_model, CollectionMethodSchema
     )
     if is_include_extra_objects:
-        print("extra objects")
+        pass
     if is_include_extra_lists:
         if data_model.cash_collections and len(data_model.cash_collections) > 0:
             data_schema.cash_collections = [
@@ -243,7 +247,7 @@ def convert_collection_method_model_to_schema(
                 for case_collection in data_model.case_collections
             ]
     if is_include_history:
-        print("history")
+        pass
     return data_schema
 
 
@@ -297,7 +301,7 @@ def convert_court_model_to_schema(
         data_model.note_courts, NoteCourtSchema
     )
     if is_include_extra_objects:
-        print("extra objects")
+        pass
     if is_include_extra_lists:
         if data_model.judges and len(data_model.judges) > 0:
             data_schema.judges = [
@@ -350,14 +354,14 @@ def convert_form_status_model_to_schema(
         data_model, FormStatusSchema
     )
     if is_include_extra_objects:
-        print("extra objects")
+        pass
     if is_include_extra_lists:
         if data_model.forms and len(data_model.forms) > 0:
             data_schema.forms = [
                 convert_form_model_to_schema(form) for form in data_model.forms
             ]
     if is_include_history:
-        print("history")
+        pass
     return data_schema
 
 
@@ -371,14 +375,14 @@ def convert_form_type_model_to_schema(
         data_model, FormTypeSchema
     )
     if is_include_extra_objects:
-        print("extra objects")
+        pass
     if is_include_extra_lists:
         if data_model.forms and len(data_model.forms) > 0:
             data_schema.forms = [
                 convert_form_model_to_schema(form) for form in data_model.forms
             ]
     if is_include_history:
-        print("history")
+        pass
     return data_schema
 
 
@@ -422,14 +426,14 @@ def convert_hearing_type_model_to_schema(
         data_model, HearingTypeSchema
     )
     if is_include_extra_objects:
-        print("extra objects")
+        pass
     if is_include_extra_lists:
         if data_model.hearing_calendars and len(data_model.hearing_calendars) > 0:
             data_schema.hearing_calendars = [
                 convert_hearing_calendar_model_to_schema(data_model.hearing_calendars)
             ]
     if is_include_history:
-        print("history")
+        pass
     return data_schema
 
 
@@ -495,7 +499,7 @@ def convert_task_type_model_to_schema(
         data_model, TaskTypeSchema
     )
     if is_include_extra_objects:
-        print("extra objects")
+        pass
     if is_include_extra_lists:
         if data_model.task_calendars and len(data_model.task_calendars) > 0:
             data_schema.task_calendars = [
@@ -503,5 +507,5 @@ def convert_task_type_model_to_schema(
                 for task_calendar in data_model.task_calendars
             ]
     if is_include_history:
-        print("history")
+        pass
     return data_schema
