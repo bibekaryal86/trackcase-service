@@ -1,75 +1,7 @@
 from typing import List
 
-from src.trackcase_service.db.models import CaseCollection as CaseCollectionModel
-from src.trackcase_service.db.models import CaseType as CaseTypeModel
-from src.trackcase_service.db.models import CashCollection as CashCollectionModel
-from src.trackcase_service.db.models import Client as ClientModel
-from src.trackcase_service.db.models import CollectionMethod as CollectionMethodModel
-from src.trackcase_service.db.models import Court as CourtModel
-from src.trackcase_service.db.models import CourtCase as CourtCaseModel
-from src.trackcase_service.db.models import Form as FormModel
-from src.trackcase_service.db.models import FormStatus as FormStatusModel
-from src.trackcase_service.db.models import FormType as FormTypeModel
-from src.trackcase_service.db.models import HearingCalendar as HearingCalendarModel
-from src.trackcase_service.db.models import HearingType as HearingTypeModel
-from src.trackcase_service.db.models import Judge as JudgeModel
-from src.trackcase_service.db.models import TaskCalendar as TaskCalendarModel
-from src.trackcase_service.db.models import TaskType as TaskTypeModel
-from src.trackcase_service.service.schemas import CaseCollection as CaseCollectionSchema
-from src.trackcase_service.service.schemas import CaseType as CaseTypeSchema
-from src.trackcase_service.service.schemas import CashCollection as CashCollectionSchema
-from src.trackcase_service.service.schemas import Client as ClientSchema
-from src.trackcase_service.service.schemas import (
-    CollectionMethod as CollectionMethodSchema,
-)
-from src.trackcase_service.service.schemas import Court as CourtSchema
-from src.trackcase_service.service.schemas import CourtCase as CourtCaseSchema
-from src.trackcase_service.service.schemas import Form as FormSchema
-from src.trackcase_service.service.schemas import FormStatus as FormStatusSchema
-from src.trackcase_service.service.schemas import FormType as FormTypeSchema
-from src.trackcase_service.service.schemas import (
-    HearingCalendar as HearingCalendarSchema,
-)
-from src.trackcase_service.service.schemas import HearingType as HearingTypeSchema
-from src.trackcase_service.service.schemas import (
-    HistoryCaseCollection as HistoryCaseCollectionSchema,
-)
-from src.trackcase_service.service.schemas import (
-    HistoryCashCollection as HistoryCashCollectionSchema,
-)
-from src.trackcase_service.service.schemas import HistoryClient as HistoryClientSchema
-from src.trackcase_service.service.schemas import HistoryCourt as HistoryCourtSchema
-from src.trackcase_service.service.schemas import (
-    HistoryCourtCase as HistoryCourtCaseSchema,
-)
-from src.trackcase_service.service.schemas import HistoryForm as HistoryFormSchema
-from src.trackcase_service.service.schemas import (
-    HistoryHearingCalendar as HistoryHearingCalendarSchema,
-)
-from src.trackcase_service.service.schemas import HistoryJudge as HistoryJudgeSchema
-from src.trackcase_service.service.schemas import (
-    HistoryTaskCalendar as HistoryTaskCalendarSchema,
-)
-from src.trackcase_service.service.schemas import Judge as JudgeSchema
-from src.trackcase_service.service.schemas import (
-    NoteCaseCollection as NoteCaseCollectionSchema,
-)
-from src.trackcase_service.service.schemas import (
-    NoteCashCollection as NoteCashCollectionSchema,
-)
-from src.trackcase_service.service.schemas import NoteClient as NoteClientSchema
-from src.trackcase_service.service.schemas import NoteCourt as NoteCourtSchema
-from src.trackcase_service.service.schemas import NoteCourtCase as NoteCourtCaseSchema
-from src.trackcase_service.service.schemas import NoteForm as NoteFormSchema
-from src.trackcase_service.service.schemas import (
-    NoteHearingCalendar as NoteHearingCalendarSchema,
-)
-from src.trackcase_service.service.schemas import NoteJudge as NoteJudgeSchema
-from src.trackcase_service.service.schemas import (
-    NoteTaskCalendar as NoteTaskCalendarSchema,
-)
-from src.trackcase_service.service.schemas import TaskCalendar as TaskCalendarSchema
-from src.trackcase_service.service.schemas import TaskType as TaskTypeSchema
+from src.trackcase_service.db import models
+from src.trackcase_service.service import schemas
 
 
 def _copy_objects(
@@ -142,16 +74,16 @@ def convert_note_models_to_note_schemas(note_models, note_schema_class):
 
 
 def convert_case_collection_model_to_schema(
-    data_model: CaseCollectionModel,
+    data_model: models.CaseCollection,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> CaseCollectionSchema:
-    data_schema: CaseCollectionSchema = convert_data_model_to_schema(
-        data_model, CaseCollectionSchema
+) -> schemas.CaseCollection:
+    data_schema: schemas.CaseCollection = convert_data_model_to_schema(
+        data_model, schemas.CaseCollection
     )
     data_schema.note_case_collections = convert_note_models_to_note_schemas(
-        data_model.note_case_collections, NoteCaseCollectionSchema
+        data_model.note_case_collections, schemas.NoteCaseCollection
     )
     if is_include_extra_objects:
         data_schema.collection_method = convert_collection_method_model_to_schema(
@@ -169,19 +101,19 @@ def convert_case_collection_model_to_schema(
             ]
     if is_include_history:
         data_schema.history_case_collections = convert_data_model_to_schema(
-            data_model.history_case_collections, HistoryCaseCollectionSchema
+            data_model.history_case_collections, schemas.HistoryCaseCollection
         )
     return data_schema
 
 
 def convert_case_type_model_to_schema(
-    data_model: CaseTypeModel,
+    data_model: models.CaseType,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> CaseTypeSchema:
-    data_schema: CaseTypeSchema = convert_data_model_to_schema(
-        data_model, CaseTypeSchema
+) -> schemas.CaseType:
+    data_schema: schemas.CaseType = convert_data_model_to_schema(
+        data_model, schemas.CaseType
     )
     if is_include_extra_objects:
         pass
@@ -197,16 +129,16 @@ def convert_case_type_model_to_schema(
 
 
 def convert_cash_collection_model_to_schema(
-    data_model: CashCollectionModel,
+    data_model: models.CashCollection,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> CashCollectionSchema:
-    data_schema: CashCollectionSchema = convert_data_model_to_schema(
-        data_model, CashCollectionSchema
+) -> schemas.CashCollection:
+    data_schema: schemas.CashCollection = convert_data_model_to_schema(
+        data_model, schemas.CashCollection
     )
     data_schema.note_cash_collections = convert_note_models_to_note_schemas(
-        data_model.note_cash_collections, NoteCashCollectionSchema
+        data_model.note_cash_collections, schemas.NoteCashCollection
     )
     if is_include_extra_objects:
         data_schema.collection_method = convert_collection_method_model_to_schema(
@@ -219,20 +151,22 @@ def convert_cash_collection_model_to_schema(
         pass
     if is_include_history:
         data_schema.history_cash_collections = convert_data_model_to_schema(
-            data_model.history_cash_collections, HistoryCashCollectionSchema
+            data_model.history_cash_collections, schemas.HistoryCashCollection
         )
     return data_schema
 
 
 def convert_client_model_to_schema(
-    data_model: ClientModel,
+    data_model: models.Client,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> ClientSchema:
-    data_schema: ClientSchema = convert_data_model_to_schema(data_model, ClientSchema)
+) -> schemas.Client:
+    data_schema: schemas.Client = convert_data_model_to_schema(
+        data_model, schemas.Client
+    )
     data_schema.note_clients = convert_note_models_to_note_schemas(
-        data_model.note_clients, NoteClientSchema
+        data_model.note_clients, schemas.NoteClient
     )
     if is_include_extra_objects:
         data_schema.judge = convert_judge_model_to_schema(data_model.judge)
@@ -244,19 +178,19 @@ def convert_client_model_to_schema(
             ]
     if is_include_history:
         data_schema.history_clients = convert_data_model_to_schema(
-            data_model.history_clients, HistoryClientSchema
+            data_model.history_clients, schemas.HistoryClient
         )
     return data_schema
 
 
 def convert_collection_method_model_to_schema(
-    data_model: CollectionMethodModel,
+    data_model: models.CollectionMethod,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> CollectionMethodSchema:
-    data_schema: CollectionMethodSchema = convert_data_model_to_schema(
-        data_model, CollectionMethodSchema
+) -> schemas.CollectionMethod:
+    data_schema: schemas.CollectionMethod = convert_data_model_to_schema(
+        data_model, schemas.CollectionMethod
     )
     if is_include_extra_objects:
         pass
@@ -277,16 +211,16 @@ def convert_collection_method_model_to_schema(
 
 
 def convert_court_case_model_to_schema(
-    data_model: CourtCaseModel,
+    data_model: models.CourtCase,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> CourtCaseSchema:
-    data_schema: CourtCaseSchema = convert_data_model_to_schema(
-        data_model, CourtCaseSchema
+) -> schemas.CourtCase:
+    data_schema: schemas.CourtCase = convert_data_model_to_schema(
+        data_model, schemas.CourtCase
     )
     data_schema.note_court_cases = convert_note_models_to_note_schemas(
-        data_model.note_court_cases, NoteCourtCaseSchema
+        data_model.note_court_cases, schemas.NoteCourtCase
     )
     if is_include_extra_objects:
         data_schema.case_type = convert_case_type_model_to_schema(data_model.case_type)
@@ -312,20 +246,20 @@ def convert_court_case_model_to_schema(
             ]
     if is_include_history:
         data_schema.history_court_cases = convert_data_model_to_schema(
-            data_model.history_court_cases, HistoryCourtCaseSchema
+            data_model.history_court_cases, schemas.HistoryCourtCase
         )
     return data_schema
 
 
 def convert_court_model_to_schema(
-    data_model: CourtModel,
+    data_model: models.Court,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> CourtSchema:
-    data_schema: CourtSchema = convert_data_model_to_schema(data_model, CourtSchema)
+) -> schemas.Court:
+    data_schema: schemas.Court = convert_data_model_to_schema(data_model, schemas.Court)
     data_schema.note_courts = convert_note_models_to_note_schemas(
-        data_model.note_courts, NoteCourtSchema
+        data_model.note_courts, schemas.NoteCourt
     )
     if is_include_extra_objects:
         pass
@@ -336,20 +270,20 @@ def convert_court_model_to_schema(
             ]
     if is_include_history:
         data_schema.history_courts = convert_data_model_to_schema(
-            data_model.history_courts, HistoryCourtSchema
+            data_model.history_courts, schemas.HistoryCourt
         )
     return data_schema
 
 
 def convert_form_model_to_schema(
-    data_model: FormModel,
+    data_model: models.Form,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> FormSchema:
-    data_schema: FormSchema = convert_data_model_to_schema(data_model, FormSchema)
+) -> schemas.Form:
+    data_schema: schemas.Form = convert_data_model_to_schema(data_model, schemas.Form)
     data_schema.note_forms = convert_note_models_to_note_schemas(
-        data_model.note_forms, NoteFormSchema
+        data_model.note_forms, schemas.NoteForm
     )
     if is_include_extra_objects:
         data_schema.form_status = convert_form_status_model_to_schema(
@@ -370,19 +304,19 @@ def convert_form_model_to_schema(
             ]
     if is_include_history:
         data_schema.history_forms = convert_data_model_to_schema(
-            data_model.history_forms, HistoryFormSchema
+            data_model.history_forms, schemas.HistoryForm
         )
     return data_schema
 
 
 def convert_form_status_model_to_schema(
-    data_model: FormStatusModel,
+    data_model: models.FormStatus,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> FormStatusSchema:
-    data_schema: FormStatusSchema = convert_data_model_to_schema(
-        data_model, FormStatusSchema
+) -> schemas.FormStatus:
+    data_schema: schemas.FormStatus = convert_data_model_to_schema(
+        data_model, schemas.FormStatus
     )
     if is_include_extra_objects:
         pass
@@ -397,13 +331,13 @@ def convert_form_status_model_to_schema(
 
 
 def convert_form_type_model_to_schema(
-    data_model: FormTypeModel,
+    data_model: models.FormType,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> FormTypeSchema:
-    data_schema: FormTypeSchema = convert_data_model_to_schema(
-        data_model, FormTypeSchema
+) -> schemas.FormType:
+    data_schema: schemas.FormType = convert_data_model_to_schema(
+        data_model, schemas.FormType
     )
     if is_include_extra_objects:
         pass
@@ -418,16 +352,16 @@ def convert_form_type_model_to_schema(
 
 
 def convert_hearing_calendar_model_to_schema(
-    data_model: HearingCalendarModel,
+    data_model: models.HearingCalendar,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> HearingCalendarSchema:
-    data_schema: HearingCalendarSchema = convert_data_model_to_schema(
-        data_model, HearingCalendarSchema
+) -> schemas.HearingCalendar:
+    data_schema: schemas.HearingCalendar = convert_data_model_to_schema(
+        data_model, schemas.HearingCalendar
     )
     data_schema.note_hearing_calendars = convert_note_models_to_note_schemas(
-        data_model.note_hearing_calendars, NoteHearingCalendarSchema
+        data_model.note_hearing_calendars, schemas.NoteHearingCalendar
     )
     if is_include_extra_objects:
         data_schema.hearing_type = convert_hearing_type_model_to_schema(
@@ -444,19 +378,19 @@ def convert_hearing_calendar_model_to_schema(
             ]
     if is_include_history:
         data_schema.history_hearing_calendars = convert_data_model_to_schema(
-            data_model.history_hearing_calendars, HistoryHearingCalendarSchema
+            data_model.history_hearing_calendars, schemas.HistoryHearingCalendar
         )
     return data_schema
 
 
 def convert_hearing_type_model_to_schema(
-    data_model: HearingTypeModel,
+    data_model: models.HearingType,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> HearingTypeSchema:
-    data_schema: HearingTypeSchema = convert_data_model_to_schema(
-        data_model, HearingTypeSchema
+) -> schemas.HearingType:
+    data_schema: schemas.HearingType = convert_data_model_to_schema(
+        data_model, schemas.HearingType
     )
     if is_include_extra_objects:
         pass
@@ -471,14 +405,14 @@ def convert_hearing_type_model_to_schema(
 
 
 def convert_judge_model_to_schema(
-    data_model: JudgeModel,
+    data_model: models.Judge,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> JudgeSchema:
-    data_schema: JudgeSchema = convert_data_model_to_schema(data_model, JudgeSchema)
+) -> schemas.Judge:
+    data_schema: schemas.Judge = convert_data_model_to_schema(data_model, schemas.Judge)
     data_schema.note_judges = convert_note_models_to_note_schemas(
-        data_model.note_judges, NoteJudgeSchema
+        data_model.note_judges, schemas.NoteJudge
     )
     if is_include_extra_objects:
         data_schema.court = convert_court_model_to_schema(data_model.court)
@@ -489,22 +423,22 @@ def convert_judge_model_to_schema(
             ]
     if is_include_history:
         data_schema.history_judges = convert_data_model_to_schema(
-            data_model.history_judges, HistoryJudgeSchema
+            data_model.history_judges, schemas.HistoryJudge
         )
     return data_schema
 
 
 def convert_task_calendar_model_to_schema(
-    data_model: TaskCalendarModel,
+    data_model: models.TaskCalendar,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> TaskCalendarSchema:
-    data_schema: TaskCalendarSchema = convert_data_model_to_schema(
-        data_model, TaskCalendarSchema
+) -> schemas.TaskCalendar:
+    data_schema: schemas.TaskCalendar = convert_data_model_to_schema(
+        data_model, schemas.TaskCalendar
     )
     data_schema.note_task_calendars = convert_note_models_to_note_schemas(
-        data_model.note_task_calendars, NoteTaskCalendarSchema
+        data_model.note_task_calendars, schemas.NoteTaskCalendar
     )
     if is_include_extra_objects:
         data_schema.task_type = convert_task_type_model_to_schema(data_model.task_type)
@@ -521,19 +455,19 @@ def convert_task_calendar_model_to_schema(
             ]
     if is_include_history:
         data_schema.history_task_calendars = convert_data_model_to_schema(
-            data_model.history_task_calendars, HistoryTaskCalendarSchema
+            data_model.history_task_calendars, schemas.HistoryTaskCalendar
         )
     return data_schema
 
 
 def convert_task_type_model_to_schema(
-    data_model: TaskTypeModel,
+    data_model: models.TaskType,
     is_include_extra_objects=False,
     is_include_extra_lists=False,
     is_include_history=False,
-) -> TaskTypeSchema:
-    data_schema: TaskTypeSchema = convert_data_model_to_schema(
-        data_model, TaskTypeSchema
+) -> schemas.TaskType:
+    data_schema: schemas.TaskType = convert_data_model_to_schema(
+        data_model, schemas.TaskType
     )
     if is_include_extra_objects:
         pass
