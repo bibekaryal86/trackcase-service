@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Type, TypeVar
 
+from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.models import Base
@@ -25,11 +26,41 @@ class CrudService:
             .first()
         )
 
-    def read_all(self, skip: int = 0, limit: int = 1000) -> List[ModelBase]:
+    def read_all(
+        self,
+        sort_direction: str = None,
+        sort_by: str = None,
+        skip: int = 0,
+        limit: int = 1000,
+    ) -> List[ModelBase]:
+        if sort_direction and sort_by:
+            if sort_direction == "asc":
+                return (
+                    self.db_session.query(self.db_model)
+                    .order_by(asc(sort_by))
+                    .offset(skip)
+                    .limit(limit)
+                    .all()
+                )
+            return (
+                self.db_session.query(self.db_model)
+                .order_by(desc(sort_by))
+                .offset(skip)
+                .limit(limit)
+                .all()
+            )
         return self.db_session.query(self.db_model).offset(skip).limit(limit).all()
 
-    def read_many(self, **kwargs: Dict[str, Any]) -> List[ModelBase]:
-        query = self.db_session.query(self.db_model)
+    def read_many(
+        self, sort_direction: str, sort_by: str, **kwargs: Dict[str, Any]
+    ) -> List[ModelBase]:
+        if sort_direction and sort_by:
+            if sort_direction == "asc":
+                query = self.db_session.query(self.db_model).order_by(asc(sort_by))
+            else:
+                query = self.db_session.query(self.db_model).order_by(desc(sort_by))
+        else:
+            query = self.db_session.query(self.db_model)
 
         for column, value in kwargs.items():
             query = query.filter(getattr(self.db_model, column) == value)
@@ -67,6 +98,7 @@ def _copy_key_values(model_data, db_record):
             attr_value is not None
             and hasattr(db_record, attr_name)
             and attr_name not in auto_generated_attributes
+            and not isinstance(attr_value, list)
         ):
             setattr(db_record, attr_name, attr_value)
 

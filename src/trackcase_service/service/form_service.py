@@ -6,15 +6,16 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Form as FormModel
-from src.trackcase_service.utils.commons import (
-    copy_objects,
-    get_err_msg,
-    raise_http_exception,
+from src.trackcase_service.db.models import HistoryForm as HistoryFormModel
+from src.trackcase_service.service.history_service import get_history_service
+from src.trackcase_service.service.schemas import Form as FormSchema
+from src.trackcase_service.service.schemas import FormRequest, FormResponse
+from src.trackcase_service.service.schemas import HistoryForm as HistoryFormSchema
+from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.convert import (
+    convert_form_model_to_schema,
+    convert_request_schema_to_model,
 )
-
-from .history_form_service import get_history_form_service
-from .schemas import Form as FormSchema
-from .schemas import FormRequest, FormResponse, HistoryFormRequest
 
 
 class FormService(CrudService):
@@ -25,18 +26,12 @@ class FormService(CrudService):
         self, request: Request, request_object: FormRequest
     ) -> FormResponse:
         try:
-            data_model: FormModel = copy_objects(request_object, FormModel)
+            data_model: FormModel = convert_request_schema_to_model(
+                request_object, FormModel
+            )
             data_model = super().create(data_model)
-
-            # add to history_forms
-            history_form_request: HistoryFormRequest = _convert_to_history_form(
-                request, request_object, data_model.id
-            )
-            get_history_form_service(self.db_session).create_one_history_form(
-                request, history_form_request, True
-            )
-
-            schema_model = _convert_model_to_schema(data_model)
+            _create_history(self.db_session, request, data_model.id, request_object)
+            schema_model = convert_form_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
@@ -46,13 +41,21 @@ class FormService(CrudService):
             )
 
     def read_one_form(
-        self, model_id: int, request: Request, is_include_extras: bool
+        self,
+        model_id: int,
+        request: Request,
+        is_include_extra_objects: bool = False,
+        is_include_extra_lists: bool = False,
+        is_include_history: bool = False,
     ) -> FormResponse:
         try:
             data_model: FormModel = super().read_one(model_id)
             if data_model:
-                schema_model: FormSchema = _convert_model_to_schema(
-                    data_model, is_include_extras
+                schema_model: FormSchema = convert_form_model_to_schema(
+                    data_model,
+                    is_include_extra_objects,
+                    is_include_extra_lists,
+                    is_include_history,
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -60,15 +63,30 @@ class FormService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Retrieving Form By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
-    def read_all_forms(self, request: Request, is_include_extras: bool) -> FormResponse:
+    def read_all_forms(
+        self,
+        request: Request,
+        is_include_extra_objects: bool = False,
+        is_include_extra_lists: bool = False,
+        is_include_history: bool = False,
+    ) -> FormResponse:
         try:
-            data_models: List[FormModel] = super().read_all()
+            data_models: List[FormModel] = super().read_all(
+                sort_direction="desc", sort_by="submit_date"
+            )
             schema_models: List[FormSchema] = [
-                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
+                convert_form_model_to_schema(
+                    data_model,
+                    is_include_extra_objects,
+                    is_include_extra_lists,
+                    is_include_history,
+                )
+                for data_model in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -81,57 +99,54 @@ class FormService(CrudService):
     def update_one_form(
         self, model_id: int, request: Request, request_object: FormRequest
     ) -> FormResponse:
-        form_response = self.read_one_form(model_id, request, False)
+        form_response = self.read_one_form(model_id, request)
 
         if not (form_response and form_response.forms):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"Form Not Found By Id: {model_id}!!!",
             )
 
         try:
-            data_model: FormModel = copy_objects(request_object, FormModel)
+            data_model: FormModel = convert_request_schema_to_model(
+                request_object, FormModel
+            )
             data_model = super().update(model_id, data_model)
-
-            # add to history_forms
-            history_form_request: HistoryFormRequest = _convert_to_history_form(
-                request, request_object, model_id
-            )
-            get_history_form_service(self.db_session).create_one_history_form(
-                request, history_form_request, True
-            )
-
-            schema_model = _convert_model_to_schema(data_model)
+            _create_history(self.db_session, request, model_id, request_object)
+            schema_model = convert_form_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Updating Form By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
     def delete_one_form(self, model_id: int, request: Request) -> FormResponse:
-        form_response = self.read_one_form(model_id, request, False)
+        form_response = self.read_one_form(model_id, request)
 
         if not (form_response and form_response.forms):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"Form Not Found By Id: {model_id}!!!",
             )
 
         try:
             super().delete(model_id)
+            _create_history(self.db_session, request, model_id, is_delete=True)
             return FormResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Deleting Form By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
@@ -148,47 +163,30 @@ def get_response_multiple(multiple: list[FormSchema]) -> FormResponse:
     return FormResponse(forms=multiple)
 
 
-def _convert_model_to_schema(
-    data_model: FormModel, is_include_extras: bool = False
-) -> FormSchema:
-    data_schema = FormSchema(
-        id=data_model.id,
-        created=data_model.created,
-        modified=data_model.modified,
-        form_type_id=data_model.form_type_id,
-        form_status_id=data_model.form_status_id,
-        court_case_id=data_model.court_case_id,
-        submit_date=data_model.submit_date,
-        receipt_date=data_model.receipt_date,
-        rfe_date=data_model.rfe_date,
-        rfe_submit_date=data_model.rfe_submit_date,
-        decision_date=data_model.decision_date,
-        task_calendar_id=data_model.task_calendar_id,
-    )
-    if is_include_extras:
-        data_schema.form_status = data_model.form_status
-        data_schema.form_type = data_model.form_type
-        data_schema.task_calendar = data_model.task_calendar
-        data_schema.court_case = data_model.court_case
-        data_schema.cash_collections = data_model.cash_collections
-        data_schema.case_collections = data_model.case_collections
-    return data_schema
-
-
-def _convert_to_history_form(
-    request: Request, form_request: FormRequest, form_id: int
-) -> HistoryFormRequest:
-    user_name = request.headers.get("x-user-name")
-    return HistoryFormRequest(
-        user_name=user_name,
-        form_id=form_id,
-        form_type_id=form_request.form_type_id,
-        form_status_id=form_request.form_status_id,
-        court_case_id=form_request.court_case_id,
-        submit_date=form_request.submit_date,
-        receipt_date=form_request.receipt_date,
-        rfe_date=form_request.rfe_date,
-        rfe_submit_date=form_request.rfe_submit_date,
-        decision_date=form_request.decision_date,
-        task_calendar_id=form_request.task_calendar_id,
-    )
+def _create_history(
+    db_session: Session,
+    request: Request,
+    form_id: int,
+    request_object: FormRequest = None,
+    is_delete: bool = False,
+):
+    history_service = get_history_service(db_session, HistoryFormModel)
+    if is_delete:
+        history_service.add_to_history_for_delete(
+            request,
+            HistoryFormModel.__tablename__,
+            "form_id",
+            form_id,
+            "Form",
+            "HistoryForm",
+        )
+    else:
+        history_service.add_to_history(
+            request,
+            request_object,
+            HistoryFormSchema,
+            "form_id",
+            form_id,
+            "Form",
+            "HistoryForm",
+        )

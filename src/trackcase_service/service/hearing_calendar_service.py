@@ -6,14 +6,25 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import HearingCalendar as HearingCalendarModel
-from src.trackcase_service.utils.commons import (
-    copy_objects,
-    get_err_msg,
-    raise_http_exception,
+from src.trackcase_service.db.models import (
+    HistoryHearingCalendar as HistoryHearingCalendarModel,
 )
-
-from .schemas import HearingCalendar as HearingCalendarSchema
-from .schemas import HearingCalendarRequest, HearingCalendarResponse
+from src.trackcase_service.service.history_service import get_history_service
+from src.trackcase_service.service.schemas import (
+    HearingCalendar as HearingCalendarSchema,
+)
+from src.trackcase_service.service.schemas import (
+    HearingCalendarRequest,
+    HearingCalendarResponse,
+)
+from src.trackcase_service.service.schemas import (
+    HistoryHearingCalendar as HistoryHearingCalendarSchema,
+)
+from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.convert import (
+    convert_hearing_calendar_model_to_schema,
+    convert_request_schema_to_model,
+)
 
 
 class HearingCalendarService(CrudService):
@@ -24,11 +35,12 @@ class HearingCalendarService(CrudService):
         self, request: Request, request_object: HearingCalendarRequest
     ) -> HearingCalendarResponse:
         try:
-            data_model: HearingCalendarModel = copy_objects(
+            data_model: HearingCalendarModel = convert_request_schema_to_model(
                 request_object, HearingCalendarModel
             )
             data_model = super().create(data_model)
-            schema_model = _convert_model_to_schema(data_model)
+            _create_history(self.db_session, request, data_model.id, request_object)
+            schema_model = convert_hearing_calendar_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
@@ -40,13 +52,23 @@ class HearingCalendarService(CrudService):
             )
 
     def read_one_hearing_calendar(
-        self, model_id: int, request: Request, is_include_extras: bool
+        self,
+        model_id: int,
+        request: Request,
+        is_include_extra_objects: bool = False,
+        is_include_extra_lists: bool = False,
+        is_include_history: bool = False,
     ) -> HearingCalendarResponse:
         try:
             data_model: HearingCalendarModel = super().read_one(model_id)
             if data_model:
-                schema_model: HearingCalendarSchema = _convert_model_to_schema(
-                    data_model, is_include_extras
+                schema_model: HearingCalendarSchema = (
+                    convert_hearing_calendar_model_to_schema(
+                        data_model,
+                        is_include_extra_objects,
+                        is_include_extra_lists,
+                        is_include_history,
+                    )
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -54,17 +76,30 @@ class HearingCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Retrieving HearingCalendar By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
     def read_all_hearing_calendars(
-        self, request: Request, is_include_extras: bool
+        self,
+        request: Request,
+        is_include_extra_objects: bool = False,
+        is_include_extra_lists: bool = False,
+        is_include_history: bool = False,
     ) -> HearingCalendarResponse:
         try:
-            data_models: List[HearingCalendarModel] = super().read_all()
+            data_models: List[HearingCalendarModel] = super().read_all(
+                sort_direction="desc", sort_by="hearing_date"
+            )
             schema_models: List[HearingCalendarSchema] = [
-                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
+                convert_hearing_calendar_model_to_schema(
+                    data_model,
+                    is_include_extra_objects,
+                    is_include_extra_lists,
+                    is_include_history,
+                )
+                for data_model in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -79,9 +114,7 @@ class HearingCalendarService(CrudService):
     def update_one_hearing_calendar(
         self, model_id: int, request: Request, request_object: HearingCalendarRequest
     ) -> HearingCalendarResponse:
-        hearing_calendar_response = self.read_one_hearing_calendar(
-            model_id, request, False
-        )
+        hearing_calendar_response = self.read_one_hearing_calendar(model_id, request)
 
         if not (
             hearing_calendar_response and hearing_calendar_response.hearing_calendars
@@ -89,31 +122,31 @@ class HearingCalendarService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"HearingCalendar Not Found By Id: {model_id}!!!",
             )
 
         try:
-            data_model: HearingCalendarModel = copy_objects(
+            data_model: HearingCalendarModel = convert_request_schema_to_model(
                 request_object, HearingCalendarModel
             )
             data_model = super().update(model_id, data_model)
-            schema_model = _convert_model_to_schema(data_model)
+            _create_history(self.db_session, request, model_id, request_object)
+            schema_model = convert_hearing_calendar_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Updating HearingCalendar By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
     def delete_one_hearing_calendar(
         self, model_id: int, request: Request
     ) -> HearingCalendarResponse:
-        hearing_calendar_response = self.read_one_hearing_calendar(
-            model_id, request, False
-        )
+        hearing_calendar_response = self.read_one_hearing_calendar(model_id, request)
 
         if not (
             hearing_calendar_response and hearing_calendar_response.hearing_calendars
@@ -121,18 +154,20 @@ class HearingCalendarService(CrudService):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"HearingCalendar Not Found By Id: {model_id}!!!",
             )
 
         try:
             super().delete(model_id)
+            _create_history(self.db_session, request, model_id, is_delete=True)
             return HearingCalendarResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Deleting HearingCalendar By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
@@ -151,19 +186,30 @@ def get_response_multiple(
     return HearingCalendarResponse(hearing_calendars=multiple)
 
 
-def _convert_model_to_schema(
-    data_model: HearingCalendarModel, is_include_extras: bool = False
-) -> HearingCalendarSchema:
-    data_schema = HearingCalendarSchema(
-        id=data_model.id,
-        created=data_model.created,
-        modified=data_model.modified,
-        hearing_date=data_model.hearing_date,
-        hearing_type_id=data_model.hearing_type_id,
-        court_case_id=data_model.court_case_id,
-    )
-    if is_include_extras:
-        data_schema.hearing_type = data_model.hearing_type
-        data_schema.court_case = data_model.court_case
-        data_schema.task_calendars = data_model.task_calendars
-    return data_schema
+def _create_history(
+    db_session: Session,
+    request: Request,
+    hearing_calendar_id: int,
+    request_object: HearingCalendarRequest = None,
+    is_delete: bool = False,
+):
+    history_service = get_history_service(db_session, HistoryHearingCalendarModel)
+    if is_delete:
+        history_service.add_to_history_for_delete(
+            request,
+            HistoryHearingCalendarModel.__tablename__,
+            "hearing_calendar_id",
+            hearing_calendar_id,
+            "HearingCalendar",
+            "HistoryHearingCalendar",
+        )
+    else:
+        history_service.add_to_history(
+            request,
+            request_object,
+            HistoryHearingCalendarSchema,
+            "hearing_calendar_id",
+            hearing_calendar_id,
+            "HearingCalendar",
+            "HistoryHearingCalendar",
+        )

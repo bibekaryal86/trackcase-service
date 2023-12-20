@@ -6,14 +6,23 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import CashCollection as CashCollectionModel
-from src.trackcase_service.utils.commons import (
-    copy_objects,
-    get_err_msg,
-    raise_http_exception,
+from src.trackcase_service.db.models import (
+    HistoryCashCollection as HistoryCashCollectionModel,
 )
-
-from .schemas import CashCollection as CashCollectionSchema
-from .schemas import CashCollectionRequest, CashCollectionResponse
+from src.trackcase_service.service.history_service import get_history_service
+from src.trackcase_service.service.schemas import CashCollection as CashCollectionSchema
+from src.trackcase_service.service.schemas import (
+    CashCollectionRequest,
+    CashCollectionResponse,
+)
+from src.trackcase_service.service.schemas import (
+    HistoryCashCollection as HistoryCashCollectionSchema,
+)
+from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.convert import (
+    convert_cash_collection_model_to_schema,
+    convert_request_schema_to_model,
+)
 
 
 class CashCollectionService(CrudService):
@@ -24,11 +33,12 @@ class CashCollectionService(CrudService):
         self, request: Request, request_object: CashCollectionRequest
     ) -> CashCollectionResponse:
         try:
-            data_model: CashCollectionModel = copy_objects(
+            data_model: CashCollectionModel = convert_request_schema_to_model(
                 request_object, CashCollectionModel
             )
             data_model = super().create(data_model)
-            schema_model = _convert_model_to_schema(data_model)
+            _create_history(self.db_session, request, data_model.id, request_object)
+            schema_model = convert_cash_collection_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
@@ -40,13 +50,23 @@ class CashCollectionService(CrudService):
             )
 
     def read_one_cash_collection(
-        self, model_id: int, request: Request, is_include_extras: bool
+        self,
+        model_id: int,
+        request: Request,
+        is_include_extra_objects: bool = False,
+        is_include_extra_lists: bool = False,
+        is_include_history: bool = False,
     ) -> CashCollectionResponse:
         try:
             data_model: CashCollectionModel = super().read_one(model_id)
             if data_model:
-                schema_model: CashCollectionSchema = _convert_model_to_schema(
-                    data_model, is_include_extras
+                schema_model: CashCollectionSchema = (
+                    convert_cash_collection_model_to_schema(
+                        data_model,
+                        is_include_extra_objects,
+                        is_include_extra_lists,
+                        is_include_history,
+                    )
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -54,17 +74,30 @@ class CashCollectionService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Retrieving CashCollection By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
     def read_all_cash_collections(
-        self, request: Request, is_include_extras: bool
+        self,
+        request: Request,
+        is_include_extra_objects: bool = False,
+        is_include_extra_lists: bool = False,
+        is_include_history: bool = False,
     ) -> CashCollectionResponse:
         try:
-            data_models: List[CashCollectionModel] = super().read_all()
+            data_models: List[CashCollectionModel] = super().read_all(
+                sort_direction="desc", sort_by="collection_date"
+            )
             schema_models: List[CashCollectionSchema] = [
-                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
+                convert_cash_collection_model_to_schema(
+                    data_model,
+                    is_include_extra_objects,
+                    is_include_extra_lists,
+                    is_include_history,
+                )
+                for data_model in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -79,56 +112,56 @@ class CashCollectionService(CrudService):
     def update_one_cash_collection(
         self, model_id: int, request: Request, request_object: CashCollectionRequest
     ) -> CashCollectionResponse:
-        cash_collection_response = self.read_one_cash_collection(
-            model_id, request, False
-        )
+        cash_collection_response = self.read_one_cash_collection(model_id, request)
 
         if not (cash_collection_response and cash_collection_response.cash_collections):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"CashCollection Not Found By Id: {model_id}!!!",
             )
 
         try:
-            data_model: CashCollectionModel = copy_objects(
+            data_model: CashCollectionModel = convert_request_schema_to_model(
                 request_object, CashCollectionModel
             )
             data_model = super().update(model_id, data_model)
-            schema_model = _convert_model_to_schema(data_model)
+            _create_history(self.db_session, request, model_id, request_object)
+            schema_model = convert_cash_collection_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Updating CashCollection By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
     def delete_one_cash_collection(
         self, model_id: int, request: Request
     ) -> CashCollectionResponse:
-        cash_collection_response = self.read_one_cash_collection(
-            model_id, request, False
-        )
+        cash_collection_response = self.read_one_cash_collection(model_id, request)
 
         if not (cash_collection_response and cash_collection_response.cash_collections):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"CashCollection Not Found By Id: {model_id}!!!",
             )
 
         try:
             super().delete(model_id)
+            _create_history(self.db_session, request, model_id, is_delete=True)
             return CashCollectionResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Deleting CashCollection By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
@@ -147,21 +180,30 @@ def get_response_multiple(
     return CashCollectionResponse(cash_collections=multiple)
 
 
-def _convert_model_to_schema(
-    data_model: CashCollectionModel, is_include_extras: bool = False
-) -> CashCollectionSchema:
-    data_schema = CashCollectionSchema(
-        id=data_model.id,
-        created=data_model.created,
-        modified=data_model.modified,
-        collection_date=data_model.collection_date,
-        collected_amount=data_model.collected_amount,
-        waived_amount=data_model.waived_amount,
-        memo=data_model.memo,
-        collection_method_id=data_model.collection_method_id,
-        case_collection_id=data_model.case_collection_id,
-    )
-    if is_include_extras:
-        data_schema.collection_method = data_model.collection_method
-        data_schema.case_collection = data_model.case_collection
-    return data_schema
+def _create_history(
+    db_session: Session,
+    request: Request,
+    cash_collection_id: int,
+    request_object: CashCollectionRequest = None,
+    is_delete: bool = False,
+):
+    history_service = get_history_service(db_session, HistoryCashCollectionModel)
+    if is_delete:
+        history_service.add_to_history_for_delete(
+            request,
+            HistoryCashCollectionModel.__tablename__,
+            "cash_collection_id",
+            cash_collection_id,
+            "CashCollection",
+            "HistoryCashCollection",
+        )
+    else:
+        history_service.add_to_history(
+            request,
+            request_object,
+            HistoryCashCollectionSchema,
+            "cash_collection_id",
+            cash_collection_id,
+            "CashCollection",
+            "HistoryCashCollection",
+        )

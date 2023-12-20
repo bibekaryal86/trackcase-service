@@ -8,6 +8,7 @@ class BaseModelSchema(BaseModel):
     id: Optional[int] = None
     created: Optional[datetime] = None
     modified: Optional[datetime] = None
+    comments: Optional[str] = None
 
 
 class ErrorDetail(BaseModel):
@@ -24,16 +25,33 @@ class NameDescBase:
     description: str
 
 
+class StatusBase(BaseModel):
+    status: Optional[str] = None
+    status_date: Optional[datetime] = None
+
+
+class AddressBase(BaseModel):
+    street_address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip_code: Optional[str] = None
+    phone_number: Optional[int] = None
+
+
+class NoteBase:
+    user_name: str
+    note: str
+
+
 # form type
 class FormTypeBase(NameDescBase):
     pass
 
 
 class FormType(FormTypeBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     forms: list["Form"] = []
-
-    class Config:
-        orm_mode = True
+    history_forms: list["HistoryForm"] = []
 
 
 class FormTypeRequest(FormTypeBase, BaseModel):
@@ -50,10 +68,9 @@ class FormStatusBase(NameDescBase):
 
 
 class FormStatus(FormStatusBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     forms: list["Form"] = []
-
-    class Config:
-        orm_mode = True
+    history_forms: list["HistoryForm"] = []
 
 
 class FormStatusRequest(FormStatusBase, BaseModel):
@@ -70,11 +87,11 @@ class CollectionMethodBase(NameDescBase):
 
 
 class CollectionMethod(CollectionMethodBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     cash_collections: list["CashCollection"] = []
     case_collections: list["CaseCollection"] = []
-
-    class Config:
-        orm_mode = True
+    history_cash_collections: list["HistoryCashCollection"] = []
+    history_case_collections: list["HistoryCaseCollection"] = []
 
 
 class CollectionMethodRequest(CollectionMethodBase, BaseModel):
@@ -91,10 +108,9 @@ class HearingTypeBase(NameDescBase):
 
 
 class HearingType(HearingTypeBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     hearing_calendars: list["HearingCalendar"] = []
-
-    class Config:
-        orm_mode = True
+    history_hearing_calendars: list["HistoryHearingCalendar"] = []
 
 
 class HearingTypeRequest(HearingTypeBase, BaseModel):
@@ -111,10 +127,9 @@ class TaskTypeBase(NameDescBase):
 
 
 class TaskType(TaskTypeBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     task_calendars: list["TaskCalendar"] = []
-
-    class Config:
-        orm_mode = True
+    history_task_calendars: list["HistoryTaskCalendar"] = []
 
 
 class TaskTypeRequest(TaskTypeBase, BaseModel):
@@ -131,10 +146,9 @@ class CaseTypeBase(NameDescBase):
 
 
 class CaseType(CaseTypeBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     court_cases: list["CourtCase"] = []
-
-    class Config:
-        orm_mode = True
+    history_court_cases: list["HistoryCourtCase"] = []
 
 
 class CaseTypeRequest(CaseTypeBase, BaseModel):
@@ -146,17 +160,35 @@ class CaseTypeResponse(ResponseBase):
 
 
 # court
-class CourtBase:
+class CourtBase(AddressBase, StatusBase):
     name: str
-    address: str
     dhs_address: Optional[str] = None
 
 
 class Court(CourtBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     judges: list["Judge"] = []
+    note_courts: list["NoteCourt"] = []
+    history_courts: list["HistoryCourt"] = []
+    history_judges: list["HistoryJudge"] = []
 
-    class Config:
-        orm_mode = True
+
+class NoteCourtBase(NoteBase):
+    court_id: int
+
+
+class NoteCourt(NoteCourtBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    court: Optional[Court] = None
+
+
+class HistoryCourt(Court):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    user_name: str
+    court_id: int
+    court: Optional[Court] = None
+    # make NOT optional inherited fields optional in history
+    name: Optional[str] = None
 
 
 class CourtRequest(CourtBase, BaseModel):
@@ -167,19 +199,55 @@ class CourtResponse(ResponseBase):
     courts: list[Court] = []
 
 
+class NoteCourtRequest(NoteCourtBase, BaseModel):
+    pass
+
+
+class NoteCourtResponse(ResponseBase):
+    note_courts: list[NoteCourt] = []
+
+
+class HistoryCourtRequest:
+    pass
+
+
+class HistoryCourtResponse(ResponseBase):
+    history_courts: list[HistoryCourt] = []
+
+
 # judge
-class JudgeBase:
+class JudgeBase(StatusBase):
     name: str
     webex: Optional[str] = None
     court_id: int
 
 
 class Judge(JudgeBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     court: Optional[Court] = None
     clients: list["Client"] = []
+    note_judges: list["NoteJudge"] = []
+    history_judges: list["HistoryJudge"] = []
+    history_clients: list["HistoryClient"] = []
 
-    class Config:
-        orm_mode = True
+
+class NoteJudgeBase(NoteBase):
+    judge_id: int
+
+
+class NoteJudge(NoteJudgeBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    judge: Optional[Judge] = None
+
+
+class HistoryJudge(Judge):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    user_name: str
+    judge_id: int
+    judge: Optional[Judge] = None
+    # make NOT optional inherited fields optional in history
+    name: Optional[str] = None
+    court_id: Optional[int] = None
 
 
 class JudgeRequest(JudgeBase, BaseModel):
@@ -190,22 +258,57 @@ class JudgeResponse(ResponseBase):
     judges: list[Judge] = []
 
 
+class NoteJudgeRequest(NoteJudgeBase, BaseModel):
+    pass
+
+
+class NoteJudgeResponse(ResponseBase):
+    note_judges: list[NoteJudge] = []
+
+
+class HistoryJudgeRequest:
+    pass
+
+
+class HistoryJudgeResponse(ResponseBase):
+    history_judges: list[HistoryJudge] = []
+
+
 # client
-class ClientBase:
+class ClientBase(AddressBase, StatusBase):
     name: str
     a_number: Optional[str] = None
-    address: str
     phone: str
     email: Optional[str] = None
     judge_id: Optional[int] = None
 
 
 class Client(ClientBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     judge: Optional[Judge] = None
     court_cases: list["CourtCase"] = []
+    note_clients: list["NoteClient"] = []
+    history_clients: list["HistoryClient"] = []
+    history_court_cases: list["HistoryCourtCase"] = []
 
-    class Config:
-        orm_mode = True
+
+class NoteClientBase(NoteBase):
+    client_id: int
+
+
+class NoteClient(NoteClientBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    client: Optional[Client] = None
+
+
+class HistoryClient(Client):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    user_name: str
+    client_id: int
+    client: Optional[Client] = None
+    # make NOT optional inherited fields optional in history
+    name: Optional[str] = None
+    phone: Optional[str] = None
 
 
 class ClientRequest(ClientBase, BaseModel):
@@ -216,23 +319,61 @@ class ClientResponse(ResponseBase):
     clients: list[Client] = []
 
 
+class NoteClientRequest(NoteClientBase, BaseModel):
+    pass
+
+
+class NoteClientResponse(ResponseBase):
+    note_clients: list[NoteClient] = []
+
+
+class HistoryClientRequest:
+    pass
+
+
+class HistoryClientResponse(ResponseBase):
+    history_clients: list[HistoryClient] = []
+
+
 # court_case
-class CourtCaseBase:
+class CourtCaseBase(StatusBase):
     case_type_id: int
     client_id: int
 
 
 class CourtCase(CourtCaseBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     case_type: Optional[CaseType] = None
     client: Optional[Client] = None
     forms: list["Form"] = []
-    cash_collections: list["CashCollection"] = []
     case_collections: list["CaseCollection"] = []
     hearing_calendars: list["HearingCalendar"] = []
     task_calendars: list["TaskCalendar"] = []
+    note_court_cases: list["NoteCourtCase"] = []
+    history_court_cases: list["HistoryCourtCase"] = []
+    history_hearing_calendars: list["HistoryHearingCalendar"] = []
+    history_task_calendars: list["HistoryTaskCalendar"] = []
+    history_forms: list["HistoryForm"] = []
+    history_case_collections: list["HistoryCaseCollection"] = []
 
-    class Config:
-        orm_mode = True
+
+class NoteCourtCaseBase(NoteBase):
+    court_case_id: int
+
+
+class NoteCourtCase(NoteCourtCaseBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    court_case: Optional[CourtCase] = None
+
+
+class HistoryCourtCase(CourtCase):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    user_name: str
+    court_case_id: int
+    court_case: Optional[CourtCase] = None
+    # make NOT optional inherited fields optional in history
+    case_type_id: Optional[int] = None
+    client_id: Optional[int] = None
 
 
 class CourtCaseRequest(CourtCaseBase, BaseModel):
@@ -243,20 +384,57 @@ class CourtCaseResponse(ResponseBase):
     court_cases: list[CourtCase] = []
 
 
+class NoteCourtCaseRequest(NoteCourtCaseBase, BaseModel):
+    pass
+
+
+class NoteCourtCaseResponse(ResponseBase):
+    note_court_cases: list[NoteCourtCase] = []
+
+
+class HistoryCourtCaseRequest:
+    pass
+
+
+class HistoryCourtCaseResponse(ResponseBase):
+    history_court_cases: list[HistoryCourtCase] = []
+
+
 # hearing_calendar
-class HearingCalendarBase:
+class HearingCalendarBase(StatusBase):
     hearing_date: datetime
     hearing_type_id: int
     court_case_id: int
 
 
 class HearingCalendar(HearingCalendarBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     hearing_type: Optional[HearingType] = None
     court_case: Optional[CourtCase] = None
     task_calendars: list["TaskCalendar"] = []
+    note_hearing_calendars: list["NoteHearingCalendar"] = []
+    history_hearing_calendars: list["HistoryHearingCalendar"] = []
+    history_task_calendars: list["HistoryTaskCalendar"] = []
 
-    class Config:
-        orm_mode = True
+
+class NoteHearingCalendarBase(NoteBase):
+    hearing_calendar_id: int
+
+
+class NoteHearingCalendar(NoteHearingCalendarBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    hearing_calendar: Optional[HearingCalendar] = None
+
+
+class HistoryHearingCalendar(HearingCalendar):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    user_name: str
+    hearing_calendar_id: int
+    hearing_calendar: Optional[HearingCalendar] = None
+    # make NOT optional inherited fields optional in history
+    hearing_date: Optional[datetime] = None
+    hearing_type_id: Optional[int] = None
+    court_case_id: Optional[int] = None
 
 
 class HearingCalendarRequest(HearingCalendarBase, BaseModel):
@@ -267,8 +445,24 @@ class HearingCalendarResponse(ResponseBase):
     hearing_calendars: list[HearingCalendar] = []
 
 
+class NoteHearingCalendarRequest(NoteHearingCalendarBase, BaseModel):
+    pass
+
+
+class NoteHearingCalendarResponse(ResponseBase):
+    note_hearing_calendars: list[NoteHearingCalendar] = []
+
+
+class HistoryHearingCalendarRequest:
+    pass
+
+
+class HistoryHearingCalendarResponse(ResponseBase):
+    history_hearing_calendars: list[HistoryHearingCalendar] = []
+
+
 # task_calendar
-class TaskCalendarBase:
+class TaskCalendarBase(StatusBase):
     task_date: datetime
     task_type_id: int
     court_case_id: int
@@ -276,13 +470,34 @@ class TaskCalendarBase:
 
 
 class TaskCalendar(TaskCalendarBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     task_type: Optional[TaskType] = None
     court_case: Optional[CourtCase] = None
     hearing_calendar: Optional[HearingCalendar] = None
     forms: list["Form"] = []
+    note_task_calendars: list["NoteTaskCalendar"] = []
+    history_task_calendars: list["HistoryTaskCalendar"] = []
+    history_forms: list["HistoryForm"] = []
 
-    class Config:
-        orm_mode = True
+
+class NoteTaskCalendarBase(NoteBase):
+    hearing_calendar_id: int
+
+
+class NoteTaskCalendar(NoteTaskCalendarBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    task_calendar: Optional[TaskCalendar] = None
+
+
+class HistoryTaskCalendar(TaskCalendar):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    user_name: str
+    task_calendar_id: int
+    task_calendar: Optional[TaskCalendar] = None
+    # make NOT optional inherited fields optional in history
+    task_date: Optional[datetime] = None
+    task_type_id: Optional[int] = None
+    court_case_id: Optional[int] = None
 
 
 class TaskCalendarRequest(TaskCalendarBase, BaseModel):
@@ -293,8 +508,24 @@ class TaskCalendarResponse(ResponseBase):
     task_calendars: list[TaskCalendar] = []
 
 
+class NoteTaskCalendarRequest(NoteTaskCalendarBase, BaseModel):
+    pass
+
+
+class NoteTaskCalendarResponse(ResponseBase):
+    note_task_calendars: list[NoteTaskCalendar] = []
+
+
+class HistoryTaskCalendarRequest:
+    pass
+
+
+class HistoryTaskCalendarResponse(ResponseBase):
+    history_task_calendars: list[HistoryTaskCalendar] = []
+
+
 # form
-class FormBase:
+class FormBase(StatusBase):
     form_type_id: int
     form_status_id: int
     court_case_id: Optional[int] = None
@@ -307,16 +538,33 @@ class FormBase:
 
 
 class Form(FormBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     form_status: Optional[FormStatus] = None
     form_type: Optional[FormType] = None
     task_calendar: Optional[TaskCalendar] = None
     court_case: Optional[CourtCase] = None
     case_collections: list["CaseCollection"] = []
-    cash_collections: list["CashCollection"] = []
+    note_forms: list["NoteForm"] = []
     history_forms: list["HistoryForm"] = []
+    history_case_collections: list["HistoryCaseCollection"] = []
 
-    class Config:
-        orm_mode = True
+
+class NoteFormBase(NoteBase):
+    form_id: int
+
+
+class NoteForm(NoteFormBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    form: Optional[Form] = None
+
+
+class HistoryForm(Form):
+    user_name: str
+    form_id: int
+    form: Optional[Form] = None
+    # make NOT optional inherited fields optional in history
+    form_type_id: Optional[int] = None
+    form_status_id: Optional[int] = None
 
 
 class FormRequest(FormBase, BaseModel):
@@ -327,33 +575,15 @@ class FormResponse(ResponseBase):
     forms: list[Form] = []
 
 
-# history_form
-class HistoryFormBase:
-    user_name: str
-    form_id: int
-    form_type_id: int
-    form_status_id: int
-    court_case_id: Optional[int] = None
-    submit_date: Optional[datetime] = None
-    receipt_date: Optional[datetime] = None
-    rfe_date: Optional[datetime] = None
-    rfe_submit_date: Optional[datetime] = None
-    decision_date: Optional[datetime] = None
-    task_calendar_id: Optional[int] = None
+class NoteFormRequest(NoteFormBase, BaseModel):
+    pass
 
 
-class HistoryForm(HistoryFormBase, BaseModelSchema):
-    form: Optional[Form] = None
-    form_status: Optional[FormStatus] = None
-    form_type: Optional[FormType] = None
-    task_calendar: Optional[TaskCalendar] = None
-    court_case: Optional[CourtCase] = None
-
-    class Config:
-        orm_mode = True
+class NoteFormResponse(ResponseBase):
+    note_forms: list[NoteForm] = []
 
 
-class HistoryFormRequest(HistoryFormBase, BaseModel):
+class HistoryFormRequest:
     pass
 
 
@@ -362,7 +592,7 @@ class HistoryFormResponse(ResponseBase):
 
 
 # case_collection
-class CaseCollectionBase:
+class CaseCollectionBase(StatusBase):
     quote_date: datetime
     quote_amount: condecimal(max_digits=5, decimal_places=2)
     initial_payment: condecimal(max_digits=5, decimal_places=2)
@@ -372,13 +602,35 @@ class CaseCollectionBase:
 
 
 class CaseCollection(CaseCollectionBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     collection_method: Optional[CollectionMethod] = None
     court_case: Optional[CourtCase] = None
     form: Optional["Form"] = None
     cash_collections: list["CashCollection"] = []
+    note_case_collections: list["NoteCaseCollection"] = []
+    history_case_collections: list["HistoryCaseCollection"] = []
+    history_cash_collections: list["HistoryCashCollection"] = []
 
-    class Config:
-        orm_mode = True
+
+class NoteCaseCollectionBase(NoteBase):
+    case_collection_id: int
+
+
+class NoteCaseCollection(NoteCaseCollectionBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    case_collection: Optional[CaseCollection] = None
+
+
+class HistoryCaseCollection(CaseCollection):
+    user_name: str
+    case_collection_id: int
+    case_collection: Optional[CaseCollection] = None
+    # make NOT optional inherited fields optional in history
+    quote_date: Optional[datetime] = None
+    quote_amount: Optional[condecimal(max_digits=5, decimal_places=2)] = None
+    initial_payment: Optional[condecimal(max_digits=5, decimal_places=2)] = None
+    collection_method_id: Optional[int] = None
+    court_case_id: Optional[int] = None
 
 
 class CaseCollectionRequest(CaseCollectionBase, BaseModel):
@@ -395,25 +647,62 @@ class CaseCollectionRetrieveRequest(BaseModel):
 
 
 class CaseCollectionResponse(ResponseBase):
-    cash_collections: list[CaseCollection] = []
+    case_collections: list[CaseCollection] = []
+
+
+class NoteCaseCollectionRequest(NoteCaseCollectionBase, BaseModel):
+    pass
+
+
+class NoteCaseCollectionResponse(ResponseBase):
+    note_case_collections: list[NoteCaseCollection] = []
+
+
+class HistoryCaseCollectionRequest:
+    pass
+
+
+class HistoryCaseCollectionResponse(ResponseBase):
+    history_case_collections: list[HistoryCaseCollection] = []
 
 
 # cash_collection
-class CashCollectionBase:
+class CashCollectionBase(StatusBase):
     collection_date: datetime
     collected_amount: condecimal(max_digits=5, decimal_places=2)
-    waived_amount = condecimal(max_digits=5, decimal_places=2)
+    waived_amount: condecimal(max_digits=5, decimal_places=2)
     memo: Optional[str] = None
     case_collection_id: int
     collection_method_id: int
 
 
 class CashCollection(CashCollectionBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
     collection_method: Optional[CollectionMethod] = None
     case_collection: Optional[CaseCollection] = None
+    note_cash_collections: list["NoteCashCollection"] = []
+    history_cash_collections: list["HistoryCashCollection"] = []
 
-    class Config:
-        orm_mode = True
+
+class NoteCashCollectionBase(NoteBase):
+    cash_collection_id: int
+
+
+class NoteCashCollection(NoteCashCollectionBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    cash_collection: Optional[CashCollection] = None
+
+
+class HistoryCashCollection(CashCollection):
+    user_name: str
+    cash_collection_id: int
+    cash_collection: Optional[CashCollection] = None
+    # make NOT optional inherited fields optional in history
+    collection_date: Optional[datetime] = None
+    collected_amount: Optional[condecimal(max_digits=5, decimal_places=2)] = None
+    waived_amount: Optional[condecimal(max_digits=5, decimal_places=2)] = None
+    case_collection_id: Optional[int] = None
+    collection_method_id: Optional[int] = None
 
 
 class CashCollectionRequest(CashCollectionBase, BaseModel):
@@ -422,3 +711,19 @@ class CashCollectionRequest(CashCollectionBase, BaseModel):
 
 class CashCollectionResponse(ResponseBase):
     cash_collections: list[CashCollection] = []
+
+
+class NoteCashCollectionRequest(NoteCashCollectionBase, BaseModel):
+    pass
+
+
+class NoteCashCollectionResponse(ResponseBase):
+    note_cash_collections: list[NoteCashCollection] = []
+
+
+class HistoryCashCollectionRequest:
+    pass
+
+
+class HistoryCashCollectionResponse(ResponseBase):
+    history_cash_collections: list[HistoryCashCollection] = []

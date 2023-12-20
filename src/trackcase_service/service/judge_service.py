@@ -5,15 +5,17 @@ from fastapi import Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
+from src.trackcase_service.db.models import HistoryJudge as HistoryJudgeModel
 from src.trackcase_service.db.models import Judge as JudgeModel
-from src.trackcase_service.utils.commons import (
-    copy_objects,
-    get_err_msg,
-    raise_http_exception,
+from src.trackcase_service.service.history_service import get_history_service
+from src.trackcase_service.service.schemas import HistoryJudge as HistoryJudgeSchema
+from src.trackcase_service.service.schemas import Judge as JudgeSchema
+from src.trackcase_service.service.schemas import JudgeRequest, JudgeResponse
+from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.convert import (
+    convert_judge_model_to_schema,
+    convert_request_schema_to_model,
 )
-
-from .schemas import Judge as JudgeSchema
-from .schemas import JudgeRequest, JudgeResponse
 
 
 class JudgeService(CrudService):
@@ -24,9 +26,12 @@ class JudgeService(CrudService):
         self, request: Request, request_object: JudgeRequest
     ) -> JudgeResponse:
         try:
-            data_model: JudgeModel = copy_objects(request_object, JudgeModel)
+            data_model: JudgeModel = convert_request_schema_to_model(
+                request_object, JudgeModel
+            )
             data_model = super().create(data_model)
-            schema_model = _convert_model_to_schema(data_model)
+            _create_history(self.db_session, request, data_model.id, request_object)
+            schema_model = convert_judge_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
@@ -36,13 +41,21 @@ class JudgeService(CrudService):
             )
 
     def read_one_judge(
-        self, model_id: int, request: Request, is_include_extras: bool
+        self,
+        model_id: int,
+        request: Request,
+        is_include_extra_objects: bool = False,
+        is_include_extra_lists: bool = False,
+        is_include_history: bool = False,
     ) -> JudgeResponse:
         try:
             data_model: JudgeModel = super().read_one(model_id)
             if data_model:
-                schema_model: JudgeSchema = _convert_model_to_schema(
-                    data_model, is_include_extras
+                schema_model: JudgeSchema = convert_judge_model_to_schema(
+                    data_model,
+                    is_include_extra_objects,
+                    is_include_extra_lists,
+                    is_include_history,
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -50,19 +63,33 @@ class JudgeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Retrieving Judge By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
     def read_all_judges(
-        self, request: Request, is_include_extras: bool
+        self,
+        request: Request,
+        is_include_extra_objects: bool = False,
+        is_include_extra_lists: bool = False,
+        is_include_history: bool = False,
     ) -> JudgeResponse:
         try:
-            data_models: List[JudgeModel] = super().read_all()
+            data_models: List[JudgeModel] = super().read_all(
+                sort_direction="asc", sort_by="court_id"
+            )
             schema_models: List[JudgeSchema] = [
-                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
+                convert_judge_model_to_schema(
+                    data_model,
+                    is_include_extra_objects,
+                    is_include_extra_lists,
+                    is_include_history,
+                )
+                for data_model in data_models
             ]
-            return get_response_multiple(schema_models)
+            sorted_schema_models = _sort_judge_by_court_name(schema_models)
+            return get_response_multiple(sorted_schema_models)
         except Exception as ex:
             raise_http_exception(
                 request,
@@ -70,51 +97,89 @@ class JudgeService(CrudService):
                 get_err_msg("Error Retrieving Judges. Please Try Again!!!", str(ex)),
             )
 
+    def read_many_judges_by_court_id(
+        self,
+        court_id,
+        request: Request,
+        is_include_extra_objects: bool = False,
+        is_include_extra_lists: bool = False,
+        is_include_history: bool = False,
+    ) -> JudgeResponse:
+        try:
+            data_models: List[JudgeModel] = super().read_many(
+                sort_direction="asc", sort_by="name", **{"court_id": court_id}
+            )
+            schema_models: List[JudgeSchema] = [
+                convert_judge_model_to_schema(
+                    data_model,
+                    is_include_extra_objects,
+                    is_include_extra_lists,
+                    is_include_history,
+                )
+                for data_model in data_models
+            ]
+            return get_response_multiple(schema_models)
+        except Exception as ex:
+            raise_http_exception(
+                request,
+                HTTPStatus.SERVICE_UNAVAILABLE,
+                get_err_msg(
+                    f"Error Retrieving Judges By Court {court_id}. Please Try Again!!!",
+                    str(ex),
+                ),
+            )
+
     def update_one_judge(
         self, model_id: int, request: Request, request_object: JudgeRequest
     ) -> JudgeResponse:
-        judge_response = self.read_one_judge(model_id, request, False)
+        judge_response = self.read_one_judge(model_id, request)
 
         if not (judge_response and judge_response.judges):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"Judge Not Found By Id: {model_id}!!!",
             )
 
         try:
-            data_model: JudgeModel = copy_objects(request_object, JudgeModel)
+            data_model: JudgeModel = convert_request_schema_to_model(
+                request_object, JudgeModel
+            )
             data_model = super().update(model_id, data_model)
-            schema_model = _convert_model_to_schema(data_model)
+            _create_history(self.db_session, request, model_id, request_object)
+            schema_model = convert_judge_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Updating Judge By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
     def delete_one_judge(self, model_id: int, request: Request) -> JudgeResponse:
-        judge_response = self.read_one_judge(model_id, request, False)
+        judge_response = self.read_one_judge(model_id, request)
 
         if not (judge_response and judge_response.judges):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"Judge Not Found By Id: {model_id}!!!",
             )
 
         try:
             super().delete(model_id)
+            _create_history(self.db_session, request, model_id, is_delete=True)
             return JudgeResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Deleting Judge By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
@@ -131,18 +196,39 @@ def get_response_multiple(multiple: list[JudgeSchema]) -> JudgeResponse:
     return JudgeResponse(judges=multiple)
 
 
-def _convert_model_to_schema(
-    data_model: JudgeModel, is_include_extras: bool = False
-) -> JudgeSchema:
-    data_schema = JudgeSchema(
-        id=data_model.id,
-        created=data_model.created,
-        modified=data_model.modified,
-        name=data_model.name,
-        webex=data_model.webex,
-        court_id=data_model.court_id,
+def _sort_judge_by_court_name(
+    judges: List[JudgeSchema],
+) -> List[JudgeSchema]:
+    return sorted(
+        judges,
+        key=lambda x: x.court.name if (x.court and x.court.name) else "",
     )
-    if is_include_extras:
-        data_schema.court = data_model.court
-        data_schema.clients = data_model.clients
-    return data_schema
+
+
+def _create_history(
+    db_session: Session,
+    request: Request,
+    judge_id: int,
+    request_object: JudgeRequest = None,
+    is_delete: bool = False,
+):
+    history_service = get_history_service(db_session, HistoryJudgeModel)
+    if is_delete:
+        history_service.add_to_history_for_delete(
+            request,
+            HistoryJudgeModel.__tablename__,
+            "judge_id",
+            judge_id,
+            "Judge",
+            "HistoryJudge",
+        )
+    else:
+        history_service.add_to_history(
+            request,
+            request_object,
+            HistoryJudgeSchema,
+            "judge_id",
+            judge_id,
+            "Judge",
+            "HistoryJudge",
+        )

@@ -19,13 +19,15 @@ router = APIRouter(prefix="/trackcase-service/form_statuses", tags=["FormStatuse
 @router.get("/", response_model=FormStatusResponse, status_code=HTTPStatus.OK)
 def find_all(
     request: Request,
-    is_include_extras: bool = False,
+    is_include_extra_objects: bool = False,
+    is_include_extra_lists: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     return get_form_status_service(db_session).read_all_form_statuses(
-        request, is_include_extras
+        request, is_include_extra_objects, is_include_extra_lists, is_include_history
     )
 
 
@@ -35,14 +37,22 @@ def find_all(
 def find_one(
     form_status_id: int,
     request: Request,
-    is_include_extras: bool = False,
+    is_include_extra_objects: bool = False,
+    is_include_extra_lists: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     form_status_response: FormStatusResponse = get_form_status_service(
         db_session
-    ).read_one_form_status(form_status_id, request, is_include_extras)
+    ).read_one_form_status(
+        form_status_id,
+        request,
+        is_include_extra_objects,
+        is_include_extra_lists,
+        is_include_history,
+    )
     if form_status_response is None:
         raise_http_exception(
             request,

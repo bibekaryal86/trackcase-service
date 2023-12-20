@@ -6,14 +6,13 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import FormType as FormTypeModel
-from src.trackcase_service.utils.commons import (
-    copy_objects,
-    get_err_msg,
-    raise_http_exception,
+from src.trackcase_service.service.schemas import FormType as FormTypeSchema
+from src.trackcase_service.service.schemas import FormTypeRequest, FormTypeResponse
+from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.convert import (
+    convert_form_type_model_to_schema,
+    convert_request_schema_to_model,
 )
-
-from .schemas import FormType as FormTypeSchema
-from .schemas import FormTypeRequest, FormTypeResponse
 
 
 class FormTypeService(CrudService):
@@ -24,9 +23,11 @@ class FormTypeService(CrudService):
         self, request: Request, request_object: FormTypeRequest
     ) -> FormTypeResponse:
         try:
-            data_model: FormTypeModel = copy_objects(request_object, FormTypeModel)
+            data_model: FormTypeModel = convert_request_schema_to_model(
+                request_object, FormTypeModel
+            )
             data_model = super().create(data_model)
-            schema_model = _convert_model_to_schema(data_model)
+            schema_model = convert_form_type_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
@@ -36,13 +37,21 @@ class FormTypeService(CrudService):
             )
 
     def read_one_form_type(
-        self, model_id: int, request: Request, is_include_extras: bool
+        self,
+        model_id: int,
+        request: Request,
+        is_include_extra_objects: bool = False,
+        is_include_extra_lists: bool = False,
+        is_include_history: bool = False,
     ) -> FormTypeResponse:
         try:
             data_model: FormTypeModel = super().read_one(model_id)
             if data_model:
-                schema_model: FormTypeSchema = _convert_model_to_schema(
-                    data_model, is_include_extras
+                schema_model: FormTypeSchema = convert_form_type_model_to_schema(
+                    data_model,
+                    is_include_extra_objects,
+                    is_include_extra_lists,
+                    is_include_history,
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -50,17 +59,30 @@ class FormTypeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Retrieving FormType By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
     def read_all_form_types(
-        self, request: Request, is_include_extras: bool
+        self,
+        request: Request,
+        is_include_extra_objects: bool = False,
+        is_include_extra_lists: bool = False,
+        is_include_history: bool = False,
     ) -> FormTypeResponse:
         try:
-            data_models: List[FormTypeModel] = super().read_all()
+            data_models: List[FormTypeModel] = super().read_all(
+                sort_direction="asc", sort_by="name"
+            )
             schema_models: List[FormTypeSchema] = [
-                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
+                convert_form_type_model_to_schema(
+                    data_model,
+                    is_include_extra_objects,
+                    is_include_extra_lists,
+                    is_include_history,
+                )
+                for data_model in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -73,37 +95,40 @@ class FormTypeService(CrudService):
     def update_one_form_type(
         self, model_id: int, request: Request, request_object: FormTypeRequest
     ) -> FormTypeResponse:
-        form_type_response = self.read_one_form_type(model_id, request, False)
+        form_type_response = self.read_one_form_type(model_id, request)
 
         if not (form_type_response and form_type_response.form_types):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"FormType Not Found By Id: {model_id}!!!",
             )
 
         try:
-            data_model: FormTypeModel = copy_objects(request_object, FormTypeModel)
+            data_model: FormTypeModel = convert_request_schema_to_model(
+                request_object, FormTypeModel
+            )
             data_model = super().update(model_id, data_model)
-            schema_model = _convert_model_to_schema(data_model)
+            schema_model = convert_form_type_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Updating FormType By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
     def delete_one_form_type(self, model_id: int, request: Request) -> FormTypeResponse:
-        form_type_response = self.read_one_form_type(model_id, request, False)
+        form_type_response = self.read_one_form_type(model_id, request)
 
         if not (form_type_response and form_type_response.form_types):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"FormType Not Found By Id: {model_id}!!!",
             )
 
         try:
@@ -114,7 +139,8 @@ class FormTypeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Deleting FormType By Id: {model_id}. Please Try Again!!!",
+                    str(ex),
                 ),
             )
 
@@ -129,18 +155,3 @@ def get_response_single(single: FormTypeSchema) -> FormTypeResponse:
 
 def get_response_multiple(multiple: list[FormTypeSchema]) -> FormTypeResponse:
     return FormTypeResponse(form_types=multiple)
-
-
-def _convert_model_to_schema(
-    data_model: FormTypeModel, is_include_extras: bool = False
-) -> FormTypeSchema:
-    data_schema = FormTypeSchema(
-        id=data_model.id,
-        created=data_model.created,
-        modified=data_model.modified,
-        name=data_model.name,
-        description=data_model.description,
-    )
-    if is_include_extras:
-        data_schema.forms = data_model.forms
-    return data_schema

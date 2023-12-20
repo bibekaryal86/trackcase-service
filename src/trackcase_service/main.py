@@ -21,7 +21,6 @@ import src.trackcase_service.api.form_status_api as form_status_api
 import src.trackcase_service.api.form_type_api as form_type_api
 import src.trackcase_service.api.hearing_calendar_api as hearing_calendar_api
 import src.trackcase_service.api.hearing_type_api as hearing_type_api
-import src.trackcase_service.api.history_form_api as history_form_api
 import src.trackcase_service.api.judge_api as judge_api
 import src.trackcase_service.api.task_calendar_api as task_calendar_api
 import src.trackcase_service.api.task_type_api as task_type_api
@@ -33,9 +32,9 @@ log = logger.Logger(logging.getLogger(__name__), __name__)
 @asynccontextmanager
 async def lifespan(application: FastAPI):
     commons.validate_input()
-    commons.startup_db_client(application)
+    commons.startup_db_client()
     yield
-    commons.shutdown_db_client(application)
+    commons.shutdown_db_client()
 
 
 app = FastAPI(
@@ -58,8 +57,8 @@ def user_name_header(
     return x_user_name
 
 
-app.include_router(case_type_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(case_collection_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(case_type_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(cash_collection_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(client_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(
@@ -74,7 +73,6 @@ app.include_router(
     hearing_calendar_api.router, dependencies=[Depends(user_name_header)]
 )
 app.include_router(hearing_type_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(history_form_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(judge_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(task_calendar_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(task_type_api.router, dependencies=[Depends(user_name_header)])
@@ -101,6 +99,7 @@ def ping():
 
 @app.get("/trackcase-service/tests/reset", tags=["Main"], summary="Reset Cache")
 def reset(request: Request):
+    # TODO: placeholder to reset cache
     return {"reset": "successful"}
 
 
@@ -140,5 +139,4 @@ async def custom_docs_url(
 
 if __name__ == "__main__":
     port = os.getenv(constants.ENV_APP_PORT, "9090")
-    host = "0.0.0.0"
     uvicorn.run(app, port=int(port), host="0.0.0.0", log_level=logging.WARNING)

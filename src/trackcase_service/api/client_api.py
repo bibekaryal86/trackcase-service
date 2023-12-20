@@ -19,25 +19,35 @@ router = APIRouter(prefix="/trackcase-service/clients", tags=["Clients"])
 @router.get("/", response_model=ClientResponse, status_code=HTTPStatus.OK)
 def find_all(
     request: Request,
-    is_include_extras: bool = True,
+    is_include_extra_objects: bool = False,
+    is_include_extra_lists: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_client_service(db_session).read_all_clients(request, is_include_extras)
+    return get_client_service(db_session).read_all_clients(
+        request, is_include_extra_objects, is_include_extra_lists, is_include_history
+    )
 
 
 @router.get("/{client_id}", response_model=ClientResponse, status_code=HTTPStatus.OK)
 def find_one(
     client_id: int,
     request: Request,
-    is_include_extras: bool = True,
+    is_include_extra_objects: bool = False,
+    is_include_extra_lists: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     client_response: ClientResponse = get_client_service(db_session).read_one_client(
-        client_id, request, is_include_extras
+        client_id,
+        request,
+        is_include_extra_objects,
+        is_include_extra_lists,
+        is_include_history,
     )
     if client_response is None:
         raise_http_exception(

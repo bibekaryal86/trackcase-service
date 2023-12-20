@@ -19,7 +19,9 @@ router = APIRouter(prefix="/trackcase-service/judges", tags=["Judges"])
 @router.get("/", response_model=JudgeResponse, status_code=HTTPStatus.OK)
 def find_all(
     request: Request,
-    is_include_extras: bool = True,
+    is_include_extra_objects: bool = False,
+    is_include_extra_lists: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
@@ -31,19 +33,56 @@ def find_all(
 def find_one(
     judge_id: int,
     request: Request,
-    is_include_extras: bool = True,
+    is_include_extra_objects: bool = False,
+    is_include_extra_lists: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     judge_response: JudgeResponse = get_judge_service(db_session).read_one_judge(
-        judge_id, request, is_include_extras
+        judge_id,
+        request,
+        is_include_extra_objects,
+        is_include_extra_lists,
+        is_include_history,
     )
     if judge_response is None:
         raise_http_exception(
             request,
             HTTPStatus.NOT_FOUND,
             f"Judge Not Found By Id: {judge_id}!!!",
+        )
+    return judge_response
+
+
+@router.get(
+    "/court/{court_id}", response_model=JudgeResponse, status_code=HTTPStatus.OK
+)
+def find_judges_by_court(
+    court_id: int,
+    request: Request,
+    is_include_extra_objects: bool = False,
+    is_include_extra_lists: bool = False,
+    is_include_history: bool = False,
+    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
+    db_session: Session = Depends(get_db_session),
+):
+    validate_http_basic_credentials(request, http_basic_credentials)
+    judge_response: JudgeResponse = get_judge_service(
+        db_session
+    ).read_many_judges_by_court_id(
+        court_id,
+        request,
+        is_include_extra_objects,
+        is_include_extra_lists,
+        is_include_history,
+    )
+    if judge_response is None or len(judge_response.judges) == 0:
+        raise_http_exception(
+            request,
+            HTTPStatus.NOT_FOUND,
+            f"Judges Not Found By Court Id: {court_id}!!!",
         )
     return judge_response
 
