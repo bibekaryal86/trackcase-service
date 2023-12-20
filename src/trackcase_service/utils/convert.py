@@ -31,6 +31,25 @@ from src.trackcase_service.service.schemas import (
     HearingCalendar as HearingCalendarSchema,
 )
 from src.trackcase_service.service.schemas import HearingType as HearingTypeSchema
+from src.trackcase_service.service.schemas import (
+    HistoryCaseCollection as HistoryCaseCollectionSchema,
+)
+from src.trackcase_service.service.schemas import (
+    HistoryCashCollection as HistoryCashCollectionSchema,
+)
+from src.trackcase_service.service.schemas import HistoryClient as HistoryClientSchema
+from src.trackcase_service.service.schemas import HistoryCourt as HistoryCourtSchema
+from src.trackcase_service.service.schemas import (
+    HistoryCourtCase as HistoryCourtCaseSchema,
+)
+from src.trackcase_service.service.schemas import HistoryForm as HistoryFormSchema
+from src.trackcase_service.service.schemas import (
+    HistoryHearingCalendar as HistoryHearingCalendarSchema,
+)
+from src.trackcase_service.service.schemas import HistoryJudge as HistoryJudgeSchema
+from src.trackcase_service.service.schemas import (
+    HistoryTaskCalendar as HistoryTaskCalendarSchema,
+)
 from src.trackcase_service.service.schemas import Judge as JudgeSchema
 from src.trackcase_service.service.schemas import (
     NoteCaseCollection as NoteCaseCollectionSchema,
@@ -149,7 +168,9 @@ def convert_case_collection_model_to_schema(
                 for cash_collection in data_model.cash_collections
             ]
     if is_include_history:
-        print("history")
+        data_schema.history_case_collections = convert_data_model_to_schema(
+            data_model.history_case_collections, HistoryCaseCollectionSchema
+        )
     return data_schema
 
 
@@ -197,7 +218,9 @@ def convert_cash_collection_model_to_schema(
     if is_include_extra_lists:
         pass
     if is_include_history:
-        pass
+        data_schema.history_cash_collections = convert_data_model_to_schema(
+            data_model.history_cash_collections, HistoryCashCollectionSchema
+        )
     return data_schema
 
 
@@ -220,7 +243,9 @@ def convert_client_model_to_schema(
                 for court_case in data_model.court_cases
             ]
     if is_include_history:
-        print("history")
+        data_schema.history_clients = convert_data_model_to_schema(
+            data_model.history_clients, HistoryClientSchema
+        )
     return data_schema
 
 
@@ -286,7 +311,9 @@ def convert_court_case_model_to_schema(
                 for task_calendar in data_model.task_calendars
             ]
     if is_include_history:
-        print("history")
+        data_schema.history_court_cases = convert_data_model_to_schema(
+            data_model.history_court_cases, HistoryCourtCaseSchema
+        )
     return data_schema
 
 
@@ -308,7 +335,9 @@ def convert_court_model_to_schema(
                 convert_judge_model_to_schema(judge) for judge in data_model.judges
             ]
     if is_include_history:
-        print("history")
+        data_schema.history_courts = convert_data_model_to_schema(
+            data_model.history_courts, HistoryCourtSchema
+        )
     return data_schema
 
 
@@ -340,7 +369,9 @@ def convert_form_model_to_schema(
                 for case_collection in data_model.case_collections
             ]
     if is_include_history:
-        print("history")
+        data_schema.history_forms = convert_data_model_to_schema(
+            data_model.history_forms, HistoryFormSchema
+        )
     return data_schema
 
 
@@ -412,7 +443,9 @@ def convert_hearing_calendar_model_to_schema(
                 for task_calendar in data_model.task_calendars
             ]
     if is_include_history:
-        print("history")
+        data_schema.history_hearing_calendars = convert_data_model_to_schema(
+            data_model.history_hearing_calendars, HistoryHearingCalendarSchema
+        )
     return data_schema
 
 
@@ -455,7 +488,9 @@ def convert_judge_model_to_schema(
                 convert_client_model_to_schema(client) for client in data_model.clients
             ]
     if is_include_history:
-        print("history")
+        data_schema.history_judges = convert_data_model_to_schema(
+            data_model.history_judges, HistoryJudgeSchema
+        )
     return data_schema
 
 
@@ -485,7 +520,9 @@ def convert_task_calendar_model_to_schema(
                 convert_form_model_to_schema(form) for form in data_model.forms
             ]
     if is_include_history:
-        print("history")
+        data_schema.history_task_calendars = convert_data_model_to_schema(
+            data_model.history_task_calendars, HistoryTaskCalendarSchema
+        )
     return data_schema
 
 
