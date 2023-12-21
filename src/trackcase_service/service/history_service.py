@@ -1,3 +1,4 @@
+import logging
 from typing import Type, TypeVar, Union
 
 from fastapi import Request
@@ -7,10 +8,12 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Base
+from src.trackcase_service.utils import logger
 from src.trackcase_service.utils.constants import USERNAME_HEADER
 from src.trackcase_service.utils.convert import convert_request_schema_to_history_schema
 
 ModelBase = TypeVar("ModelBase", bound=Base)
+log = logger.Logger(logging.getLogger(__name__), __name__)
 
 
 class HistoryService(CrudService):
@@ -37,11 +40,11 @@ class HistoryService(CrudService):
         )
         try:
             super().create(history_data_model)
-        except Exception:
-            raise Exception(
-                f"{parent_type} Action Successful! BUT!! "
-                f"Something went wrong inserting {history_type}!!!"
-            )
+        except Exception as ex:
+            err_msg = f"{parent_type} Action Successful! BUT!! Something went wrong inserting {history_type}!!!"
+            log.error(err_msg)
+            log.error(str(ex))
+            raise Exception(err_msg)
 
     def add_to_history_for_delete(
         self,
@@ -58,11 +61,11 @@ class HistoryService(CrudService):
         )
         try:
             self.db_session.execute(sql)
-        except Exception:
-            raise Exception(
-                f"{parent_type} Action Successful! BUT!! "
-                f"Something went wrong inserting {history_type}!!!"
-            )
+        except Exception as ex:
+            err_msg = f"{parent_type} Action Successful! BUT!! Something went wrong inserting {history_type}!!!"
+            log.error(err_msg)
+            log.error(str(ex))
+            raise Exception(err_msg)
 
 
 def get_history_service(
