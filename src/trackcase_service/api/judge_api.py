@@ -26,7 +26,7 @@ def find_all(
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_judge_service(db_session).read_all_judges(request, is_include_extras)
+    return get_judge_service(db_session).read_all_judges(request, is_include_extra_objects, is_include_extra_lists, is_include_history)
 
 
 @router.get("/{judge_id}", response_model=JudgeResponse, status_code=HTTPStatus.OK)
