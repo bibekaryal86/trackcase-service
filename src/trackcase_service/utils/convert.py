@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import List
 
 from pydantic.fields import FieldInfo
 
@@ -35,8 +34,14 @@ def _create_default_schema_instance(destination_class):
 
 
 def _copy_objects(
-    source_object, destination_class, destination_object=None, is_copy_all=False
+    source_object,
+    destination_class,
+    destination_object=None,
+    is_copy_all=False,
+    exclusions=None,
 ):
+    if exclusions is None:
+        exclusions = []
     if source_object is None:
         return None
     if destination_object is None:
@@ -46,6 +51,7 @@ def _copy_objects(
         if (
             not callable(getattr(source_object, attr))
             and not attr.startswith("_")
+            and attr not in exclusions
             and (is_copy_all or not getattr(destination_object, attr))
         ):
             value = getattr(source_object, attr)
@@ -58,101 +64,63 @@ def _copy_objects(
 
 
 def convert_request_schema_to_model(request_schema, model_class):
-    return _copy_objects(request_schema, model_class)
+    return _copy_objects(request_schema, model_class, model_class())
 
 
-def convert_data_model_to_schema(data_model, schema_class):
-    return _copy_objects(data_model, schema_class, is_copy_all=True)
+def convert_data_model_to_schema(data_model, schema_class, exclusions=None):
+    return _copy_objects(
+        data_model, schema_class, is_copy_all=True, exclusions=exclusions
+    )
 
 
-def convert_request_schema_to_history_schema(
+def convert_request_schema_to_history_model(
     request_schema,
-    history_schema_class,
+    history_model_class,
     user_name,
     history_object_id_key,
     history_object_id_value,
 ):
-    history_schema = _copy_objects(request_schema, history_schema_class)
-    setattr(history_schema, "user_name", user_name)
-    setattr(history_schema, history_object_id_key, history_object_id_value)
-    return history_schema
-
-
-def convert_request_schema_to_note_schema(
-    request_schema,
-    note_schema_class,
-    note_object_id_key,
-    note_object_id_value,
-):
-    note_schema = _copy_objects(request_schema, note_schema_class)
-    setattr(note_schema, note_object_id_key, note_object_id_value)
-    return note_schema
-
-
-def convert_note_model_to_note_schema(note_model, note_schema_class):
-    return convert_data_model_to_schema(note_model, note_schema_class)
-
-
-def convert_note_models_to_note_schemas(note_models, note_schema_class):
-    note_schemas = []
-    if note_models and len(note_models) > 0:
-        note_schemas: List[note_schema_class] = [
-            convert_note_model_to_note_schema(note_model, note_schema_class)
-            for note_model in note_models
-        ]
-    return note_schemas
+    history_model = _copy_objects(
+        request_schema, history_model_class, history_model_class()
+    )
+    setattr(history_model, "user_name", user_name)
+    setattr(history_model, history_object_id_key, history_object_id_value)
+    return history_model
 
 
 def convert_case_collection_model_to_schema(
     data_model: models.CaseCollection,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.CaseCollection:
+    exclusions = [
+        "cash_collections",
+        "history_case_collections",
+        "history_cash_collections",
+    ]
     data_schema: schemas.CaseCollection = convert_data_model_to_schema(
-        data_model, schemas.CaseCollection
+        data_model, schemas.CaseCollection, exclusions
     )
-    data_schema.note_case_collections = convert_note_models_to_note_schemas(
-        data_model.note_case_collections, schemas.NoteCaseCollection
-    )
-    if is_include_extra_objects:
-        data_schema.collection_method = convert_collection_method_model_to_schema(
-            data_model.collection_method
-        )
-        data_schema.court_case = convert_court_case_model_to_schema(
-            data_model.court_case
-        )
-        data_schema.form = convert_form_model_to_schema(data_model.form)
-    if is_include_extra_lists:
-        if data_model.cash_collections and len(data_model.cash_collections) > 0:
-            data_schema.cash_collections = [
-                convert_cash_collection_model_to_schema(cash_collection)
-                for cash_collection in data_model.cash_collections
-            ]
+    if is_include_extra:
+        setattr(data_schema, "cash_collections", data_model.cash_collections)
     if is_include_history:
-        data_schema.history_case_collections = convert_data_model_to_schema(
-            data_model.history_case_collections, schemas.HistoryCaseCollection
+        setattr(
+            data_schema, "history_case_collections", data_model.history_case_collections
         )
     return data_schema
 
 
 def convert_case_type_model_to_schema(
     data_model: models.CaseType,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.CaseType:
+    exclusions = ["court_cases", "history_court_cases"]
     data_schema: schemas.CaseType = convert_data_model_to_schema(
-        data_model, schemas.CaseType
+        data_model, schemas.CaseType, exclusions
     )
-    if is_include_extra_objects:
-        pass
-    if is_include_extra_lists:
-        if data_model.court_cases and len(data_model.court_cases) > 0:
-            data_schema.court_cases = [
-                convert_court_case_model_to_schema(court_case)
-                for court_case in data_model.court_cases
-            ]
+    if is_include_extra:
+        setattr(data_schema, "court_cases", data_model.court_cases)
     if is_include_history:
         pass
     return data_schema
@@ -160,81 +128,55 @@ def convert_case_type_model_to_schema(
 
 def convert_cash_collection_model_to_schema(
     data_model: models.CashCollection,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.CashCollection:
+    exclusions = ["history_cash_collections"]
     data_schema: schemas.CashCollection = convert_data_model_to_schema(
-        data_model, schemas.CashCollection
+        data_model, schemas.CashCollection, exclusions
     )
-    data_schema.note_cash_collections = convert_note_models_to_note_schemas(
-        data_model.note_cash_collections, schemas.NoteCashCollection
-    )
-    if is_include_extra_objects:
-        data_schema.collection_method = convert_collection_method_model_to_schema(
-            data_model.collection_method
-        )
-        data_schema.case_type = convert_case_type_model_to_schema(
-            data_model.case_collection
-        )
-    if is_include_extra_lists:
+    if is_include_extra:
         pass
     if is_include_history:
-        data_schema.history_cash_collections = convert_data_model_to_schema(
-            data_model.history_cash_collections, schemas.HistoryCashCollection
+        setattr(
+            data_schema, "history_cash_collections", data_model.history_cash_collections
         )
     return data_schema
 
 
 def convert_client_model_to_schema(
     data_model: models.Client,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.Client:
+    exclusions = ["court_cases", "history_clients", "history_court_cases"]
     data_schema: schemas.Client = convert_data_model_to_schema(
-        data_model, schemas.Client
+        data_model, schemas.Client, exclusions
     )
-    data_schema.note_clients = convert_note_models_to_note_schemas(
-        data_model.note_clients, schemas.NoteClient
-    )
-    if is_include_extra_objects:
-        data_schema.judge = convert_judge_model_to_schema(data_model.judge)
-    if is_include_extra_lists:
-        if data_model.court_cases and len(data_model.court_cases) > 0:
-            data_schema.court_cases = [
-                convert_court_case_model_to_schema(court_case)
-                for court_case in data_model.court_cases
-            ]
+    if is_include_extra:
+        setattr(data_schema, "court_cases", data_model.court_cases)
     if is_include_history:
-        data_schema.history_clients = convert_data_model_to_schema(
-            data_model.history_clients, schemas.HistoryClient
-        )
+        setattr(data_schema, "history_clients", data_model.history_clients)
     return data_schema
 
 
 def convert_collection_method_model_to_schema(
     data_model: models.CollectionMethod,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.CollectionMethod:
+    exclusions = [
+        "cash_collections",
+        "case_collections",
+        "history_cash_collections",
+        "history_case_collections",
+    ]
     data_schema: schemas.CollectionMethod = convert_data_model_to_schema(
-        data_model, schemas.CollectionMethod
+        data_model, schemas.CollectionMethod, exclusions
     )
-    if is_include_extra_objects:
-        pass
-    if is_include_extra_lists:
-        if data_model.cash_collections and len(data_model.cash_collections) > 0:
-            data_schema.cash_collections = [
-                convert_cash_collection_model_to_schema(cash_collection)
-                for cash_collection in data_model.cash_collections
-            ]
-        if data_model.case_collections and len(data_model.case_collections) > 0:
-            data_schema.case_collections = [
-                convert_case_collection_model_to_schema(case_collection)
-                for case_collection in data_model.case_collections
-            ]
+    if is_include_extra:
+        setattr(data_schema, "cash_collections", data_model.cash_collections)
+        setattr(data_schema, "case_collections", data_model.case_collections)
     if is_include_history:
         pass
     return data_schema
@@ -242,119 +184,76 @@ def convert_collection_method_model_to_schema(
 
 def convert_court_case_model_to_schema(
     data_model: models.CourtCase,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.CourtCase:
+    exclusions = [
+        "forms",
+        "case_collections",
+        "hearing_calendars",
+        "task_calendars",
+        "history_court_cases",
+        "history_hearing_calendars",
+        "history_task_calendars",
+        "history_forms",
+        "history_case_collections",
+    ]
     data_schema: schemas.CourtCase = convert_data_model_to_schema(
-        data_model, schemas.CourtCase
+        data_model, schemas.CourtCase, exclusions
     )
-    data_schema.note_court_cases = convert_note_models_to_note_schemas(
-        data_model.note_court_cases, schemas.NoteCourtCase
-    )
-    if is_include_extra_objects:
-        data_schema.case_type = convert_case_type_model_to_schema(data_model.case_type)
-        data_schema.client = convert_client_model_to_schema(data_model.client)
-    if is_include_extra_lists:
-        if data_model.forms and len(data_model.forms) > 0:
-            data_schema.forms = [
-                convert_form_model_to_schema(form) for form in data_model.forms
-            ]
-        if data_model.case_collections and len(data_model.case_collections) > 0:
-            data_schema.case_collections = [
-                convert_case_collection_model_to_schema(case_collection)
-                for case_collection in data_model.case_collections
-            ]
-        if data_model.hearing_calendars and len(data_model.hearing_calendars) > 0:
-            data_schema.hearing_calendars = [
-                convert_hearing_calendar_model_to_schema(hearing_calendar)
-                for hearing_calendar in data_model.hearing_calendars
-            ]
-            data_schema.task_calendars = [
-                convert_task_calendar_model_to_schema(task_calendar)
-                for task_calendar in data_model.task_calendars
-            ]
+    if is_include_extra:
+        setattr(data_schema, "forms", data_model.forms)
+        setattr(data_schema, "case_collections", data_model.case_collections)
+        setattr(data_schema, "hearing_calendars", data_model.hearing_calendars)
+        setattr(data_schema, "task_calendars", data_model.task_calendars)
     if is_include_history:
-        data_schema.history_court_cases = convert_data_model_to_schema(
-            data_model.history_court_cases, schemas.HistoryCourtCase
-        )
+        setattr(data_schema, "history_court_cases", data_model.history_court_cases)
     return data_schema
 
 
 def convert_court_model_to_schema(
     data_model: models.Court,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.Court:
-    data_schema: schemas.Court = convert_data_model_to_schema(data_model, schemas.Court)
-    data_schema.note_courts = convert_note_models_to_note_schemas(
-        data_model.note_courts, schemas.NoteCourt
+    exclusions = ["judges", "history_courts", "history_judges"]
+    data_schema: schemas.Court = convert_data_model_to_schema(
+        data_model, schemas.Court, exclusions
     )
-    if is_include_extra_objects:
-        pass
-    if is_include_extra_lists:
-        if data_model.judges and len(data_model.judges) > 0:
-            data_schema.judges = [
-                convert_judge_model_to_schema(judge) for judge in data_model.judges
-            ]
+    if is_include_extra:
+        setattr(data_schema, "judges", data_model.judges)
     if is_include_history:
-        data_schema.history_courts = convert_data_model_to_schema(
-            data_model.history_courts, schemas.HistoryCourt
-        )
+        setattr(data_schema, "history_courts", data_model.history_courts)
     return data_schema
 
 
 def convert_form_model_to_schema(
     data_model: models.Form,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.Form:
-    data_schema: schemas.Form = convert_data_model_to_schema(data_model, schemas.Form)
-    data_schema.note_forms = convert_note_models_to_note_schemas(
-        data_model.note_forms, schemas.NoteForm
+    exclusions = ["case_collections", "history_forms", "history_case_collections"]
+    data_schema: schemas.Form = convert_data_model_to_schema(
+        data_model, schemas.Form, exclusions
     )
-    if is_include_extra_objects:
-        data_schema.form_status = convert_form_status_model_to_schema(
-            data_model.form_status
-        )
-        data_schema.form_type = convert_form_type_model_to_schema(data_model.form_type)
-        data_schema.task_calendar = convert_task_calendar_model_to_schema(
-            data_model.task_calendar
-        )
-        data_schema.court_case = convert_court_case_model_to_schema(
-            data_model.court_case
-        )
-    if is_include_extra_lists:
-        if data_model.case_collections and len(data_model.case_collections) > 0:
-            data_schema.case_collections = [
-                convert_case_collection_model_to_schema(case_collection)
-                for case_collection in data_model.case_collections
-            ]
+    if is_include_extra:
+        setattr(data_schema, "case_collections", data_model.case_collections)
     if is_include_history:
-        data_schema.history_forms = convert_data_model_to_schema(
-            data_model.history_forms, schemas.HistoryForm
-        )
+        setattr(data_schema, "history_forms", data_model.history_forms)
     return data_schema
 
 
 def convert_form_status_model_to_schema(
     data_model: models.FormStatus,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.FormStatus:
+    exclusions = ["forms", "history_forms"]
     data_schema: schemas.FormStatus = convert_data_model_to_schema(
-        data_model, schemas.FormStatus
+        data_model, schemas.FormStatus, exclusions
     )
-    if is_include_extra_objects:
-        pass
-    if is_include_extra_lists:
-        if data_model.forms and len(data_model.forms) > 0:
-            data_schema.forms = [
-                convert_form_model_to_schema(form) for form in data_model.forms
-            ]
+    if is_include_extra:
+        setattr(data_schema, "forms", data_model.forms)
     if is_include_history:
         pass
     return data_schema
@@ -362,20 +261,15 @@ def convert_form_status_model_to_schema(
 
 def convert_form_type_model_to_schema(
     data_model: models.FormType,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.FormType:
+    exclusions = ["forms", "history_forms"]
     data_schema: schemas.FormType = convert_data_model_to_schema(
-        data_model, schemas.FormType
+        data_model, schemas.FormType, exclusions
     )
-    if is_include_extra_objects:
-        pass
-    if is_include_extra_lists:
-        if data_model.forms and len(data_model.forms) > 0:
-            data_schema.forms = [
-                convert_form_model_to_schema(form) for form in data_model.forms
-            ]
+    if is_include_extra:
+        setattr(data_schema, "forms", data_model.forms)
     if is_include_history:
         pass
     return data_schema
@@ -383,52 +277,39 @@ def convert_form_type_model_to_schema(
 
 def convert_hearing_calendar_model_to_schema(
     data_model: models.HearingCalendar,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.HearingCalendar:
+    exclusions = [
+        "task_calendars",
+        "history_hearing_calendars",
+        "history_task_calendars",
+    ]
     data_schema: schemas.HearingCalendar = convert_data_model_to_schema(
-        data_model, schemas.HearingCalendar
+        data_model, schemas.HearingCalendar, exclusions
     )
-    data_schema.note_hearing_calendars = convert_note_models_to_note_schemas(
-        data_model.note_hearing_calendars, schemas.NoteHearingCalendar
-    )
-    if is_include_extra_objects:
-        data_schema.hearing_type = convert_hearing_type_model_to_schema(
-            data_model.hearing_type
-        )
-        data_schema.court_case = convert_court_case_model_to_schema(
-            data_model.court_case
-        )
-    if is_include_extra_lists:
-        if data_model.task_calendars and len(data_model.task_calendars) > 0:
-            data_schema.task_calendars = [
-                convert_task_calendar_model_to_schema(task_calendar)
-                for task_calendar in data_model.task_calendars
-            ]
+    if is_include_extra:
+        setattr(data_schema, "task_calendars", data_model.task_calendars)
     if is_include_history:
-        data_schema.history_hearing_calendars = convert_data_model_to_schema(
-            data_model.history_hearing_calendars, schemas.HistoryHearingCalendar
+        setattr(
+            data_schema,
+            "history_hearing_calendars",
+            data_model.history_hearing_calendars,
         )
     return data_schema
 
 
 def convert_hearing_type_model_to_schema(
     data_model: models.HearingType,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.HearingType:
+    exclusions = ["hearing_calendars", "history_hearing_calendars"]
     data_schema: schemas.HearingType = convert_data_model_to_schema(
-        data_model, schemas.HearingType
+        data_model, schemas.HearingType, exclusions
     )
-    if is_include_extra_objects:
-        pass
-    if is_include_extra_lists:
-        if data_model.hearing_calendars and len(data_model.hearing_calendars) > 0:
-            data_schema.hearing_calendars = [
-                convert_hearing_calendar_model_to_schema(data_model.hearing_calendars)
-            ]
+    if is_include_extra:
+        setattr(data_schema, "hearing_calendars", data_model.hearing_calendars)
     if is_include_history:
         pass
     return data_schema
@@ -436,77 +317,49 @@ def convert_hearing_type_model_to_schema(
 
 def convert_judge_model_to_schema(
     data_model: models.Judge,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.Judge:
-    data_schema: schemas.Judge = convert_data_model_to_schema(data_model, schemas.Judge)
-    data_schema.note_judges = convert_note_models_to_note_schemas(
-        data_model.note_judges, schemas.NoteJudge
+    exclusions = ["clients", "history_judges", "history_clients"]
+    data_schema: schemas.Judge = convert_data_model_to_schema(
+        data_model, schemas.Judge, exclusions
     )
-    if is_include_extra_objects:
-        data_schema.court = convert_court_model_to_schema(data_model.court)
-    if is_include_extra_lists:
-        if data_model.clients and len(data_model.clients) > 0:
-            data_schema.clients = [
-                convert_client_model_to_schema(client) for client in data_model.clients
-            ]
+    if is_include_extra:
+        setattr(data_schema, "clients", data_model.clients)
     if is_include_history:
-        data_schema.history_judges = convert_data_model_to_schema(
-            data_model.history_judges, schemas.HistoryJudge
-        )
+        setattr(data_schema, "history_judges", data_model.history_judges)
     return data_schema
 
 
 def convert_task_calendar_model_to_schema(
     data_model: models.TaskCalendar,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.TaskCalendar:
+    exclusions = ["forms", "history_task_calendars", "history_forms"]
     data_schema: schemas.TaskCalendar = convert_data_model_to_schema(
-        data_model, schemas.TaskCalendar
+        data_model, schemas.TaskCalendar, exclusions
     )
-    data_schema.note_task_calendars = convert_note_models_to_note_schemas(
-        data_model.note_task_calendars, schemas.NoteTaskCalendar
-    )
-    if is_include_extra_objects:
-        data_schema.task_type = convert_task_type_model_to_schema(data_model.task_type)
-        data_schema.court_case = convert_court_case_model_to_schema(
-            data_model.court_case
-        )
-        data_schema.hearing_calendar = convert_hearing_calendar_model_to_schema(
-            data_model.hearing_calendar
-        )
-    if is_include_extra_lists:
-        if data_model.forms and len(data_model.forms) > 0:
-            data_schema.forms = [
-                convert_form_model_to_schema(form) for form in data_model.forms
-            ]
+    if is_include_extra:
+        setattr(data_schema, "forms", data_model.forms)
     if is_include_history:
-        data_schema.history_task_calendars = convert_data_model_to_schema(
-            data_model.history_task_calendars, schemas.HistoryTaskCalendar
+        setattr(
+            data_schema, "history_task_calendars", data_model.history_task_calendars
         )
     return data_schema
 
 
 def convert_task_type_model_to_schema(
     data_model: models.TaskType,
-    is_include_extra_objects=False,
-    is_include_extra_lists=False,
+    is_include_extra=False,
     is_include_history=False,
 ) -> schemas.TaskType:
+    exclusions = ["task_calendars", "history_task_calendars"]
     data_schema: schemas.TaskType = convert_data_model_to_schema(
-        data_model, schemas.TaskType
+        data_model, schemas.TaskType, exclusions
     )
-    if is_include_extra_objects:
-        pass
-    if is_include_extra_lists:
-        if data_model.task_calendars and len(data_model.task_calendars) > 0:
-            data_schema.task_calendars = [
-                convert_task_calendar_model_to_schema(task_calendar)
-                for task_calendar in data_model.task_calendars
-            ]
+    if is_include_extra:
+        setattr(data_schema, "task_calendars", data_model.task_calendars)
     if is_include_history:
         pass
     return data_schema

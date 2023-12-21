@@ -10,7 +10,7 @@ from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Base
 from src.trackcase_service.utils import logger
 from src.trackcase_service.utils.constants import USERNAME_HEADER
-from src.trackcase_service.utils.convert import convert_request_schema_to_history_schema
+from src.trackcase_service.utils.convert import convert_request_schema_to_history_model
 
 ModelBase = TypeVar("ModelBase", bound=Base)
 log = logger.Logger(logging.getLogger(__name__), __name__)
@@ -24,16 +24,15 @@ class HistoryService(CrudService):
         self,
         request: Request,
         request_object: BaseModel,
-        history_schema_class: Type[BaseModel],
         history_object_id_key: str,
         history_object_id_value: Union[str, int],
         parent_type: str,
         history_type: str,
     ):
         user_name = request.headers.get(USERNAME_HEADER)
-        history_data_model = convert_request_schema_to_history_schema(
+        history_data_model = convert_request_schema_to_history_model(
             request_object,
-            history_schema_class,
+            self.db_model,
             user_name,
             history_object_id_key,
             history_object_id_value,
@@ -57,7 +56,7 @@ class HistoryService(CrudService):
     ):
         user_name_value = request.headers.get(USERNAME_HEADER)
         sql = text(
-            f"INSERT INTO {history_table_name} (user_name, {id_key}) VALUES ({user_name_value}, {id_value})"
+            f"""INSERT INTO {history_table_name} (user_name, {id_key}) VALUES ('{user_name_value}', {id_value})"""
         )
         try:
             self.db_session.execute(sql)

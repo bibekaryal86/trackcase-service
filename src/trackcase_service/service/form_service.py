@@ -10,7 +10,6 @@ from src.trackcase_service.db.models import HistoryForm as HistoryFormModel
 from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.schemas import Form as FormSchema
 from src.trackcase_service.service.schemas import FormRequest, FormResponse
-from src.trackcase_service.service.schemas import HistoryForm as HistoryFormSchema
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_form_model_to_schema,
@@ -44,8 +43,7 @@ class FormService(CrudService):
         self,
         model_id: int,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> FormResponse:
         try:
@@ -53,8 +51,7 @@ class FormService(CrudService):
             if data_model:
                 schema_model: FormSchema = convert_form_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 return get_response_single(schema_model)
@@ -71,8 +68,7 @@ class FormService(CrudService):
     def read_all_forms(
         self,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> FormResponse:
         try:
@@ -82,8 +78,7 @@ class FormService(CrudService):
             schema_models: List[FormSchema] = [
                 convert_form_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 for data_model in data_models
@@ -184,7 +179,6 @@ def _create_history(
         history_service.add_to_history(
             request,
             request_object,
-            HistoryFormSchema,
             "form_id",
             form_id,
             "Form",

@@ -10,7 +10,6 @@ from src.trackcase_service.db.models import HistoryClient as HistoryClientModel
 from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.schemas import Client as ClientSchema
 from src.trackcase_service.service.schemas import ClientRequest, ClientResponse
-from src.trackcase_service.service.schemas import HistoryClient as HistoryClientSchema
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_client_model_to_schema,
@@ -44,8 +43,7 @@ class ClientService(CrudService):
         self,
         model_id: int,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> ClientResponse:
         try:
@@ -53,8 +51,7 @@ class ClientService(CrudService):
             if data_model:
                 schema_model: ClientSchema = convert_client_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 return get_response_single(schema_model)
@@ -71,8 +68,7 @@ class ClientService(CrudService):
     def read_all_clients(
         self,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> ClientResponse:
         try:
@@ -82,8 +78,7 @@ class ClientService(CrudService):
             schema_models: List[ClientSchema] = [
                 convert_client_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 for data_model in data_models
@@ -184,7 +179,6 @@ def _create_history(
         history_service.add_to_history(
             request,
             request_object,
-            HistoryClientSchema,
             "client_id",
             client_id,
             "Client",

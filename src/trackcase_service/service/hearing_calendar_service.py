@@ -17,9 +17,6 @@ from src.trackcase_service.service.schemas import (
     HearingCalendarRequest,
     HearingCalendarResponse,
 )
-from src.trackcase_service.service.schemas import (
-    HistoryHearingCalendar as HistoryHearingCalendarSchema,
-)
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_hearing_calendar_model_to_schema,
@@ -55,8 +52,7 @@ class HearingCalendarService(CrudService):
         self,
         model_id: int,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> HearingCalendarResponse:
         try:
@@ -65,8 +61,7 @@ class HearingCalendarService(CrudService):
                 schema_model: HearingCalendarSchema = (
                     convert_hearing_calendar_model_to_schema(
                         data_model,
-                        is_include_extra_objects,
-                        is_include_extra_lists,
+                        is_include_extra,
                         is_include_history,
                     )
                 )
@@ -84,8 +79,7 @@ class HearingCalendarService(CrudService):
     def read_all_hearing_calendars(
         self,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> HearingCalendarResponse:
         try:
@@ -95,8 +89,7 @@ class HearingCalendarService(CrudService):
             schema_models: List[HearingCalendarSchema] = [
                 convert_hearing_calendar_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 for data_model in data_models
@@ -207,7 +200,6 @@ def _create_history(
         history_service.add_to_history(
             request,
             request_object,
-            HistoryHearingCalendarSchema,
             "hearing_calendar_id",
             hearing_calendar_id,
             "HearingCalendar",

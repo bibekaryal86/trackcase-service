@@ -40,8 +40,7 @@ class FormTypeService(CrudService):
         self,
         model_id: int,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> FormTypeResponse:
         try:
@@ -49,8 +48,7 @@ class FormTypeService(CrudService):
             if data_model:
                 schema_model: FormTypeSchema = convert_form_type_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 return get_response_single(schema_model)
@@ -67,8 +65,7 @@ class FormTypeService(CrudService):
     def read_all_form_types(
         self,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> FormTypeResponse:
         try:
@@ -78,8 +75,7 @@ class FormTypeService(CrudService):
             schema_models: List[FormTypeSchema] = [
                 convert_form_type_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 for data_model in data_models

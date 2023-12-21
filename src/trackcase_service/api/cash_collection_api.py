@@ -26,15 +26,14 @@ router = APIRouter(
 @router.get("/", response_model=CashCollectionResponse, status_code=HTTPStatus.OK)
 def find_all(
     request: Request,
-    is_include_extra_objects: bool = False,
-    is_include_extra_lists: bool = False,
+    is_include_extra: bool = False,
     is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     return get_cash_collection_service(db_session).read_all_cash_collections(
-        request, is_include_extra_objects, is_include_extra_lists, is_include_history
+        request, is_include_extra, is_include_history
     )
 
 
@@ -46,8 +45,7 @@ def find_all(
 def find_one(
     cash_collection_id: int,
     request: Request,
-    is_include_extra_objects: bool = False,
-    is_include_extra_lists: bool = False,
+    is_include_extra: bool = False,
     is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
@@ -58,8 +56,7 @@ def find_one(
     ).read_one_cash_collection(
         cash_collection_id,
         request,
-        is_include_extra_objects,
-        is_include_extra_lists,
+        is_include_extra,
         is_include_history,
     )
     if cash_collection_response is None:

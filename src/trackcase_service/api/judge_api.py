@@ -19,22 +19,22 @@ router = APIRouter(prefix="/trackcase-service/judges", tags=["Judges"])
 @router.get("/", response_model=JudgeResponse, status_code=HTTPStatus.OK)
 def find_all(
     request: Request,
-    is_include_extra_objects: bool = False,
-    is_include_extra_lists: bool = False,
+    is_include_extra: bool = False,
     is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_judge_service(db_session).read_all_judges(request, is_include_extra_objects, is_include_extra_lists, is_include_history)
+    return get_judge_service(db_session).read_all_judges(
+        request, is_include_extra, is_include_history
+    )
 
 
 @router.get("/{judge_id}", response_model=JudgeResponse, status_code=HTTPStatus.OK)
 def find_one(
     judge_id: int,
     request: Request,
-    is_include_extra_objects: bool = False,
-    is_include_extra_lists: bool = False,
+    is_include_extra: bool = False,
     is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
@@ -43,8 +43,7 @@ def find_one(
     judge_response: JudgeResponse = get_judge_service(db_session).read_one_judge(
         judge_id,
         request,
-        is_include_extra_objects,
-        is_include_extra_lists,
+        is_include_extra,
         is_include_history,
     )
     if judge_response is None:
@@ -62,8 +61,7 @@ def find_one(
 def find_judges_by_court(
     court_id: int,
     request: Request,
-    is_include_extra_objects: bool = False,
-    is_include_extra_lists: bool = False,
+    is_include_extra: bool = False,
     is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
@@ -74,8 +72,7 @@ def find_judges_by_court(
     ).read_many_judges_by_court_id(
         court_id,
         request,
-        is_include_extra_objects,
-        is_include_extra_lists,
+        is_include_extra,
         is_include_history,
     )
     if judge_response is None or len(judge_response.judges) == 0:

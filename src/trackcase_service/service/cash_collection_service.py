@@ -15,9 +15,6 @@ from src.trackcase_service.service.schemas import (
     CashCollectionRequest,
     CashCollectionResponse,
 )
-from src.trackcase_service.service.schemas import (
-    HistoryCashCollection as HistoryCashCollectionSchema,
-)
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_cash_collection_model_to_schema,
@@ -53,8 +50,7 @@ class CashCollectionService(CrudService):
         self,
         model_id: int,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> CashCollectionResponse:
         try:
@@ -63,8 +59,7 @@ class CashCollectionService(CrudService):
                 schema_model: CashCollectionSchema = (
                     convert_cash_collection_model_to_schema(
                         data_model,
-                        is_include_extra_objects,
-                        is_include_extra_lists,
+                        is_include_extra,
                         is_include_history,
                     )
                 )
@@ -82,8 +77,7 @@ class CashCollectionService(CrudService):
     def read_all_cash_collections(
         self,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> CashCollectionResponse:
         try:
@@ -93,8 +87,7 @@ class CashCollectionService(CrudService):
             schema_models: List[CashCollectionSchema] = [
                 convert_cash_collection_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 for data_model in data_models
@@ -201,7 +194,6 @@ def _create_history(
         history_service.add_to_history(
             request,
             request_object,
-            HistoryCashCollectionSchema,
             "cash_collection_id",
             cash_collection_id,
             "CashCollection",

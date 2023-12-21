@@ -16,9 +16,6 @@ from src.trackcase_service.service.schemas import (
     CaseCollectionResponse,
     CaseCollectionRetrieveRequest,
 )
-from src.trackcase_service.service.schemas import (
-    HistoryCaseCollection as HistoryCaseCollectionSchema,
-)
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_case_collection_model_to_schema,
@@ -54,8 +51,7 @@ class CaseCollectionService(CrudService):
         self,
         model_id: int,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> CaseCollectionResponse:
         try:
@@ -64,8 +60,7 @@ class CaseCollectionService(CrudService):
                 schema_model: CaseCollectionSchema = (
                     convert_case_collection_model_to_schema(
                         data_model,
-                        is_include_extra_objects,
-                        is_include_extra_lists,
+                        is_include_extra,
                         is_include_history,
                     )
                 )
@@ -83,8 +78,7 @@ class CaseCollectionService(CrudService):
     def read_all_case_collections(
         self,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> CaseCollectionResponse:
         try:
@@ -94,8 +88,7 @@ class CaseCollectionService(CrudService):
             schema_models: List[CaseCollectionSchema] = [
                 convert_case_collection_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 for data_model in data_models
@@ -114,8 +107,7 @@ class CaseCollectionService(CrudService):
         self,
         request: Request,
         case_collection_retrieve_request: CaseCollectionRetrieveRequest,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ):
         filters = case_collection_retrieve_request.to_dict()
@@ -127,8 +119,7 @@ class CaseCollectionService(CrudService):
             schema_models: List[CaseCollectionSchema] = [
                 convert_case_collection_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 for data_model in data_models
@@ -137,8 +128,7 @@ class CaseCollectionService(CrudService):
         else:
             self.read_all_case_collections(
                 request,
-                is_include_extra_objects,
-                is_include_extra_lists,
+                is_include_extra,
                 is_include_history,
             )
 
@@ -237,7 +227,6 @@ def _create_history(
         history_service.add_to_history(
             request,
             request_object,
-            HistoryCaseCollectionSchema,
             "case_collection_id",
             case_collection_id,
             "CaseCollection",

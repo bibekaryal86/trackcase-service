@@ -45,8 +45,7 @@ class HearingTypeService(CrudService):
         self,
         model_id: int,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> HearingTypeResponse:
         try:
@@ -54,8 +53,7 @@ class HearingTypeService(CrudService):
             if data_model:
                 schema_model: HearingTypeSchema = convert_hearing_type_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 return get_response_single(schema_model)
@@ -72,8 +70,7 @@ class HearingTypeService(CrudService):
     def read_all_hearing_types(
         self,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> HearingTypeResponse:
         try:
@@ -83,8 +80,7 @@ class HearingTypeService(CrudService):
             schema_models: List[HearingTypeSchema] = [
                 convert_hearing_type_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 for data_model in data_models

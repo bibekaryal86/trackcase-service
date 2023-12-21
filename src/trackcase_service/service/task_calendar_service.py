@@ -10,9 +10,6 @@ from src.trackcase_service.db.models import (
 )
 from src.trackcase_service.db.models import TaskCalendar as TaskCalendarModel
 from src.trackcase_service.service.history_service import get_history_service
-from src.trackcase_service.service.schemas import (
-    HistoryTaskCalendar as HistoryTaskCalendarSchema,
-)
 from src.trackcase_service.service.schemas import TaskCalendar as TaskCalendarSchema
 from src.trackcase_service.service.schemas import (
     TaskCalendarRequest,
@@ -53,8 +50,7 @@ class TaskCalendarService(CrudService):
         self,
         model_id: int,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> TaskCalendarResponse:
         try:
@@ -63,8 +59,7 @@ class TaskCalendarService(CrudService):
                 schema_model: TaskCalendarSchema = (
                     convert_task_calendar_model_to_schema(
                         data_model,
-                        is_include_extra_objects,
-                        is_include_extra_lists,
+                        is_include_extra,
                         is_include_history,
                     )
                 )
@@ -82,8 +77,7 @@ class TaskCalendarService(CrudService):
     def read_all_task_calendars(
         self,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> TaskCalendarResponse:
         try:
@@ -93,8 +87,7 @@ class TaskCalendarService(CrudService):
             schema_models: List[TaskCalendarSchema] = [
                 convert_task_calendar_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 for data_model in data_models
@@ -199,7 +192,6 @@ def _create_history(
         history_service.add_to_history(
             request,
             request_object,
-            HistoryTaskCalendarSchema,
             "task_calendar_id",
             task_calendar_id,
             "TaskCalendar",

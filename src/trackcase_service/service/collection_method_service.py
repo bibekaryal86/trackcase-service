@@ -47,8 +47,7 @@ class CollectionMethodService(CrudService):
         self,
         model_id: int,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> CollectionMethodResponse:
         try:
@@ -57,8 +56,7 @@ class CollectionMethodService(CrudService):
                 schema_model: CollectionMethodSchema = (
                     convert_collection_method_model_to_schema(
                         data_model,
-                        is_include_extra_objects,
-                        is_include_extra_lists,
+                        is_include_extra,
                         is_include_history,
                     )
                 )
@@ -76,8 +74,7 @@ class CollectionMethodService(CrudService):
     def read_all_collection_methods(
         self,
         request: Request,
-        is_include_extra_objects: bool = False,
-        is_include_extra_lists: bool = False,
+        is_include_extra: bool = False,
         is_include_history: bool = False,
     ) -> CollectionMethodResponse:
         try:
@@ -87,8 +84,7 @@ class CollectionMethodService(CrudService):
             schema_models: List[CollectionMethodSchema] = [
                 convert_collection_method_model_to_schema(
                     data_model,
-                    is_include_extra_objects,
-                    is_include_extra_lists,
+                    is_include_extra,
                     is_include_history,
                 )
                 for data_model in data_models
