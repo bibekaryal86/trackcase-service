@@ -22,6 +22,7 @@ import src.trackcase_service.api.form_type_api as form_type_api
 import src.trackcase_service.api.hearing_calendar_api as hearing_calendar_api
 import src.trackcase_service.api.hearing_type_api as hearing_type_api
 import src.trackcase_service.api.judge_api as judge_api
+import src.trackcase_service.api.note_api as note_api
 import src.trackcase_service.api.task_calendar_api as task_calendar_api
 import src.trackcase_service.api.task_type_api as task_type_api
 from src.trackcase_service.utils import commons, constants, enums, logger
@@ -76,6 +77,7 @@ app.include_router(hearing_type_api.router, dependencies=[Depends(user_name_head
 app.include_router(judge_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(task_calendar_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(task_type_api.router, dependencies=[Depends(user_name_header)])
+app.include_router(note_api.router, dependencies=[Depends(user_name_header)])
 
 
 @app.middleware("http")
