@@ -1,7 +1,37 @@
+from datetime import datetime
+from decimal import Decimal
 from typing import List
+
+from pydantic.fields import FieldInfo
 
 from src.trackcase_service.db import models
 from src.trackcase_service.service import schemas
+
+
+def _get_default_value(field: FieldInfo):
+    field_type_name = field.annotation.__name__
+    if field.is_required():
+        if field_type_name == "str":
+            return ""
+        elif field_type_name == "int":
+            return 0
+        elif field_type_name == "datetime":
+            return datetime.now()
+        elif field_type_name == "Decimal":
+            return Decimal("0.00")
+        elif field_type_name == "list":
+            return []
+    return field.default
+
+
+# this is required because Pydantic doesn't allow creating empty instance
+# so create an instance with default empty values according to type
+def _create_default_schema_instance(destination_class):
+    fields = destination_class.__fields__
+    required_fields = {
+        name: _get_default_value(field) for name, field in fields.items()
+    }
+    return destination_class(**required_fields)
 
 
 def _copy_objects(
@@ -10,7 +40,7 @@ def _copy_objects(
     if source_object is None:
         return None
     if destination_object is None:
-        destination_object = destination_class()
+        destination_object = _create_default_schema_instance(destination_class)
     common_attributes = set(dir(source_object)) & set(dir(destination_object))
     for attr in common_attributes:
         if (

@@ -10,9 +10,7 @@ from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Base
 from src.trackcase_service.utils import logger
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
-from src.trackcase_service.utils.convert import (
-    convert_request_schema_to_model,
-)
+from src.trackcase_service.utils.convert import convert_request_schema_to_model
 
 ModelBase = TypeVar("ModelBase", bound=Base)
 log = logger.Logger(logging.getLogger(__name__), __name__)
