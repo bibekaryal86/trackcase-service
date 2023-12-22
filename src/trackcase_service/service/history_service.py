@@ -45,7 +45,7 @@ class HistoryService(CrudService):
             log.error(str(ex))
             raise Exception(err_msg)
 
-    def add_to_history_for_delete(
+    def delete_history_before_delete_object(
         self,
         request: Request,
         history_table_name: str,
@@ -56,7 +56,7 @@ class HistoryService(CrudService):
     ):
         user_name_value = request.headers.get(USERNAME_HEADER)
         sql = text(
-            f"""INSERT INTO {history_table_name} (user_name, {id_key}) VALUES ('{user_name_value}', {id_value})"""
+            f"""DELETE FROM {history_table_name} WHERE {id_key} = {id_value}"""
         )
         try:
             self.db_session.execute(sql)

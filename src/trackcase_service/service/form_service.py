@@ -29,7 +29,7 @@ class FormService(CrudService):
                 request_object, FormModel
             )
             data_model = super().create(data_model)
-            _create_history(self.db_session, request, data_model.id, request_object)
+            _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_form_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -108,7 +108,7 @@ class FormService(CrudService):
                 request_object, FormModel
             )
             data_model = super().update(model_id, data_model)
-            _create_history(self.db_session, request, model_id, request_object)
+            _handle_history(self.db_session, request, model_id, request_object)
             schema_model = convert_form_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -132,7 +132,7 @@ class FormService(CrudService):
             )
 
         try:
-            _create_history(self.db_session, request, model_id, is_delete=True)
+            _handle_history(self.db_session, request, model_id, is_delete=True)
             super().delete(model_id)
             return FormResponse(delete_count=1)
         except Exception as ex:
@@ -158,7 +158,7 @@ def get_response_multiple(multiple: list[FormSchema]) -> FormResponse:
     return FormResponse(forms=multiple)
 
 
-def _create_history(
+def _handle_history(
     db_session: Session,
     request: Request,
     form_id: int,
@@ -167,7 +167,7 @@ def _create_history(
 ):
     history_service = get_history_service(db_session, HistoryFormModel)
     if is_delete:
-        history_service.add_to_history_for_delete(
+        history_service.delete_history_before_delete_object(
             request,
             HistoryFormModel.__tablename__,
             "form_id",
