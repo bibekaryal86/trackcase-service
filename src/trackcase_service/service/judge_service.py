@@ -208,7 +208,6 @@ def _handle_history(
     history_service = get_history_service(db_session, HistoryJudgeModel)
     if is_delete:
         history_service.delete_history_before_delete_object(
-            request,
             HistoryJudgeModel.__tablename__,
             "judge_id",
             judge_id,

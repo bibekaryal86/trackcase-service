@@ -168,7 +168,6 @@ def _handle_history(
     history_service = get_history_service(db_session, HistoryFormModel)
     if is_delete:
         history_service.delete_history_before_delete_object(
-            request,
             HistoryFormModel.__tablename__,
             "form_id",
             form_id,

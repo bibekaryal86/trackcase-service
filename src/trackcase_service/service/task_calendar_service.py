@@ -181,7 +181,6 @@ def _handle_history(
     history_service = get_history_service(db_session, HistoryTaskCalendarModel)
     if is_delete:
         history_service.delete_history_before_delete_object(
-            request,
             HistoryTaskCalendarModel.__tablename__,
             "task_calendar_id",
             task_calendar_id,

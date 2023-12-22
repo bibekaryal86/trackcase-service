@@ -47,14 +47,12 @@ class HistoryService(CrudService):
 
     def delete_history_before_delete_object(
         self,
-        request: Request,
         history_table_name: str,
         id_key: str,
         id_value: int,
         parent_type: str,
         history_type: str,
     ):
-        user_name_value = request.headers.get(USERNAME_HEADER)
         sql = text(
             f"""DELETE FROM {history_table_name} WHERE {id_key} = {id_value}"""
         )

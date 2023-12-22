@@ -168,7 +168,6 @@ def _handle_history(
     history_service = get_history_service(db_session, HistoryCourtModel)
     if is_delete:
         history_service.delete_history_before_delete_object(
-            request,
             HistoryCourtModel.__tablename__,
             "court_id",
             court_id,

@@ -189,7 +189,6 @@ def _handle_history(
     history_service = get_history_service(db_session, HistoryHearingCalendarModel)
     if is_delete:
         history_service.delete_history_before_delete_object(
-            request,
             HistoryHearingCalendarModel.__tablename__,
             "hearing_calendar_id",
             hearing_calendar_id,

@@ -216,7 +216,6 @@ def _handle_history(
     history_service = get_history_service(db_session, HistoryCaseCollectionModel)
     if is_delete:
         history_service.delete_history_before_delete_object(
-            request,
             HistoryCaseCollectionModel.__tablename__,
             "case_collection_id",
             case_collection_id,
