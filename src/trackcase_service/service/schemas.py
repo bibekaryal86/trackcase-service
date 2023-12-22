@@ -47,11 +47,10 @@ class NoteRequest(BaseModel):
     user_name: str
     note: str
     note_object_id: int
-    note_object_type: str
 
 
 class NoteResponse(ResponseBase):
-    pass
+    success: bool
 
 
 # form type
