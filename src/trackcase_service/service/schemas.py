@@ -8,7 +8,6 @@ class BaseModelSchema(BaseModel):
     id: Optional[int] = None
     created: Optional[datetime] = None
     modified: Optional[datetime] = None
-    comments: Optional[str] = None
 
 
 class ErrorDetail(BaseModel):
@@ -27,7 +26,7 @@ class NameDescBase:
 
 class StatusBase(BaseModel):
     status: Optional[str] = None
-    status_date: Optional[datetime] = None
+    comments: Optional[str] = None
 
 
 class AddressBase(BaseModel):

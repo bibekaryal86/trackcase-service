@@ -1,8 +1,8 @@
-"""first
+"""0000001
 
-Revision ID: caa68e9cb33c
-Revises:
-Create Date: 2023-11-25 10:19:45.889072
+Revision ID: 4da10b509bf9
+Revises: 
+Create Date: 2023-12-22 11:49:03.837046
 
 """
 from typing import Sequence, Union
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "caa68e9cb33c"
+revision: str = "4da10b509bf9"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -22,13 +22,8 @@ def upgrade() -> None:
     op.create_table(
         "case_type",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("description", sa.String(length=3000), nullable=False),
         sa.PrimaryKeyConstraint("id"),
@@ -37,13 +32,8 @@ def upgrade() -> None:
     op.create_table(
         "collection_method",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("description", sa.String(length=3000), nullable=False),
         sa.PrimaryKeyConstraint("id"),
@@ -54,31 +44,23 @@ def upgrade() -> None:
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("dhs_address", sa.String(length=1000), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("street_address", sa.String(length=500), nullable=True),
         sa.Column("city", sa.String(length=100), nullable=True),
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
         sa.Column("phone_number", sa.Integer(), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("name"),
     )
     op.create_table(
         "form_status",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("description", sa.String(length=3000), nullable=False),
         sa.PrimaryKeyConstraint("id"),
@@ -87,13 +69,8 @@ def upgrade() -> None:
     op.create_table(
         "form_type",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("description", sa.String(length=3000), nullable=False),
         sa.PrimaryKeyConstraint("id"),
@@ -102,13 +79,8 @@ def upgrade() -> None:
     op.create_table(
         "hearing_type",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("description", sa.String(length=3000), nullable=False),
         sa.PrimaryKeyConstraint("id"),
@@ -117,13 +89,8 @@ def upgrade() -> None:
     op.create_table(
         "task_type",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("description", sa.String(length=3000), nullable=False),
         sa.PrimaryKeyConstraint("id"),
@@ -138,21 +105,18 @@ def upgrade() -> None:
         "history_court",
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("court_id", sa.Integer(), nullable=False),
-        sa.Column("name", sa.String(length=100), nullable=False),
+        sa.Column("name", sa.String(length=100), nullable=True),
         sa.Column("dhs_address", sa.String(length=1000), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("street_address", sa.String(length=500), nullable=True),
         sa.Column("city", sa.String(length=100), nullable=True),
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
         sa.Column("phone_number", sa.Integer(), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_id"], ["court.id"], onupdate="NO ACTION", ondelete="RESTRICT"
         ),
@@ -164,12 +128,9 @@ def upgrade() -> None:
         sa.Column("webex", sa.String(length=1000), nullable=True),
         sa.Column("court_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_id"], ["court.id"], onupdate="NO ACTION", ondelete="RESTRICT"
@@ -182,13 +143,8 @@ def upgrade() -> None:
         "note_court",
         sa.Column("court_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("note", sa.String(length=3000), nullable=False),
         sa.ForeignKeyConstraint(
@@ -203,18 +159,15 @@ def upgrade() -> None:
         sa.Column("email", sa.String(length=100), nullable=True),
         sa.Column("judge_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("street_address", sa.String(length=500), nullable=True),
         sa.Column("city", sa.String(length=100), nullable=True),
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
         sa.Column("phone_number", sa.Integer(), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["judge_id"], ["judge.id"], onupdate="NO ACTION", ondelete="RESTRICT"
         ),
@@ -227,16 +180,13 @@ def upgrade() -> None:
         "history_judge",
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("judge_id", sa.Integer(), nullable=False),
-        sa.Column("name", sa.String(length=100), nullable=False),
+        sa.Column("name", sa.String(length=100), nullable=True),
         sa.Column("webex", sa.String(length=1000), nullable=True),
-        sa.Column("court_id", sa.Integer(), nullable=False),
+        sa.Column("court_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_id"], ["court.id"], onupdate="NO ACTION", ondelete="RESTRICT"
@@ -250,13 +200,8 @@ def upgrade() -> None:
         "note_judge",
         sa.Column("judge_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("note", sa.String(length=3000), nullable=False),
         sa.ForeignKeyConstraint(
@@ -269,12 +214,9 @@ def upgrade() -> None:
         sa.Column("case_type_id", sa.Integer(), nullable=False),
         sa.Column("client_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_type_id"],
@@ -291,23 +233,20 @@ def upgrade() -> None:
         "history_client",
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("client_id", sa.Integer(), nullable=False),
-        sa.Column("name", sa.String(length=100), nullable=False),
+        sa.Column("name", sa.String(length=100), nullable=True),
         sa.Column("a_number", sa.String(length=100), nullable=True),
         sa.Column("email", sa.String(length=100), nullable=True),
         sa.Column("judge_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("street_address", sa.String(length=500), nullable=True),
         sa.Column("city", sa.String(length=100), nullable=True),
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
         sa.Column("phone_number", sa.Integer(), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["client_id"], ["client.id"], onupdate="NO ACTION", ondelete="RESTRICT"
         ),
@@ -320,13 +259,8 @@ def upgrade() -> None:
         "note_client",
         sa.Column("client_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("note", sa.String(length=3000), nullable=False),
         sa.ForeignKeyConstraint(
@@ -340,12 +274,9 @@ def upgrade() -> None:
         sa.Column("hearing_type_id", sa.Integer(), nullable=False),
         sa.Column("court_case_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
@@ -365,15 +296,12 @@ def upgrade() -> None:
         "history_court_case",
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("court_case_id", sa.Integer(), nullable=False),
-        sa.Column("case_type_id", sa.Integer(), nullable=False),
-        sa.Column("client_id", sa.Integer(), nullable=False),
+        sa.Column("case_type_id", sa.Integer(), nullable=True),
+        sa.Column("client_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_type_id"],
@@ -396,13 +324,8 @@ def upgrade() -> None:
         "note_court_case",
         sa.Column("court_case_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("note", sa.String(length=3000), nullable=False),
         sa.ForeignKeyConstraint(
@@ -417,16 +340,13 @@ def upgrade() -> None:
         "history_hearing_calendar",
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("hearing_calendar_id", sa.Integer(), nullable=False),
-        sa.Column("hearing_date", sa.DateTime(), nullable=False),
-        sa.Column("hearing_type_id", sa.Integer(), nullable=False),
-        sa.Column("court_case_id", sa.Integer(), nullable=False),
+        sa.Column("hearing_date", sa.DateTime(), nullable=True),
+        sa.Column("hearing_type_id", sa.Integer(), nullable=True),
+        sa.Column("court_case_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
@@ -452,13 +372,8 @@ def upgrade() -> None:
         "note_hearing_calendar",
         sa.Column("hearing_calendar_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("note", sa.String(length=3000), nullable=False),
         sa.ForeignKeyConstraint(
@@ -476,12 +391,9 @@ def upgrade() -> None:
         sa.Column("court_case_id", sa.Integer(), nullable=False),
         sa.Column("hearing_calendar_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
@@ -515,12 +427,9 @@ def upgrade() -> None:
         sa.Column("court_case_id", sa.Integer(), nullable=False),
         sa.Column("task_calendar_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
@@ -552,17 +461,14 @@ def upgrade() -> None:
         "history_task_calendar",
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("task_calendar_id", sa.Integer(), nullable=False),
-        sa.Column("task_date", sa.DateTime(), nullable=False),
-        sa.Column("task_type_id", sa.Integer(), nullable=False),
-        sa.Column("court_case_id", sa.Integer(), nullable=False),
+        sa.Column("task_date", sa.DateTime(), nullable=True),
+        sa.Column("task_type_id", sa.Integer(), nullable=True),
+        sa.Column("court_case_id", sa.Integer(), nullable=True),
         sa.Column("hearing_calendar_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
@@ -594,13 +500,8 @@ def upgrade() -> None:
         "note_task_calendar",
         sa.Column("task_calendar_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("note", sa.String(length=3000), nullable=False),
         sa.ForeignKeyConstraint(
@@ -620,12 +521,9 @@ def upgrade() -> None:
         sa.Column("court_case_id", sa.Integer(), nullable=False),
         sa.Column("form_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["collection_method_id"],
@@ -653,17 +551,14 @@ def upgrade() -> None:
         sa.Column("rfe_date", sa.DateTime(), nullable=True),
         sa.Column("rfe_submit_date", sa.DateTime(), nullable=True),
         sa.Column("decision_date", sa.DateTime(), nullable=True),
-        sa.Column("form_type_id", sa.Integer(), nullable=False),
-        sa.Column("form_status_id", sa.Integer(), nullable=False),
-        sa.Column("court_case_id", sa.Integer(), nullable=False),
+        sa.Column("form_type_id", sa.Integer(), nullable=True),
+        sa.Column("form_status_id", sa.Integer(), nullable=True),
+        sa.Column("court_case_id", sa.Integer(), nullable=True),
         sa.Column("task_calendar_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
@@ -698,13 +593,8 @@ def upgrade() -> None:
         "note_form",
         sa.Column("form_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("note", sa.String(length=3000), nullable=False),
         sa.ForeignKeyConstraint(
@@ -721,12 +611,9 @@ def upgrade() -> None:
         sa.Column("case_collection_id", sa.Integer(), nullable=False),
         sa.Column("collection_method_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_collection_id"],
@@ -746,19 +633,16 @@ def upgrade() -> None:
         "history_case_collection",
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("case_collection_id", sa.Integer(), nullable=False),
-        sa.Column("quote_date", sa.DateTime(), nullable=False),
-        sa.Column("quote_amount", sa.BigInteger(), nullable=False),
-        sa.Column("initial_payment", sa.BigInteger(), nullable=False),
-        sa.Column("collection_method_id", sa.Integer(), nullable=False),
-        sa.Column("court_case_id", sa.Integer(), nullable=False),
+        sa.Column("quote_date", sa.DateTime(), nullable=True),
+        sa.Column("quote_amount", sa.BigInteger(), nullable=True),
+        sa.Column("initial_payment", sa.BigInteger(), nullable=True),
+        sa.Column("collection_method_id", sa.Integer(), nullable=True),
+        sa.Column("court_case_id", sa.Integer(), nullable=True),
         sa.Column("form_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_collection_id"],
@@ -787,13 +671,8 @@ def upgrade() -> None:
         "note_case_collection",
         sa.Column("case_collection_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("note", sa.String(length=3000), nullable=False),
         sa.ForeignKeyConstraint(
@@ -808,19 +687,16 @@ def upgrade() -> None:
         "history_cash_collection",
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("cash_collection_id", sa.Integer(), nullable=False),
-        sa.Column("collection_date", sa.DateTime(), nullable=False),
-        sa.Column("collected_amount", sa.BigInteger(), nullable=False),
-        sa.Column("waived_amount", sa.BigInteger(), nullable=False),
+        sa.Column("collection_date", sa.DateTime(), nullable=True),
+        sa.Column("collected_amount", sa.BigInteger(), nullable=True),
+        sa.Column("waived_amount", sa.BigInteger(), nullable=True),
         sa.Column("memo", sa.String(length=3000), nullable=True),
-        sa.Column("case_collection_id", sa.Integer(), nullable=False),
-        sa.Column("collection_method_id", sa.Integer(), nullable=False),
+        sa.Column("case_collection_id", sa.Integer(), nullable=True),
+        sa.Column("collection_method_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
+        sa.Column("status", sa.String(length=100), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_collection_id"],
@@ -846,13 +722,8 @@ def upgrade() -> None:
         "note_cash_collection",
         sa.Column("cash_collection_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "modified", sa.DateTime(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
+        sa.Column("created", sa.DateTime(), nullable=False),
+        sa.Column("modified", sa.DateTime(), nullable=False),
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("note", sa.String(length=3000), nullable=False),
         sa.ForeignKeyConstraint(

@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Type, TypeVar
 
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, func
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.models import Base
@@ -14,6 +14,8 @@ class CrudService:
         self.db_session = db_session
 
     def create(self, model_data: ModelBase) -> ModelBase:
+        setattr(model_data, "created", func.now())
+        setattr(model_data, "modified", func.now())
         self.db_session.add(model_data)
         self.db_session.commit()
         self.db_session.refresh(model_data)
@@ -71,6 +73,7 @@ class CrudService:
         db_record = self.db_session.query(self.db_model).get(model_id)
         # exists check done in controller/api for better messaging, so no need again
         db_record = _copy_key_values(model_data, db_record)
+        setattr(db_record, "modified", func.now())
         self.db_session.commit()
         self.db_session.refresh(db_record)
         return db_record

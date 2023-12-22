@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, func
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped, relationship
 
@@ -9,9 +9,8 @@ Base: Any = declarative_base()
 
 class TableBase:
     id = Column(Integer, primary_key=True, autoincrement=True)
-    created = Column(DateTime, server_default=func.now(), nullable=False)
-    modified = Column(DateTime, server_default=func.now(), nullable=False)
-    comments = Column(String(10000), unique=False, nullable=True)
+    created = Column(DateTime, nullable=False)
+    modified = Column(DateTime, nullable=False)
 
 
 class NameDescBase:
@@ -21,7 +20,7 @@ class NameDescBase:
 
 class StatusBase:
     status = Column(String(100), nullable=True)
-    status_date = Column(DateTime, nullable=True)
+    comments = Column(String(10000), unique=False, nullable=True)
 
 
 class AddressBase:

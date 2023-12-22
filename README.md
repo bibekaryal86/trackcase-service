@@ -7,6 +7,10 @@ backend service for trackcase
   * `alembic revision --autogenerate -m COMMIT_MESSAGE`
 * run migrations:
   * `alembic upgrade head`
+* revert one migration:
+  * `alembic downgrade -1`
+* revert all migrations:
+  * `alembic upgrade HEAD --reset`
 * run as module
   * python -m src.trackcase_service.main
 * For History and Notes
