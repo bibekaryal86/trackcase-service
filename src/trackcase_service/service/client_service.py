@@ -132,8 +132,8 @@ class ClientService(CrudService):
             )
 
         try:
-            super().delete(model_id)
             _create_history(self.db_session, request, model_id, is_delete=True)
+            super().delete(model_id)
             return ClientResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
