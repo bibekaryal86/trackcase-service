@@ -12,3 +12,4 @@ class Statuses(str, Enum):
     INACTIVE = "INACTIVE"
     CLOSED = "CLOSED"
     RETIRED = "RETIRED"
+    DISABLED = "DISABLED"
