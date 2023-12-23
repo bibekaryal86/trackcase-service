@@ -15,11 +15,13 @@ backend service for trackcase
   * To retrieve history, use the `find_one` endpoint with `is_include_history=True`
   * To retrieve notes, use the `find_one` endpoint, notes are always included
 
-* do not let change status to inactive if dependents are still active
-* deleting is not allowed, set status of inactive/closed/retired etc
-* case status tied with form status and collections
-  * case complete when all forms complete
-  * case complete when all collections balance zero
-* report of all court cases where all forms and other dependencies are done but still active
-
-testing without from_attributes=True in schema, don't think needed because all converting manually
+* advanced:
+  * DELETING
+    * deleting is not allowed in general, but set status of inactive/closed
+      * instead of delete, the button should show CLOSE
+      * do not let something to be marked as closed/finished until all the dependents are closed/finished
+  * REPORTING
+    * show all court cases that are pending
+    * show all forms that are in progress
+    * show all pending payments to be received
+    * show all hearing/task calendars that are past due
