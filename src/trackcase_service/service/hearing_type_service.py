@@ -62,7 +62,7 @@ class HearingTypeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving HearingType By Id: {model_id}. Please Try Again!!!",     # noqa: E501
+                    f"Error Retrieving HearingType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )
@@ -119,7 +119,7 @@ class HearingTypeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating HearingType By Id: {model_id}. Please Try Again!!!",   # noqa: E501
+                    f"Error Updating HearingType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )
@@ -144,7 +144,7 @@ class HearingTypeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting HearingType By Id: {model_id}. Please Try Again!!!",   # noqa: E501
+                    f"Error Deleting HearingType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )

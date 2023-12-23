@@ -66,7 +66,7 @@ class CollectionMethodService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving CollectionMethod By Id: {model_id}. Please Try Again!!!",    # noqa: E501
+                    f"Error Retrieving CollectionMethod By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )

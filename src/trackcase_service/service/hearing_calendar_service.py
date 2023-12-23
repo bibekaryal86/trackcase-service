@@ -75,7 +75,7 @@ class HearingCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving HearingCalendar By Id: {model_id}. Please Try Again!!!",     # noqa: E501
+                    f"Error Retrieving HearingCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )
@@ -135,7 +135,7 @@ class HearingCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating HearingCalendar By Id: {model_id}. Please Try Again!!!",   # noqa: E501
+                    f"Error Updating HearingCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )
@@ -167,7 +167,7 @@ class HearingCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting HearingCalendar By Id: {model_id}. Please Try Again!!!",   # noqa: E501
+                    f"Error Deleting HearingCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )

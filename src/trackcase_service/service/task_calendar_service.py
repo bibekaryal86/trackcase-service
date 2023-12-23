@@ -71,7 +71,7 @@ class TaskCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving TaskCalendar By Id: {model_id}. Please Try Again!!!",    # noqa: E501
+                    f"Error Retrieving TaskCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )

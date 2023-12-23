@@ -131,7 +131,7 @@ class CashCollectionService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating CashCollection By Id: {model_id}. Please Try Again!!!",    # noqa: E501
+                    f"Error Updating CashCollection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )
@@ -158,7 +158,7 @@ class CashCollectionService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting CashCollection By Id: {model_id}. Please Try Again!!!",    # noqa: E501
+                    f"Error Deleting CashCollection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )

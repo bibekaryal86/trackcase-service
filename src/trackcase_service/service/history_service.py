@@ -40,7 +40,7 @@ class HistoryService(CrudService):
         try:
             super().create(history_data_model)
         except Exception as ex:
-            err_msg = f"{parent_type} Action Successful! BUT!! Something went wrong inserting {history_type}!!!"    # noqa: E501
+            err_msg = f"{parent_type} Action Successful! BUT!! Something went wrong inserting {history_type}!!!"  # noqa: E501
             log.error(err_msg)
             log.error(str(ex))
             raise Exception(err_msg)
