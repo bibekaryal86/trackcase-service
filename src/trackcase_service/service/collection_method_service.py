@@ -66,7 +66,7 @@ class CollectionMethodService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving CollectionMethod By Id: {model_id}. Please Try Again!!!",
+                    f"Error Retrieving CollectionMethod By Id: {model_id}. Please Try Again!!!",    # noqa: E501
                     str(ex),
                 ),
             )
@@ -125,7 +125,7 @@ class CollectionMethodService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating CollectionMethod By Id: {model_id}. Please Try Again!!!",
+                    f"Error Updating CollectionMethod By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )
@@ -152,7 +152,7 @@ class CollectionMethodService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting CollectionMethod By Id: {model_id}. Please Try Again!!!",
+                    f"Error Deleting CollectionMethod By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )

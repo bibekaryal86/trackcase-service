@@ -75,7 +75,7 @@ class HearingCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving HearingCalendar By Id: {model_id}. Please Try Again!!!",
+                    f"Error Retrieving HearingCalendar By Id: {model_id}. Please Try Again!!!",     # noqa: E501
                     str(ex),
                 ),
             )
@@ -135,7 +135,7 @@ class HearingCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating HearingCalendar By Id: {model_id}. Please Try Again!!!",
+                    f"Error Updating HearingCalendar By Id: {model_id}. Please Try Again!!!",   # noqa: E501
                     str(ex),
                 ),
             )
@@ -167,7 +167,7 @@ class HearingCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting HearingCalendar By Id: {model_id}. Please Try Again!!!",
+                    f"Error Deleting HearingCalendar By Id: {model_id}. Please Try Again!!!",   # noqa: E501
                     str(ex),
                 ),
             )
@@ -192,7 +192,7 @@ def _check_dependents(request: Request, hearing_calendar: HearingCalendarSchema)
         raise_http_exception(
             request,
             HTTPStatus.UNPROCESSABLE_ENTITY,
-            f"Cannot Delete Hearing Calendar {hearing_calendar.id}, There are Linked Task Calendars!",
+            f"Cannot Delete Hearing Calendar {hearing_calendar.id}, There are Linked Task Calendars!",  # noqa: E501
         )
 
 

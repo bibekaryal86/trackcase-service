@@ -57,7 +57,7 @@ class FormStatusService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving FormStatus By Id: {model_id}. Please Try Again!!!",
+                    f"Error Retrieving FormStatus By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )

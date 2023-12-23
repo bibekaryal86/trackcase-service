@@ -24,6 +24,7 @@ profile = "black"
 
 [tool.black]
 target-version = ['py311']
+line-length = 88    # match max-line-length of flake8 a few lines below
 
 [tool.flake8]
 max-complexity = 15

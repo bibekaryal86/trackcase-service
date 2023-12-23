@@ -52,7 +52,7 @@ class NoteService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating {self.db_model} By Id: {note_id}. Please Try Again!!!",
+                    f"Error Updating {self.db_model} By Id: {note_id}. Please Try Again!!!",    # noqa: E501
                     str(ex),
                 ),
             )
@@ -73,7 +73,7 @@ class NoteService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting {self.db_model} By Id: {note_id}. Please Try Again!!!",
+                    f"Error Deleting {self.db_model} By Id: {note_id}. Please Try Again!!!",    # noqa: E501
                     str(ex),
                 ),
             )

@@ -74,7 +74,7 @@ class CaseCollectionService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving CaseCollection By Id: {model_id}. Please Try Again!!!",
+                    f"Error Retrieving CaseCollection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )
@@ -161,7 +161,7 @@ class CaseCollectionService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating CaseCollection By Id: {model_id}. Please Try Again!!!",
+                    f"Error Updating CaseCollection By Id: {model_id}. Please Try Again!!!",    # noqa: E501
                     str(ex),
                 ),
             )
@@ -191,7 +191,7 @@ class CaseCollectionService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting CaseCollection By Id: {model_id}. Please Try Again!!!",
+                    f"Error Deleting CaseCollection By Id: {model_id}. Please Try Again!!!",    # noqa: E501
                     str(ex),
                 ),
             )
@@ -216,7 +216,7 @@ def _check_dependents(request: Request, case_collection: CaseCollectionSchema):
         raise_http_exception(
             request,
             HTTPStatus.UNPROCESSABLE_ENTITY,
-            f"Cannot Delete CaseCollection {case_collection.id}, There are Linked Cash Collections!",
+            f"Cannot Delete CaseCollection {case_collection.id}, There are Linked Cash Collections!",   # noqa: E501
         )
 
 

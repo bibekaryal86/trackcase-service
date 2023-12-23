@@ -62,7 +62,7 @@ class CourtCaseService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving CourtCase By Id: {model_id}. Please Try Again!!!",
+                    f"Error Retrieving CourtCase By Id: {model_id}. Please Try Again!!!",   # noqa: E501
                     str(ex),
                 ),
             )
@@ -190,21 +190,21 @@ def _check_dependents(request: Request, court_case: CourtCaseSchema):
         raise_http_exception(
             request,
             HTTPStatus.UNPROCESSABLE_ENTITY,
-            f"Cannot Delete Court Case {court_case.id}, There are Linked Case Collections!",
+            f"Cannot Delete Court Case {court_case.id}, There are Linked Case Collections!",    # noqa: E501
         )
 
     if court_case.hearing_calendars:
         raise_http_exception(
             request,
             HTTPStatus.UNPROCESSABLE_ENTITY,
-            f"Cannot Delete Court Case {court_case.id}, There are Linked Hearing Calendars!",
+            f"Cannot Delete Court Case {court_case.id}, There are Linked Hearing Calendars!",   # noqa: E501
         )
 
     if court_case.task_calendars:
         raise_http_exception(
             request,
             HTTPStatus.UNPROCESSABLE_ENTITY,
-            f"Cannot Delete Court Case {court_case.id}, There are Linked Task Calendars!",
+            f"Cannot Delete Court Case {court_case.id}, There are Linked Task Calendars!",  # noqa: E501
         )
 
 

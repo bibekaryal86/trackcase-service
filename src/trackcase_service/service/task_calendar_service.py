@@ -71,7 +71,7 @@ class TaskCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving TaskCalendar By Id: {model_id}. Please Try Again!!!",
+                    f"Error Retrieving TaskCalendar By Id: {model_id}. Please Try Again!!!",    # noqa: E501
                     str(ex),
                 ),
             )
@@ -129,7 +129,7 @@ class TaskCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating TaskCalendar By Id: {model_id}. Please Try Again!!!",
+                    f"Error Updating TaskCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )
@@ -159,7 +159,7 @@ class TaskCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting TaskCalendar By Id: {model_id}. Please Try Again!!!",
+                    f"Error Deleting TaskCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
             )

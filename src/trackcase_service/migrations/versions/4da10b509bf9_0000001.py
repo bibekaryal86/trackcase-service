@@ -1,7 +1,7 @@
 """0000001
 
 Revision ID: 4da10b509bf9
-Revises: 
+Revises:
 Create Date: 2023-12-22 11:49:03.837046
 
 """
