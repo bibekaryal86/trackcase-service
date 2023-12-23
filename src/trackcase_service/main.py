@@ -26,7 +26,7 @@ from src.trackcase_service.api import (
     task_calendar_api,
     task_type_api,
 )
-from src.trackcase_service.utils import commons, constants, enums, logger
+from src.trackcase_service.utils import commons, constants, logger
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
 
@@ -118,8 +118,19 @@ def test_database(
     return {"test_db": "successful"}
 
 
+@app.get("/trackcase-service/tests/status", tags=["Main"], summary="Get Status Dict")
+def get_statuses(
+    request: Request,
+    http_basic_credentials: HTTPBasicCredentials = Depends(
+        constants.http_basic_security
+    ),
+):
+    commons.validate_http_basic_credentials(request, http_basic_credentials, True)
+    return constants.get_statuses()
+
+
 @app.get("/trackcase-service/tests/log-level", tags=["Main"], summary="Set Log Level")
-def log_level(level: enums.LogLevelOptions):
+def log_level(level: constants.LogLevelOptions):
     log_level_to_set = logging.getLevelNamesMapping().get(level)
     log.set_level(log_level_to_set)
     commons.log.set_level(log_level_to_set)

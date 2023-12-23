@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 from functools import lru_cache
 
 from fastapi.security import HTTPBasic
@@ -29,3 +30,34 @@ BASIC_AUTH_PWD = get_settings().basic_auth_pwd
 DB_USERNAME = get_settings().db_username
 DB_PASSWORD = get_settings().db_password
 REPO_HOME = get_settings().repo_home
+
+
+class LogLevelOptions(str, Enum):
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    ERROR = "ERROR"
+
+
+@lru_cache()
+def get_statuses():
+    return {
+        "court": ["ACTIVE", "INACTIVE", "CLOSED"],
+        "judge": ["ACTIVE", "INACTIVE", "CLOSED"],
+        "client": ["ACTIVE", "COMPLETED", "TRANSFERRED", "CLOSED"],
+        "court_case": ["OPEN", "CLOSED"],
+        "hearing_calendar": ["OPEN", "PROCESSING", "CLOSED"],
+        "task_calendar": ["OPEN", "PROCESSING", "CLOSED"],
+        "form": [
+            "OPEN",
+            "PROCESSING",
+            "PENDING",
+            "SUBMITTED",
+            "EVIDENCE",
+            "APPROVED",
+            "DENIED",
+            "WITHDRAWN",
+            "CLOSED",
+        ],
+        "case_collection": ["OPEN", "PENDING", "CLOSED"],
+        "cash_collection": ["PENDING", "RECEIVED", "WAIVED", "CLOSED"],
+    }

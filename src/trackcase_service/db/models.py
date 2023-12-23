@@ -19,7 +19,7 @@ class NameDescBase:
 
 
 class StatusBase:
-    status = Column(String(100), nullable=True)
+    status = Column(String(100), nullable=False)
     comments = Column(String(10000), unique=False, nullable=True)
 
 

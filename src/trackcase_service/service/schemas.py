@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel, condecimal, field_validator
 
-from src.trackcase_service.utils.enums import Status
+from src.trackcase_service.utils.constants import get_statuses
 
 
 class BaseModelSchema(BaseModel):
@@ -27,14 +27,8 @@ class NameDescBase:
 
 
 class StatusBase(BaseModel):
-    status: Optional[str] = None
+    status: str
     comments: Optional[str] = None
-
-    @field_validator("status")
-    def check_status(self, v: str) -> str | None:
-        if v is not None and v not in Status.__members__:
-            raise ValueError(f"Invalid status value: {v}")
-        return v
 
 
 class AddressBase(BaseModel):
@@ -160,6 +154,13 @@ class CourtBase(AddressBase, StatusBase):
     name: str
     dhs_address: Optional[str] = None
 
+    @field_validator("status")
+    @classmethod
+    def check_status(cls, v: str) -> str | None:
+        if v is not None and v not in get_statuses().get("court", []):
+            raise ValueError(f"Invalid status value: {v}")
+        return v
+
 
 class Court(CourtBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
@@ -208,6 +209,13 @@ class JudgeBase(StatusBase):
     name: str
     webex: Optional[str] = None
     court_id: int
+
+    @field_validator("status")
+    @classmethod
+    def check_status(cls, v: str) -> str | None:
+        if v is not None and v not in get_statuses().get("judge", []):
+            raise ValueError(f"Invalid status value: {v}")
+        return v
 
 
 class Judge(JudgeBase, BaseModelSchema):
@@ -262,6 +270,13 @@ class ClientBase(AddressBase, StatusBase):
     email: Optional[str] = None
     judge_id: Optional[int] = None
 
+    @field_validator("status")
+    @classmethod
+    def check_status(cls, v: str) -> str | None:
+        if v is not None and v not in get_statuses().get("client", []):
+            raise ValueError(f"Invalid status value: {v}")
+        return v
+
 
 class Client(ClientBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
@@ -311,6 +326,13 @@ class NoteClientResponse(ResponseBase):
 class CourtCaseBase(StatusBase):
     case_type_id: int
     client_id: int
+
+    @field_validator("status")
+    @classmethod
+    def check_status(cls, v: str) -> str | None:
+        if v is not None and v not in get_statuses().get("court_case", []):
+            raise ValueError(f"Invalid status value: {v}")
+        return v
 
 
 class CourtCase(CourtCaseBase, BaseModelSchema):
@@ -370,6 +392,13 @@ class HearingCalendarBase(StatusBase):
     hearing_type_id: int
     court_case_id: int
 
+    @field_validator("status")
+    @classmethod
+    def check_status(cls, v: str) -> str | None:
+        if v is not None and v not in get_statuses().get("hearing_calendar", []):
+            raise ValueError(f"Invalid status value: {v}")
+        return v
+
 
 class HearingCalendar(HearingCalendarBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
@@ -423,6 +452,13 @@ class TaskCalendarBase(StatusBase):
     task_type_id: int
     court_case_id: int
     hearing_calendar_id: Optional[int] = None
+
+    @field_validator("status")
+    @classmethod
+    def check_status(cls, v: str) -> str | None:
+        if v is not None and v not in get_statuses().get("task_calendar", []):
+            raise ValueError(f"Invalid status value: {v}")
+        return v
 
 
 class TaskCalendar(TaskCalendarBase, BaseModelSchema):
@@ -483,6 +519,13 @@ class FormBase(StatusBase):
     decision_date: Optional[datetime] = None
     task_calendar_id: Optional[int] = None
 
+    @field_validator("status")
+    @classmethod
+    def check_status(cls, v: str) -> str | None:
+        if v is not None and v not in get_statuses().get("form", []):
+            raise ValueError(f"Invalid status value: {v}")
+        return v
+
 
 class Form(FormBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
@@ -536,6 +579,13 @@ class CaseCollectionBase(StatusBase):
     collection_method_id: int
     court_case_id: int
     form_id: Optional[int] = None
+
+    @field_validator("status")
+    @classmethod
+    def check_status(cls, v: str) -> str | None:
+        if v is not None and v not in get_statuses().get("case_collection", []):
+            raise ValueError(f"Invalid status value: {v}")
+        return v
 
 
 class CaseCollection(CaseCollectionBase, BaseModelSchema):
@@ -603,6 +653,13 @@ class CashCollectionBase(StatusBase):
     memo: Optional[str] = None
     case_collection_id: int
     collection_method_id: int
+
+    @field_validator("status")
+    @classmethod
+    def check_status(cls, v: str) -> str | None:
+        if v is not None and v not in get_statuses().get("cash_collection", []):
+            raise ValueError(f"Invalid status value: {v}")
+        return v
 
 
 class CashCollection(CashCollectionBase, BaseModelSchema):
