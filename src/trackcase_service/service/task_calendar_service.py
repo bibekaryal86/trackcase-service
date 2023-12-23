@@ -137,7 +137,9 @@ class TaskCalendarService(CrudService):
     def delete_one_task_calendar(
         self, model_id: int, request: Request
     ) -> TaskCalendarResponse:
-        task_calendar_response = self.read_one_task_calendar(model_id, request)
+        task_calendar_response = self.read_one_task_calendar(
+            model_id, request, is_include_extra=True
+        )
 
         if not (task_calendar_response and task_calendar_response.task_calendars):
             raise_http_exception(
@@ -146,8 +148,10 @@ class TaskCalendarService(CrudService):
                 f"TaskCalendar Not Found By Id: {model_id}!!!",
             )
 
+        _check_dependents(request, task_calendar_response.task_calendars[0])
+        _handle_history(self.db_session, request, model_id, is_delete=True)
+
         try:
-            _handle_history(self.db_session, request, model_id, is_delete=True)
             super().delete(model_id)
             return TaskCalendarResponse(delete_count=1)
         except Exception as ex:
@@ -171,6 +175,15 @@ def get_response_single(single: TaskCalendarSchema) -> TaskCalendarResponse:
 
 def get_response_multiple(multiple: list[TaskCalendarSchema]) -> TaskCalendarResponse:
     return TaskCalendarResponse(task_calendars=multiple)
+
+
+def _check_dependents(request: Request, task_calendar: TaskCalendarSchema):
+    if task_calendar.forms:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete Task Calendar {task_calendar.id}, There are Linked Forms!",
+        )
 
 
 def _handle_history(

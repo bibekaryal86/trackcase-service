@@ -143,7 +143,9 @@ class HearingCalendarService(CrudService):
     def delete_one_hearing_calendar(
         self, model_id: int, request: Request
     ) -> HearingCalendarResponse:
-        hearing_calendar_response = self.read_one_hearing_calendar(model_id, request)
+        hearing_calendar_response = self.read_one_hearing_calendar(
+            model_id, request, is_include_extra=True
+        )
 
         if not (
             hearing_calendar_response and hearing_calendar_response.hearing_calendars
@@ -154,8 +156,10 @@ class HearingCalendarService(CrudService):
                 f"HearingCalendar Not Found By Id: {model_id}!!!",
             )
 
+        _check_dependents(request, hearing_calendar_response.hearing_calendars[0])
+        _handle_history(self.db_session, request, model_id, is_delete=True)
+
         try:
-            _handle_history(self.db_session, request, model_id, is_delete=True)
             super().delete(model_id)
             return HearingCalendarResponse(delete_count=1)
         except Exception as ex:
@@ -181,6 +185,15 @@ def get_response_multiple(
     multiple: list[HearingCalendarSchema],
 ) -> HearingCalendarResponse:
     return HearingCalendarResponse(hearing_calendars=multiple)
+
+
+def _check_dependents(request: Request, hearing_calendar: HearingCalendarSchema):
+    if hearing_calendar.task_calendars:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete Hearing Calendar {hearing_calendar.id}, There are Linked Task Calendars!",
+        )
 
 
 def _handle_history(

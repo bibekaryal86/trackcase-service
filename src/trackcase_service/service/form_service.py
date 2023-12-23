@@ -124,7 +124,7 @@ class FormService(CrudService):
             )
 
     def delete_one_form(self, model_id: int, request: Request) -> FormResponse:
-        form_response = self.read_one_form(model_id, request)
+        form_response = self.read_one_form(model_id, request, is_include_extra=True)
 
         if not (form_response and form_response.forms):
             raise_http_exception(
@@ -133,8 +133,10 @@ class FormService(CrudService):
                 f"Form Not Found By Id: {model_id}!!!",
             )
 
+        _check_dependents(request, form_response.forms[0])
+        _handle_history(self.db_session, request, model_id, is_delete=True)
+
         try:
-            _handle_history(self.db_session, request, model_id, is_delete=True)
             super().delete(model_id)
             return FormResponse(delete_count=1)
         except Exception as ex:
@@ -158,6 +160,15 @@ def get_response_single(single: FormSchema) -> FormResponse:
 
 def get_response_multiple(multiple: list[FormSchema]) -> FormResponse:
     return FormResponse(forms=multiple)
+
+
+def _check_dependents(request: Request, form: FormSchema):
+    if form.case_collections:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete Form {form.id}, There are Linked Case Collection!",
+        )
 
 
 def _handle_history(

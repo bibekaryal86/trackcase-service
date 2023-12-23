@@ -124,7 +124,7 @@ class CourtService(CrudService):
             )
 
     def delete_one_court(self, model_id: int, request: Request) -> CourtResponse:
-        court_response = self.read_one_court(model_id, request)
+        court_response = self.read_one_court(model_id, request, is_include_extra=True)
 
         if not (court_response and court_response.courts):
             raise_http_exception(
@@ -133,8 +133,10 @@ class CourtService(CrudService):
                 f"Court Not Found By Id: {model_id}!!!",
             )
 
+        _check_dependents(request, court_response.courts[0])
+        _handle_history(self.db_session, request, model_id, is_delete=True)
+
         try:
-            _handle_history(self.db_session, request, model_id, is_delete=True)
             super().delete(model_id)
             return CourtResponse(delete_count=1)
         except Exception as ex:
@@ -158,6 +160,15 @@ def get_response_single(single: CourtSchema) -> CourtResponse:
 
 def get_response_multiple(multiple: list[CourtSchema]) -> CourtResponse:
     return CourtResponse(courts=multiple)
+
+
+def _check_dependents(request: Request, court: CourtSchema):
+    if court.judges:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete Court {court.id}, There are Linked Judges!",
+        )
 
 
 def _handle_history(

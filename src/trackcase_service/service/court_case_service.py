@@ -129,7 +129,9 @@ class CourtCaseService(CrudService):
     def delete_one_court_case(
         self, model_id: int, request: Request
     ) -> CourtCaseResponse:
-        court_case_response = self.read_one_court_case(model_id, request)
+        court_case_response = self.read_one_court_case(
+            model_id, request, is_include_extra=True
+        )
 
         if not (court_case_response and court_case_response.court_cases):
             raise_http_exception(
@@ -138,8 +140,10 @@ class CourtCaseService(CrudService):
                 f"CourtCase Not Found By Id: {model_id}!!!",
             )
 
+        _check_dependents(request, court_case_response.court_case[0])
+        _handle_history(self.db_session, request, model_id, is_delete=True)
+
         try:
-            _handle_history(self.db_session, request, model_id, is_delete=True)
             super().delete(model_id)
             return CourtCaseResponse(delete_count=1)
         except Exception as ex:
@@ -172,6 +176,36 @@ def _sort_court_case_by_client_name(
         court_cases,
         key=lambda x: x.client.name if (x.client and x.client.name) else "",
     )
+
+
+def _check_dependents(request: Request, court_case: CourtCaseSchema):
+    if court_case.forms:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete Court Case {court_case.id}, There are Linked Forms!",
+        )
+
+    if court_case.case_collections:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete Court Case {court_case.id}, There are Linked Case Collections!",
+        )
+
+    if court_case.hearing_calendars:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete Court Case {court_case.id}, There are Linked Hearing Calendars!",
+        )
+
+    if court_case.task_calendars:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete Court Case {court_case.id}, There are Linked Task Calendars!",
+        )
 
 
 def _handle_history(

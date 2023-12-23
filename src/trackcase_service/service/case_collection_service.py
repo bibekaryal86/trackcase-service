@@ -170,8 +170,7 @@ class CaseCollectionService(CrudService):
         self, model_id: int, request: Request
     ) -> CaseCollectionResponse:
         case_collection_response = self.read_one_case_collection(
-            model_id,
-            request,
+            model_id, request, is_include_extra=True
         )
 
         if not (case_collection_response and case_collection_response.case_collections):
@@ -181,8 +180,10 @@ class CaseCollectionService(CrudService):
                 f"CaseCollection Not Found By Id: {model_id}!!!",
             )
 
+        _check_dependents(request, case_collection_response.case_collections[0])
+        _handle_history(self.db_session, request, model_id, is_delete=True)
+
         try:
-            _handle_history(self.db_session, request, model_id, is_delete=True)
             super().delete(model_id)
             return CaseCollectionResponse(delete_count=1)
         except Exception as ex:
@@ -208,6 +209,15 @@ def get_response_multiple(
     multiple: list[CaseCollectionSchema],
 ) -> CaseCollectionResponse:
     return CaseCollectionResponse(case_collections=multiple)
+
+
+def _check_dependents(request: Request, case_collection: CaseCollectionSchema):
+    if case_collection.cash_collections:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete CaseCollection {case_collection.id}, There are Linked Cash Collections!",
+        )
 
 
 def _handle_history(

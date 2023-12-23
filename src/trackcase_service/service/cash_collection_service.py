@@ -148,8 +148,9 @@ class CashCollectionService(CrudService):
                 f"CashCollection Not Found By Id: {model_id}!!!",
             )
 
+        _handle_history(self.db_session, request, model_id, is_delete=True)
+
         try:
-            _handle_history(self.db_session, request, model_id, is_delete=True)
             super().delete(model_id)
             return CashCollectionResponse(delete_count=1)
         except Exception as ex:

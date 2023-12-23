@@ -155,7 +155,7 @@ class JudgeService(CrudService):
             )
 
     def delete_one_judge(self, model_id: int, request: Request) -> JudgeResponse:
-        judge_response = self.read_one_judge(model_id, request)
+        judge_response = self.read_one_judge(model_id, request, is_include_extra=True)
 
         if not (judge_response and judge_response.judges):
             raise_http_exception(
@@ -164,8 +164,10 @@ class JudgeService(CrudService):
                 f"Judge Not Found By Id: {model_id}!!!",
             )
 
+        _check_dependents(request, judge_response.judges[0])
+        _handle_history(self.db_session, request, model_id, is_delete=True)
+
         try:
-            _handle_history(self.db_session, request, model_id, is_delete=True)
             super().delete(model_id)
             return JudgeResponse(delete_count=1)
         except Exception as ex:
@@ -198,6 +200,15 @@ def _sort_judge_by_court_name(
         judges,
         key=lambda x: x.court.name if (x.court and x.court.name) else "",
     )
+
+
+def _check_dependents(request: Request, judge: JudgeSchema):
+    if judge.clients:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete Judge {judge.id}, There are Linked Clients!",
+        )
 
 
 def _handle_history(

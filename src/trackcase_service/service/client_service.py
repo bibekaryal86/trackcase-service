@@ -124,7 +124,7 @@ class ClientService(CrudService):
             )
 
     def delete_one_client(self, model_id: int, request: Request) -> ClientResponse:
-        client_response = self.read_one_client(model_id, request)
+        client_response = self.read_one_client(model_id, request, is_include_extra=True)
 
         if not (client_response and client_response.clients):
             raise_http_exception(
@@ -133,8 +133,10 @@ class ClientService(CrudService):
                 f"Client Not Found By Id: {model_id}!!!",
             )
 
+        _check_dependents(request, client_response.clients[0])
+        _handle_history(self.db_session, request, model_id, is_delete=True)
+
         try:
-            _handle_history(self.db_session, request, model_id, is_delete=True)
             super().delete(model_id)
             return ClientResponse(delete_count=1)
         except Exception as ex:
@@ -158,6 +160,15 @@ def get_response_single(single: ClientSchema) -> ClientResponse:
 
 def get_response_multiple(multiple: list[ClientSchema]) -> ClientResponse:
     return ClientResponse(clients=multiple)
+
+
+def _check_dependents(request: Request, client: ClientSchema):
+    if client.court_cases:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete Client {client.id}, There are Linked Court Cases!",
+        )
 
 
 def _handle_history(
