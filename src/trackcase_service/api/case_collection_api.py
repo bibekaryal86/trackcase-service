@@ -28,18 +28,24 @@ router = APIRouter(
 def find_all(
     request: Request,
     case_collection_retrieve_request: CaseCollectionRetrieveRequest = None,
-    is_include_extras: bool = True,
+    is_include_extra: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     if case_collection_retrieve_request is None:
         return get_case_collection_service(db_session).read_all_case_collections(
-            request, is_include_extras
+            request,
+            is_include_extra,
+            is_include_history,
         )
     else:
         return get_case_collection_service(db_session).read_many_case_collections(
-            request, case_collection_retrieve_request, is_include_extras
+            request,
+            case_collection_retrieve_request,
+            is_include_extra,
+            is_include_history,
         )
 
 
@@ -51,14 +57,20 @@ def find_all(
 def find_one(
     case_collection_id: int,
     request: Request,
-    is_include_extras: bool = True,
+    is_include_extra: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     case_collection_response: CaseCollectionResponse = get_case_collection_service(
         db_session
-    ).read_one_case_collection(case_collection_id, request, is_include_extras)
+    ).read_one_case_collection(
+        case_collection_id,
+        request,
+        is_include_extra,
+        is_include_history,
+    )
     if case_collection_response is None:
         raise_http_exception(
             request,

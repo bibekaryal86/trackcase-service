@@ -19,13 +19,14 @@ router = APIRouter(prefix="/trackcase-service/task_types", tags=["TaskTypes"])
 @router.get("/", response_model=TaskTypeResponse, status_code=HTTPStatus.OK)
 def find_all(
     request: Request,
-    is_include_extras: bool = False,
+    is_include_extra: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     return get_task_type_service(db_session).read_all_task_types(
-        request, is_include_extras
+        request, is_include_extra, is_include_history
     )
 
 
@@ -35,14 +36,20 @@ def find_all(
 def find_one(
     task_type_id: int,
     request: Request,
-    is_include_extras: bool = False,
+    is_include_extra: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     task_type_response: TaskTypeResponse = get_task_type_service(
         db_session
-    ).read_one_task_type(task_type_id, request, is_include_extras)
+    ).read_one_task_type(
+        task_type_id,
+        request,
+        is_include_extra,
+        is_include_history,
+    )
     if task_type_response is None:
         raise_http_exception(
             request,

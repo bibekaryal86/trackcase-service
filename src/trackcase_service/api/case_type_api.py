@@ -19,13 +19,14 @@ router = APIRouter(prefix="/trackcase-service/case_types", tags=["CaseTypes"])
 @router.get("/", response_model=CaseTypeResponse, status_code=HTTPStatus.OK)
 def find_all(
     request: Request,
-    is_include_extras: bool = False,
+    is_include_extra: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     return get_case_type_service(db_session).read_all_case_types(
-        request, is_include_extras
+        request, is_include_extra, is_include_history
     )
 
 
@@ -35,14 +36,20 @@ def find_all(
 def find_one(
     case_type_id: int,
     request: Request,
-    is_include_extras: bool = False,
+    is_include_extra: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     case_type_response: CaseTypeResponse = get_case_type_service(
         db_session
-    ).read_one_case_type(case_type_id, request, is_include_extras)
+    ).read_one_case_type(
+        case_type_id,
+        request,
+        is_include_extra,
+        is_include_history,
+    )
     if case_type_response is None:
         raise_http_exception(
             request,

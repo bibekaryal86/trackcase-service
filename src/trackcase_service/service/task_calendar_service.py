@@ -5,15 +5,23 @@ from fastapi import Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
-from src.trackcase_service.db.models import TaskCalendar as TaskCalendarModel
-from src.trackcase_service.utils.commons import (
-    copy_objects,
-    get_err_msg,
-    raise_http_exception,
+from src.trackcase_service.db.models import (
+    HistoryTaskCalendar as HistoryTaskCalendarModel,
 )
-
-from .schemas import TaskCalendar as TaskCalendarSchema
-from .schemas import TaskCalendarRequest, TaskCalendarResponse
+from src.trackcase_service.db.models import NoteTaskCalendar as NoteTaskCalendarModel
+from src.trackcase_service.db.models import TaskCalendar as TaskCalendarModel
+from src.trackcase_service.service.history_service import get_history_service
+from src.trackcase_service.service.note_service import get_note_service
+from src.trackcase_service.service.schemas import TaskCalendar as TaskCalendarSchema
+from src.trackcase_service.service.schemas import (
+    TaskCalendarRequest,
+    TaskCalendarResponse,
+)
+from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.convert import (
+    convert_request_schema_to_model,
+    convert_task_calendar_model_to_schema,
+)
 
 
 class TaskCalendarService(CrudService):
@@ -24,11 +32,12 @@ class TaskCalendarService(CrudService):
         self, request: Request, request_object: TaskCalendarRequest
     ) -> TaskCalendarResponse:
         try:
-            data_model: TaskCalendarModel = copy_objects(
+            data_model: TaskCalendarModel = convert_request_schema_to_model(
                 request_object, TaskCalendarModel
             )
             data_model = super().create(data_model)
-            schema_model = _convert_model_to_schema(data_model)
+            _handle_history(self.db_session, request, data_model.id, request_object)
+            schema_model = convert_task_calendar_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
@@ -40,13 +49,21 @@ class TaskCalendarService(CrudService):
             )
 
     def read_one_task_calendar(
-        self, model_id: int, request: Request, is_include_extras: bool
+        self,
+        model_id: int,
+        request: Request,
+        is_include_extra: bool = False,
+        is_include_history: bool = False,
     ) -> TaskCalendarResponse:
         try:
             data_model: TaskCalendarModel = super().read_one(model_id)
             if data_model:
-                schema_model: TaskCalendarSchema = _convert_model_to_schema(
-                    data_model, is_include_extras
+                schema_model: TaskCalendarSchema = (
+                    convert_task_calendar_model_to_schema(
+                        data_model,
+                        is_include_extra,
+                        is_include_history,
+                    )
                 )
                 return get_response_single(schema_model)
         except Exception as ex:
@@ -54,17 +71,28 @@ class TaskCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Retrieving By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Retrieving TaskCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
+                    str(ex),
                 ),
             )
 
     def read_all_task_calendars(
-        self, request: Request, is_include_extras: bool
+        self,
+        request: Request,
+        is_include_extra: bool = False,
+        is_include_history: bool = False,
     ) -> TaskCalendarResponse:
         try:
-            data_models: List[TaskCalendarModel] = super().read_all()
+            data_models: List[TaskCalendarModel] = super().read_all(
+                sort_direction="desc", sort_by="task_date"
+            )
             schema_models: List[TaskCalendarSchema] = [
-                _convert_model_to_schema(c_m, is_include_extras) for c_m in data_models
+                convert_task_calendar_model_to_schema(
+                    data_model,
+                    is_include_extra,
+                    is_include_history,
+                )
+                for data_model in data_models
             ]
             return get_response_multiple(schema_models)
         except Exception as ex:
@@ -79,42 +107,49 @@ class TaskCalendarService(CrudService):
     def update_one_task_calendar(
         self, model_id: int, request: Request, request_object: TaskCalendarRequest
     ) -> TaskCalendarResponse:
-        task_calendar_response = self.read_one_task_calendar(model_id, request, False)
+        task_calendar_response = self.read_one_task_calendar(model_id, request)
 
         if not (task_calendar_response and task_calendar_response.task_calendars):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"TaskCalendar Not Found By Id: {model_id}!!!",
             )
 
         try:
-            data_model: TaskCalendarModel = copy_objects(
+            data_model: TaskCalendarModel = convert_request_schema_to_model(
                 request_object, TaskCalendarModel
             )
             data_model = super().update(model_id, data_model)
-            schema_model = _convert_model_to_schema(data_model)
+            _handle_history(self.db_session, request, model_id, request_object)
+            schema_model = convert_task_calendar_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Updating TaskCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
+                    str(ex),
                 ),
             )
 
     def delete_one_task_calendar(
         self, model_id: int, request: Request
     ) -> TaskCalendarResponse:
-        task_calendar_response = self.read_one_task_calendar(model_id, request, False)
+        task_calendar_response = self.read_one_task_calendar(
+            model_id, request, is_include_extra=True
+        )
 
         if not (task_calendar_response and task_calendar_response.task_calendars):
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Not Found By Id: {model_id}!!!",
+                f"TaskCalendar Not Found By Id: {model_id}!!!",
             )
+
+        _check_dependents(request, task_calendar_response.task_calendars[0])
+        _handle_history(self.db_session, request, model_id, is_delete=True)
 
         try:
             super().delete(model_id)
@@ -124,7 +159,8 @@ class TaskCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting By Id: {model_id}. Please Try Again!!!", str(ex)
+                    f"Error Deleting TaskCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
+                    str(ex),
                 ),
             )
 
@@ -141,21 +177,45 @@ def get_response_multiple(multiple: list[TaskCalendarSchema]) -> TaskCalendarRes
     return TaskCalendarResponse(task_calendars=multiple)
 
 
-def _convert_model_to_schema(
-    data_model: TaskCalendarModel, is_include_extras: bool = False
-) -> TaskCalendarSchema:
-    data_schema = TaskCalendarSchema(
-        id=data_model.id,
-        created=data_model.created,
-        modified=data_model.modified,
-        task_date=data_model.hearing_date,
-        task_type_id=data_model.hearing_type_id,
-        court_case_id=data_model.court_case_id,
-        hearing_calendar_id=data_model.hearing_calendar_id,
-    )
-    if is_include_extras:
-        data_schema.task_type = data_model.task_type
-        data_schema.court_case = data_model.court_case
-        data_schema.hearing_calendar = data_model.hearing_calendar
-        data_schema.forms = data_model.forms
-    return data_schema
+def _check_dependents(request: Request, task_calendar: TaskCalendarSchema):
+    if task_calendar.forms:
+        raise_http_exception(
+            request,
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Cannot Delete Task Calendar {task_calendar.id}, There are Linked Forms!",
+        )
+
+
+def _handle_history(
+    db_session: Session,
+    request: Request,
+    task_calendar_id: int,
+    request_object: TaskCalendarRequest = None,
+    is_delete: bool = False,
+):
+    history_service = get_history_service(db_session, HistoryTaskCalendarModel)
+    if is_delete:
+        note_service = get_note_service(db_session, NoteTaskCalendarModel)
+        note_service.delete_note_before_delete_object(
+            NoteTaskCalendarModel.__tablename__,
+            "task_calendar_id",
+            task_calendar_id,
+            "TaskCalendar",
+            "NoteTaskCalendar",
+        )
+        history_service.delete_history_before_delete_object(
+            HistoryTaskCalendarModel.__tablename__,
+            "task_calendar_id",
+            task_calendar_id,
+            "TaskCalendar",
+            "HistoryTaskCalendar",
+        )
+    else:
+        history_service.add_to_history(
+            request,
+            request_object,
+            "task_calendar_id",
+            task_calendar_id,
+            "TaskCalendar",
+            "HistoryTaskCalendar",
+        )

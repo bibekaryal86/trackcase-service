@@ -2,14 +2,14 @@ import http
 import logging
 import secrets
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+import src.trackcase_service.utils.constants as constants
+import src.trackcase_service.utils.logger as logger
 from src.trackcase_service.db.session import get_db_session
-
-from . import constants, logger
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
 
@@ -30,19 +30,22 @@ def validate_input():
     if constants.BASIC_AUTH_PWD is None:
         missing_variables.append("BASIC_AUTH_PWD")
 
+    if constants.REPO_HOME is None:
+        missing_variables.append("REPO_HOME")
+
     if len(missing_variables) != 0:
         raise ValueError(
             "The following env variables are missing: {}".format(missing_variables)
         )
 
 
-def startup_db_client(app: FastAPI):
+def startup_db_client():
     log.info("App Starting...")
     get_db_session()
     log.info("Created DB Session...")
 
 
-def shutdown_db_client(app: FastAPI):
+def shutdown_db_client():
     log.info("App Shutting Down...")
 
 
@@ -67,9 +70,9 @@ def validate_http_basic_credentials(
             sts_code=http.HTTPStatus.UNAUTHORIZED,
             error="Invalid Credentials",
         )
+
     # also check if user_name present in request headers or not
-    # username header is sent from authenv_gateway after validation
-    user_name = request.headers.get("x-user-name")
+    user_name = request.headers.get(constants.USERNAME_HEADER)
     if not is_ignore_username and not user_name:
         raise_http_exception(
             request=request,
@@ -87,22 +90,6 @@ def raise_http_exception(
         "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
     )
     raise HTTPException(status_code=sts_code, detail={"error": error})
-
-
-def copy_objects(
-    source_object, destination_class, destination_object=None, is_copy_all=False
-):
-    if destination_object is None:
-        destination_object = destination_class()
-    common_attributes = set(dir(source_object)) & set(dir(destination_object))
-    for attr in common_attributes:
-        if (
-            not callable(getattr(source_object, attr))
-            and not attr.startswith("_")
-            and (is_copy_all or not getattr(destination_object, attr))
-        ):
-            setattr(destination_object, attr, getattr(source_object, attr))
-    return destination_object
 
 
 def test_database(db_session: Session):

@@ -19,25 +19,32 @@ router = APIRouter(prefix="/trackcase-service/courts", tags=["Courts"])
 @router.get("/", response_model=CourtResponse, status_code=HTTPStatus.OK)
 def find_all(
     request: Request,
-    is_include_extras: bool = True,
+    is_include_extra: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_court_service(db_session).read_all_courts(request, is_include_extras)
+    return get_court_service(db_session).read_all_courts(
+        request, is_include_extra, is_include_history
+    )
 
 
 @router.get("/{court_id}", response_model=CourtResponse, status_code=HTTPStatus.OK)
 def find_one(
     court_id: int,
     request: Request,
-    is_include_extras: bool = True,
+    is_include_extra: bool = False,
+    is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     court_response: CourtResponse = get_court_service(db_session).read_one_court(
-        court_id, request, is_include_extras
+        court_id,
+        request,
+        is_include_extra,
+        is_include_history,
     )
     if court_response is None:
         raise_http_exception(

@@ -7,6 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 # Constants
 ENV_APP_PORT = "APP_PORT"
 http_basic_security = HTTPBasic()
+USERNAME_HEADER = "x-user-name"
 
 
 # ENVIRONMENT VARIABLES
@@ -27,3 +28,4 @@ BASIC_AUTH_USR = get_settings().basic_auth_usr
 BASIC_AUTH_PWD = get_settings().basic_auth_pwd
 DB_USERNAME = get_settings().db_username
 DB_PASSWORD = get_settings().db_password
+REPO_HOME = get_settings().repo_home
