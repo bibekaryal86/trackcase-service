@@ -53,13 +53,13 @@ class HistoryService(CrudService):
         parent_type: str,
         history_type: str,
     ):
-        sql = text(
-            f"""DELETE FROM {history_table_name} WHERE {id_key} = {id_value}"""
-        )
+        sql = text(f"""DELETE FROM {history_table_name} WHERE {id_key} = {id_value}""")
         try:
             self.db_session.execute(sql)
         except Exception as ex:
-            err_msg = f"{parent_type} Action Successful! BUT!! Something went wrong inserting {history_type}!!!"
+            err_msg = (
+                f"Something went wrong deleting all {history_type} for {parent_type}!!!"
+            )
             log.error(err_msg)
             log.error(str(ex))
             raise Exception(err_msg)

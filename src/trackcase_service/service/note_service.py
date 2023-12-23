@@ -3,6 +3,7 @@ from http import HTTPStatus
 from typing import Type, TypeVar
 
 from fastapi import Request
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
@@ -76,6 +77,25 @@ class NoteService(CrudService):
                     str(ex),
                 ),
             )
+
+    def delete_note_before_delete_object(
+        self,
+        note_table_name: str,
+        id_key: str,
+        id_value: int,
+        parent_type: str,
+        note_type: str,
+    ):
+        sql = text(f"""DELETE FROM {note_table_name} WHERE {id_key} = {id_value}""")
+        try:
+            self.db_session.execute(sql)
+        except Exception as ex:
+            err_msg = (
+                f"Something went wrong deleting all {note_type} for {parent_type}!!!"
+            )
+            log.error(err_msg)
+            log.error(str(ex))
+            raise Exception(err_msg)
 
 
 def get_note_service(db_session: Session, db_model: Type[ModelBase]) -> NoteService:

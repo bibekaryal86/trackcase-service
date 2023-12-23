@@ -9,7 +9,11 @@ from src.trackcase_service.db.models import HearingCalendar as HearingCalendarMo
 from src.trackcase_service.db.models import (
     HistoryHearingCalendar as HistoryHearingCalendarModel,
 )
+from src.trackcase_service.db.models import (
+    NoteHearingCalendar as NoteHearingCalendarModel,
+)
 from src.trackcase_service.service.history_service import get_history_service
+from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import (
     HearingCalendar as HearingCalendarSchema,
 )
@@ -188,6 +192,14 @@ def _handle_history(
 ):
     history_service = get_history_service(db_session, HistoryHearingCalendarModel)
     if is_delete:
+        note_service = get_note_service(db_session, NoteHearingCalendarModel)
+        note_service.delete_note_before_delete_object(
+            NoteHearingCalendarModel.__tablename__,
+            "hearing_calendar_id",
+            hearing_calendar_id,
+            "HearingCalendar",
+            "NoteHearingCalendar",
+        )
         history_service.delete_history_before_delete_object(
             HistoryHearingCalendarModel.__tablename__,
             "hearing_calendar_id",

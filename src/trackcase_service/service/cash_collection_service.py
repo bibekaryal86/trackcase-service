@@ -9,7 +9,11 @@ from src.trackcase_service.db.models import CashCollection as CashCollectionMode
 from src.trackcase_service.db.models import (
     HistoryCashCollection as HistoryCashCollectionModel,
 )
+from src.trackcase_service.db.models import (
+    NoteCashCollection as NoteCashCollectionModel,
+)
 from src.trackcase_service.service.history_service import get_history_service
+from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import CashCollection as CashCollectionSchema
 from src.trackcase_service.service.schemas import (
     CashCollectionRequest,
@@ -182,6 +186,14 @@ def _handle_history(
 ):
     history_service = get_history_service(db_session, HistoryCashCollectionModel)
     if is_delete:
+        note_service = get_note_service(db_session, NoteCashCollectionModel)
+        note_service.delete_note_before_delete_object(
+            NoteCashCollectionModel.__tablename__,
+            "cash_collection_id",
+            cash_collection_id,
+            "CashCollection",
+            "NoteCashCollection",
+        )
         history_service.delete_history_before_delete_object(
             HistoryCashCollectionModel.__tablename__,
             "cash_collection_id",

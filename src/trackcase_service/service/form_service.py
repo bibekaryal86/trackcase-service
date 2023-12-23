@@ -7,7 +7,9 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Form as FormModel
 from src.trackcase_service.db.models import HistoryForm as HistoryFormModel
+from src.trackcase_service.db.models import NoteForm as NoteFormModel
 from src.trackcase_service.service.history_service import get_history_service
+from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import Form as FormSchema
 from src.trackcase_service.service.schemas import FormRequest, FormResponse
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
@@ -167,6 +169,10 @@ def _handle_history(
 ):
     history_service = get_history_service(db_session, HistoryFormModel)
     if is_delete:
+        note_service = get_note_service(db_session, NoteFormModel)
+        note_service.delete_note_before_delete_object(
+            NoteFormModel.__tablename__, "form_id", form_id, "Form", "NoteForm"
+        )
         history_service.delete_history_before_delete_object(
             HistoryFormModel.__tablename__,
             "form_id",
