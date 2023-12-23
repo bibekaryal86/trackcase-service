@@ -17,15 +17,11 @@ backend service for trackcase
   * To retrieve history, use the `find_one` endpoint with `is_include_history=True`
   * To retrieve notes, use the `find_one` endpoint, notes are always included
 
+* do not let change status to inactive if dependents are still active
 * deleting is not allowed, set status of inactive/closed/retired etc
 * case status tied with form status and collections
   * case complete when all forms complete
   * case complete when all collections balance zero
-  * case can't be closed/inactive etc if forms pending, give option to close it all
-    * still need to put blocker to reconcile cash/case collection
-
-* TODO
-  * Add Notes API one for all
-    * this will add notes only
+* report of all court cases where all forms and other dependencies are done but still active
 
 testing without from_attributes=True in schema, don't think needed because all converting manually
