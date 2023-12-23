@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, condecimal
+from pydantic import BaseModel, condecimal, field_validator
+
+from src.trackcase_service.utils.enums import Status
 
 
 class BaseModelSchema(BaseModel):
@@ -28,6 +30,12 @@ class StatusBase(BaseModel):
     status: Optional[str] = None
     comments: Optional[str] = None
 
+    @field_validator("status")
+    def check_status(self, v: str) -> str | None:
+        if v is not None and v not in Status.__members__:
+            raise ValueError(f"Invalid status value: {v}")
+        return v
+
 
 class AddressBase(BaseModel):
     street_address: Optional[str] = None
@@ -37,14 +45,12 @@ class AddressBase(BaseModel):
     phone_number: Optional[int] = None
 
 
-class NoteBase:
+class NoteBase(BaseModel):
     user_name: str
     note: str
 
 
-class NoteRequest(BaseModel):
-    user_name: str
-    note: str
+class NoteRequest(NoteBase):
     note_object_id: int
 
 
@@ -69,25 +75,6 @@ class FormTypeRequest(FormTypeBase, BaseModel):
 
 class FormTypeResponse(ResponseBase):
     form_types: list[FormType] = []
-
-
-# form status
-class FormStatusBase(NameDescBase):
-    pass
-
-
-class FormStatus(FormStatusBase, BaseModelSchema):
-    # model_config = ConfigDict(from_attributes=True, extra="ignore")
-    forms: list["Form"] = []
-    history_forms: list["HistoryForm"] = []
-
-
-class FormStatusRequest(FormStatusBase, BaseModel):
-    pass
-
-
-class FormStatusResponse(ResponseBase):
-    form_statuses: list[FormStatus] = []
 
 
 # collection method
@@ -216,14 +203,6 @@ class NoteCourtResponse(ResponseBase):
     note_courts: list[NoteCourt] = []
 
 
-class HistoryCourtRequest:
-    pass
-
-
-class HistoryCourtResponse(ResponseBase):
-    history_courts: list[HistoryCourt] = []
-
-
 # judge
 class JudgeBase(StatusBase):
     name: str
@@ -273,14 +252,6 @@ class NoteJudgeRequest(NoteJudgeBase, BaseModel):
 
 class NoteJudgeResponse(ResponseBase):
     note_judges: list[NoteJudge] = []
-
-
-class HistoryJudgeRequest:
-    pass
-
-
-class HistoryJudgeResponse(ResponseBase):
-    history_judges: list[HistoryJudge] = []
 
 
 # client
@@ -334,14 +305,6 @@ class NoteClientRequest(NoteClientBase, BaseModel):
 
 class NoteClientResponse(ResponseBase):
     note_clients: list[NoteClient] = []
-
-
-class HistoryClientRequest:
-    pass
-
-
-class HistoryClientResponse(ResponseBase):
-    history_clients: list[HistoryClient] = []
 
 
 # court_case
@@ -401,14 +364,6 @@ class NoteCourtCaseResponse(ResponseBase):
     note_court_cases: list[NoteCourtCase] = []
 
 
-class HistoryCourtCaseRequest:
-    pass
-
-
-class HistoryCourtCaseResponse(ResponseBase):
-    history_court_cases: list[HistoryCourtCase] = []
-
-
 # hearing_calendar
 class HearingCalendarBase(StatusBase):
     hearing_date: datetime
@@ -460,14 +415,6 @@ class NoteHearingCalendarRequest(NoteHearingCalendarBase, BaseModel):
 
 class NoteHearingCalendarResponse(ResponseBase):
     note_hearing_calendars: list[NoteHearingCalendar] = []
-
-
-class HistoryHearingCalendarRequest:
-    pass
-
-
-class HistoryHearingCalendarResponse(ResponseBase):
-    history_hearing_calendars: list[HistoryHearingCalendar] = []
 
 
 # task_calendar
@@ -525,18 +472,9 @@ class NoteTaskCalendarResponse(ResponseBase):
     note_task_calendars: list[NoteTaskCalendar] = []
 
 
-class HistoryTaskCalendarRequest:
-    pass
-
-
-class HistoryTaskCalendarResponse(ResponseBase):
-    history_task_calendars: list[HistoryTaskCalendar] = []
-
-
 # form
 class FormBase(StatusBase):
     form_type_id: int
-    form_status_id: int
     court_case_id: Optional[int] = None
     submit_date: Optional[datetime] = None
     receipt_date: Optional[datetime] = None
@@ -548,7 +486,6 @@ class FormBase(StatusBase):
 
 class Form(FormBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
-    form_status: Optional[FormStatus] = None
     form_type: Optional[FormType] = None
     task_calendar: Optional[TaskCalendar] = None
     court_case: Optional[CourtCase] = None
@@ -573,7 +510,6 @@ class HistoryForm(Form):
     form: Optional[Form] = None
     # make NOT optional inherited fields optional in history
     form_type_id: Optional[int] = None
-    form_status_id: Optional[int] = None
 
 
 class FormRequest(FormBase, BaseModel):
@@ -590,14 +526,6 @@ class NoteFormRequest(NoteFormBase, BaseModel):
 
 class NoteFormResponse(ResponseBase):
     note_forms: list[NoteForm] = []
-
-
-class HistoryFormRequest:
-    pass
-
-
-class HistoryFormResponse(ResponseBase):
-    history_forms: list[HistoryForm] = []
 
 
 # case_collection
@@ -667,14 +595,6 @@ class NoteCaseCollectionResponse(ResponseBase):
     note_case_collections: list[NoteCaseCollection] = []
 
 
-class HistoryCaseCollectionRequest:
-    pass
-
-
-class HistoryCaseCollectionResponse(ResponseBase):
-    history_case_collections: list[HistoryCaseCollection] = []
-
-
 # cash_collection
 class CashCollectionBase(StatusBase):
     collection_date: datetime
@@ -728,11 +648,3 @@ class NoteCashCollectionRequest(NoteCashCollectionBase, BaseModel):
 
 class NoteCashCollectionResponse(ResponseBase):
     note_cash_collections: list[NoteCashCollection] = []
-
-
-class HistoryCashCollectionRequest:
-    pass
-
-
-class HistoryCashCollectionResponse(ResponseBase):
-    history_cash_collections: list[HistoryCashCollection] = []

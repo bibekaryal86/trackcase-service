@@ -9,22 +9,23 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
-import src.trackcase_service.api.case_collection_api as case_collection_api
-import src.trackcase_service.api.case_type_api as case_type_api
-import src.trackcase_service.api.cash_collection_api as cash_collection_api
-import src.trackcase_service.api.client_api as client_api
-import src.trackcase_service.api.collection_method_api as collection_method_api
-import src.trackcase_service.api.court_api as court_api
-import src.trackcase_service.api.court_case_api as court_case_api
-import src.trackcase_service.api.form_api as form_api
-import src.trackcase_service.api.form_status_api as form_status_api
-import src.trackcase_service.api.form_type_api as form_type_api
-import src.trackcase_service.api.hearing_calendar_api as hearing_calendar_api
-import src.trackcase_service.api.hearing_type_api as hearing_type_api
-import src.trackcase_service.api.judge_api as judge_api
-import src.trackcase_service.api.note_api as note_api
-import src.trackcase_service.api.task_calendar_api as task_calendar_api
-import src.trackcase_service.api.task_type_api as task_type_api
+from src.trackcase_service.api import (
+    case_collection_api,
+    case_type_api,
+    cash_collection_api,
+    client_api,
+    collection_method_api,
+    court_api,
+    court_case_api,
+    form_api,
+    form_type_api,
+    hearing_calendar_api,
+    hearing_type_api,
+    judge_api,
+    note_api,
+    task_calendar_api,
+    task_type_api,
+)
 from src.trackcase_service.utils import commons, constants, enums, logger
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
@@ -68,7 +69,6 @@ app.include_router(
 app.include_router(court_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(court_case_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(form_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(form_status_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(form_type_api.router, dependencies=[Depends(user_name_header)])
 app.include_router(
     hearing_calendar_api.router, dependencies=[Depends(user_name_header)]
