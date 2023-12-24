@@ -419,7 +419,7 @@ class TaskCalendar(TaskCalendarBase, BaseModelSchema):
 
 class NoteTaskCalendar(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
-    hearing_calendar_id: int
+    task_calendar_id: int
     task_calendar: Optional[TaskCalendar] = None
 
 
