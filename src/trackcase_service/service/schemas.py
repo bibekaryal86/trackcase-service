@@ -170,12 +170,9 @@ class Court(CourtBase, BaseModelSchema):
     history_judges: list["HistoryJudge"] = []
 
 
-class NoteCourtBase(NoteBase):
-    court_id: int
-
-
-class NoteCourt(NoteCourtBase, BaseModelSchema):
+class NoteCourt(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    court_id: int
     court: Optional[Court] = None
 
 
@@ -194,14 +191,6 @@ class CourtRequest(CourtBase, BaseModel):
 
 class CourtResponse(ResponseBase):
     courts: list[Court] = []
-
-
-class NoteCourtRequest(NoteCourtBase, BaseModel):
-    pass
-
-
-class NoteCourtResponse(ResponseBase):
-    note_courts: list[NoteCourt] = []
 
 
 # judge
@@ -227,12 +216,9 @@ class Judge(JudgeBase, BaseModelSchema):
     history_clients: list["HistoryClient"] = []
 
 
-class NoteJudgeBase(NoteBase):
-    judge_id: int
-
-
-class NoteJudge(NoteJudgeBase, BaseModelSchema):
+class NoteJudge(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    judge_id: int
     judge: Optional[Judge] = None
 
 
@@ -252,14 +238,6 @@ class JudgeRequest(JudgeBase, BaseModel):
 
 class JudgeResponse(ResponseBase):
     judges: list[Judge] = []
-
-
-class NoteJudgeRequest(NoteJudgeBase, BaseModel):
-    pass
-
-
-class NoteJudgeResponse(ResponseBase):
-    note_judges: list[NoteJudge] = []
 
 
 # client
@@ -287,12 +265,9 @@ class Client(ClientBase, BaseModelSchema):
     history_court_cases: list["HistoryCourtCase"] = []
 
 
-class NoteClientBase(NoteBase):
-    client_id: int
-
-
-class NoteClient(NoteClientBase, BaseModelSchema):
+class NoteClient(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    client_id: int
     client: Optional[Client] = None
 
 
@@ -312,14 +287,6 @@ class ClientRequest(ClientBase, BaseModel):
 
 class ClientResponse(ResponseBase):
     clients: list[Client] = []
-
-
-class NoteClientRequest(NoteClientBase, BaseModel):
-    pass
-
-
-class NoteClientResponse(ResponseBase):
-    note_clients: list[NoteClient] = []
 
 
 # court_case
@@ -351,12 +318,9 @@ class CourtCase(CourtCaseBase, BaseModelSchema):
     history_case_collections: list["HistoryCaseCollection"] = []
 
 
-class NoteCourtCaseBase(NoteBase):
-    court_case_id: int
-
-
-class NoteCourtCase(NoteCourtCaseBase, BaseModelSchema):
+class NoteCourtCase(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    court_case_id: int
     court_case: Optional[CourtCase] = None
 
 
@@ -376,14 +340,6 @@ class CourtCaseRequest(CourtCaseBase, BaseModel):
 
 class CourtCaseResponse(ResponseBase):
     court_cases: list[CourtCase] = []
-
-
-class NoteCourtCaseRequest(NoteCourtCaseBase, BaseModel):
-    pass
-
-
-class NoteCourtCaseResponse(ResponseBase):
-    note_court_cases: list[NoteCourtCase] = []
 
 
 # hearing_calendar
@@ -410,12 +366,9 @@ class HearingCalendar(HearingCalendarBase, BaseModelSchema):
     history_task_calendars: list["HistoryTaskCalendar"] = []
 
 
-class NoteHearingCalendarBase(NoteBase):
-    hearing_calendar_id: int
-
-
-class NoteHearingCalendar(NoteHearingCalendarBase, BaseModelSchema):
+class NoteHearingCalendar(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    hearing_calendar_id: int
     hearing_calendar: Optional[HearingCalendar] = None
 
 
@@ -436,14 +389,6 @@ class HearingCalendarRequest(HearingCalendarBase, BaseModel):
 
 class HearingCalendarResponse(ResponseBase):
     hearing_calendars: list[HearingCalendar] = []
-
-
-class NoteHearingCalendarRequest(NoteHearingCalendarBase, BaseModel):
-    pass
-
-
-class NoteHearingCalendarResponse(ResponseBase):
-    note_hearing_calendars: list[NoteHearingCalendar] = []
 
 
 # task_calendar
@@ -472,12 +417,9 @@ class TaskCalendar(TaskCalendarBase, BaseModelSchema):
     history_forms: list["HistoryForm"] = []
 
 
-class NoteTaskCalendarBase(NoteBase):
-    hearing_calendar_id: int
-
-
-class NoteTaskCalendar(NoteTaskCalendarBase, BaseModelSchema):
+class NoteTaskCalendar(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    hearing_calendar_id: int
     task_calendar: Optional[TaskCalendar] = None
 
 
@@ -498,14 +440,6 @@ class TaskCalendarRequest(TaskCalendarBase, BaseModel):
 
 class TaskCalendarResponse(ResponseBase):
     task_calendars: list[TaskCalendar] = []
-
-
-class NoteTaskCalendarRequest(NoteTaskCalendarBase, BaseModel):
-    pass
-
-
-class NoteTaskCalendarResponse(ResponseBase):
-    note_task_calendars: list[NoteTaskCalendar] = []
 
 
 # form
@@ -538,12 +472,9 @@ class Form(FormBase, BaseModelSchema):
     history_case_collections: list["HistoryCaseCollection"] = []
 
 
-class NoteFormBase(NoteBase):
-    form_id: int
-
-
-class NoteForm(NoteFormBase, BaseModelSchema):
+class NoteForm(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    form_id: int
     form: Optional[Form] = None
 
 
@@ -561,14 +492,6 @@ class FormRequest(FormBase, BaseModel):
 
 class FormResponse(ResponseBase):
     forms: list[Form] = []
-
-
-class NoteFormRequest(NoteFormBase, BaseModel):
-    pass
-
-
-class NoteFormResponse(ResponseBase):
-    note_forms: list[NoteForm] = []
 
 
 # case_collection
@@ -599,12 +522,9 @@ class CaseCollection(CaseCollectionBase, BaseModelSchema):
     history_cash_collections: list["HistoryCashCollection"] = []
 
 
-class NoteCaseCollectionBase(NoteBase):
-    case_collection_id: int
-
-
-class NoteCaseCollection(NoteCaseCollectionBase, BaseModelSchema):
+class NoteCaseCollection(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    case_collection_id: int
     case_collection: Optional[CaseCollection] = None
 
 
@@ -637,14 +557,6 @@ class CaseCollectionResponse(ResponseBase):
     case_collections: list[CaseCollection] = []
 
 
-class NoteCaseCollectionRequest(NoteCaseCollectionBase, BaseModel):
-    pass
-
-
-class NoteCaseCollectionResponse(ResponseBase):
-    note_case_collections: list[NoteCaseCollection] = []
-
-
 # cash_collection
 class CashCollectionBase(StatusBase):
     collection_date: datetime
@@ -670,12 +582,9 @@ class CashCollection(CashCollectionBase, BaseModelSchema):
     history_cash_collections: list["HistoryCashCollection"] = []
 
 
-class NoteCashCollectionBase(NoteBase):
-    cash_collection_id: int
-
-
-class NoteCashCollection(NoteCashCollectionBase, BaseModelSchema):
+class NoteCashCollection(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    cash_collection_id: int
     cash_collection: Optional[CashCollection] = None
 
 
@@ -697,11 +606,3 @@ class CashCollectionRequest(CashCollectionBase, BaseModel):
 
 class CashCollectionResponse(ResponseBase):
     cash_collections: list[CashCollection] = []
-
-
-class NoteCashCollectionRequest(NoteCashCollectionBase, BaseModel):
-    pass
-
-
-class NoteCashCollectionResponse(ResponseBase):
-    note_cash_collections: list[NoteCashCollection] = []
