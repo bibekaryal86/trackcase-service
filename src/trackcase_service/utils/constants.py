@@ -40,24 +40,46 @@ class LogLevelOptions(str, Enum):
 
 @lru_cache()
 def get_statuses():
-    return {
-        "court": ["ACTIVE", "INACTIVE", "CLOSED"],
-        "judge": ["ACTIVE", "INACTIVE", "CLOSED"],
-        "client": ["ACTIVE", "COMPLETED", "TRANSFERRED", "CLOSED"],
-        "court_case": ["OPEN", "CLOSED"],
-        "hearing_calendar": ["OPEN", "PROCESSING", "CLOSED"],
-        "task_calendar": ["OPEN", "PROCESSING", "CLOSED"],
-        "form": [
-            "OPEN",
-            "PROCESSING",
-            "PENDING",
-            "SUBMITTED",
-            "EVIDENCE",
-            "APPROVED",
-            "DENIED",
-            "WITHDRAWN",
-            "CLOSED",
-        ],
-        "case_collection": ["OPEN", "PENDING", "CLOSED"],
-        "cash_collection": ["PENDING", "RECEIVED", "WAIVED", "CLOSED"],
+    category_statuses = {
+        "court": {
+            "active": ["ACTIVE"],
+            "inactive": ["INACTIVE", "CLOSED"],
+        },
+        "judge": {
+            "active": ["ACTIVE"],
+            "inactive": ["INACTIVE", "CLOSED"],
+        },
+        "client": {
+            "active": ["ACTIVE"],
+            "inactive": ["COMPLETED", "TRANSFERRED", "CLOSED"],
+        },
+        "court_case": {
+            "active": ["OPEN"],
+            "inactive": ["CLOSED"],
+        },
+        "hearing_calendar": {
+            "active": ["OPEN", "PROCESSING"],
+            "inactive": ["COMPLETED", "CLOSED"],
+        },
+        "task_calendar": {
+            "active": ["OPEN", "PROCESSING"],
+            "inactive": ["COMPLETED", "CLOSED"],
+        },
+        "form": {
+            "active": ["OPEN", "PROCESSING", "PENDING", "SUBMITTED", "EVIDENCE"],
+            "inactive": ["APPROVED", "DENIED", "WITHDRAWN", "CLOSED",
+        ]},
+        "case_collection": {
+            "active": ["OPEN", "PENDING"],
+            "inactive": ["COMPLETED", "CLOSED"],
+        },
+        "cash_collection": {
+            "active": ["PENDING"],
+            "inactive": ["RECEIVED", "WAIVED", "CLOSED"],
+        },
     }
+
+    for category_status in category_statuses:
+        category_statuses[category_status]["all"] = category_statuses[category_status]["active"] + category_statuses[category_status]["inactive"]
+
+    return category_statuses
