@@ -12,7 +12,12 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import Judge as JudgeSchema
 from src.trackcase_service.service.schemas import JudgeRequest, JudgeResponse
-from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.commons import (
+    check_active_clients,
+    get_err_msg,
+    raise_http_exception,
+)
+from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (
     convert_judge_model_to_schema,
     convert_request_schema_to_model,
@@ -127,7 +132,7 @@ class JudgeService(CrudService):
     def update_one_judge(
         self, model_id: int, request: Request, request_object: JudgeRequest
     ) -> JudgeResponse:
-        judge_response = self.read_one_judge(model_id, request)
+        judge_response = self.read_one_judge(model_id, request, is_include_extra=True)
 
         if not (judge_response and judge_response.judges):
             raise_http_exception(
@@ -135,6 +140,10 @@ class JudgeService(CrudService):
                 HTTPStatus.NOT_FOUND,
                 f"Judge Not Found By Id: {model_id}!!!",
             )
+
+        _check_dependents_statuses(
+            request, request_object.status, judge_response.judges[0]
+        )
 
         try:
             data_model: JudgeModel = convert_request_schema_to_model(
@@ -200,6 +209,22 @@ def _sort_judge_by_court_name(
         judges,
         key=lambda x: x.court.name if (x.court and x.court.name) else "",
     )
+
+
+def _check_dependents_statuses(
+    request: Request,
+    status_new: str,
+    judge_old: JudgeSchema,
+):
+    status_old = judge_old.status
+    inactive_statuses = get_statuses().get("judge").get("inactive")
+    if status_new != status_old and status_new in inactive_statuses:
+        if check_active_clients(judge_old.clients):
+            raise_http_exception(
+                request,
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                f"Cannot Update Judge {judge_old.id} Status to {status_new}, There are Active Clients!",  # noqa: E501
+            )
 
 
 def _check_dependents(request: Request, judge: JudgeSchema):

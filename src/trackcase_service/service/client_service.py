@@ -12,7 +12,12 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import Client as ClientSchema
 from src.trackcase_service.service.schemas import ClientRequest, ClientResponse
-from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.commons import (
+    check_active_court_cases,
+    get_err_msg,
+    raise_http_exception,
+)
+from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (
     convert_client_model_to_schema,
     convert_request_schema_to_model,
@@ -96,7 +101,7 @@ class ClientService(CrudService):
     def update_one_client(
         self, model_id: int, request: Request, request_object: ClientRequest
     ) -> ClientResponse:
-        client_response = self.read_one_client(model_id, request)
+        client_response = self.read_one_client(model_id, request, is_include_extra=True)
 
         if not (client_response and client_response.clients):
             raise_http_exception(
@@ -104,6 +109,10 @@ class ClientService(CrudService):
                 HTTPStatus.NOT_FOUND,
                 f"Client Not Found By Id: {model_id}!!!",
             )
+
+        _check_dependents_statuses(
+            request, request_object.status, client_response.clients[0]
+        )
 
         try:
             data_model: ClientModel = convert_request_schema_to_model(
@@ -160,6 +169,22 @@ def get_response_single(single: ClientSchema) -> ClientResponse:
 
 def get_response_multiple(multiple: list[ClientSchema]) -> ClientResponse:
     return ClientResponse(clients=multiple)
+
+
+def _check_dependents_statuses(
+    request: Request,
+    status_new: str,
+    client_old: ClientSchema,
+):
+    status_old = client_old.status
+    inactive_statuses = get_statuses().get("client").get("inactive")
+    if status_new != status_old and status_new in inactive_statuses:
+        if check_active_court_cases(client_old.court_cases):
+            raise_http_exception(
+                request,
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                f"Cannot Update Client {client_old.id} Status to {status_new}, There are Active Court Cases!",  # noqa: E501
+            )
 
 
 def _check_dependents(request: Request, client: ClientSchema):

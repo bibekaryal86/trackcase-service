@@ -19,7 +19,7 @@ class NameDescBase:
 
 
 class StatusBase:
-    status = Column(String(100), nullable=True)
+    status = Column(String(100), nullable=False)
     comments = Column(String(10000), unique=False, nullable=True)
 
 
@@ -41,14 +41,6 @@ class FormType(TableBase, NameDescBase, Base):
     forms: Mapped[List["Form"]] = relationship(back_populates="form_type")
     history_forms: Mapped[List["HistoryForm"]] = relationship(
         back_populates="form_type"
-    )
-
-
-class FormStatus(TableBase, NameDescBase, Base):
-    __tablename__ = "form_status"
-    forms: Mapped[List["Form"]] = relationship(back_populates="form_status")
-    history_forms: Mapped[List["HistoryForm"]] = relationship(
-        back_populates="form_status"
     )
 
 
@@ -437,10 +429,6 @@ class Form(TableBase, StatusBase, Base):
         ForeignKey("form_type.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=False,
     )
-    form_status_id = Column(
-        ForeignKey("form_status.id", onupdate="NO ACTION", ondelete="RESTRICT"),
-        nullable=False,
-    )
     court_case_id = Column(
         ForeignKey("court_case.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=False,
@@ -449,7 +437,6 @@ class Form(TableBase, StatusBase, Base):
         ForeignKey("task_calendar.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=True,
     )
-    form_status: Mapped[FormStatus] = relationship(back_populates="forms")
     form_type: Mapped[FormType] = relationship(back_populates="forms")
     task_calendar: Mapped[TaskCalendar] = relationship(back_populates="forms")
     court_case: Mapped[CourtCase] = relationship(back_populates="forms")
@@ -488,10 +475,6 @@ class HistoryForm(TableBase, StatusBase, Base):
         ForeignKey("form_type.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=True,
     )
-    form_status_id = Column(
-        ForeignKey("form_status.id", onupdate="NO ACTION", ondelete="RESTRICT"),
-        nullable=True,
-    )
     court_case_id = Column(
         ForeignKey("court_case.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=True,
@@ -501,7 +484,6 @@ class HistoryForm(TableBase, StatusBase, Base):
         nullable=True,
     )
     form: Mapped[Form] = relationship(back_populates="history_forms")
-    form_status: Mapped[FormStatus] = relationship(back_populates="history_forms")
     form_type: Mapped[FormType] = relationship(back_populates="history_forms")
     task_calendar: Mapped[TaskCalendar] = relationship(back_populates="history_forms")
     court_case: Mapped[CourtCase] = relationship(back_populates="history_forms")

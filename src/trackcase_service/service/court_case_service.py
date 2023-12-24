@@ -12,7 +12,15 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import CourtCase as CourtCaseSchema
 from src.trackcase_service.service.schemas import CourtCaseRequest, CourtCaseResponse
-from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.commons import (
+    check_active_case_collections,
+    check_active_forms,
+    check_active_hearing_calendars,
+    check_active_task_calendars,
+    get_err_msg,
+    raise_http_exception,
+)
+from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (
     convert_court_case_model_to_schema,
     convert_request_schema_to_model,
@@ -99,7 +107,9 @@ class CourtCaseService(CrudService):
     def update_one_court_case(
         self, model_id: int, request: Request, request_object: CourtCaseRequest
     ) -> CourtCaseResponse:
-        court_case_response = self.read_one_court_case(model_id, request)
+        court_case_response = self.read_one_court_case(
+            model_id, request, is_include_extra=True
+        )
 
         if not (court_case_response and court_case_response.court_cases):
             raise_http_exception(
@@ -107,6 +117,10 @@ class CourtCaseService(CrudService):
                 HTTPStatus.NOT_FOUND,
                 f"CourtCase Not Found By Id: {model_id}!!!",
             )
+
+        _check_dependents_statuses(
+            request, request_object.status, court_case_response.court_cases[0]
+        )
 
         try:
             data_model: CourtCaseModel = convert_request_schema_to_model(
@@ -176,6 +190,43 @@ def _sort_court_case_by_client_name(
         court_cases,
         key=lambda x: x.client.name if (x.client and x.client.name) else "",
     )
+
+
+def _check_dependents_statuses(
+    request: Request,
+    status_new: str,
+    court_case_old: CourtCaseSchema,
+):
+    status_old = court_case_old.status
+    inactive_statuses = get_statuses().get("court_case").get("inactive")
+    if status_new != status_old and status_new in inactive_statuses:
+        if check_active_forms(court_case_old.forms):
+            raise_http_exception(
+                request,
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                f"Cannot Update Court Case {court_case_old.id} Status to {status_new}, There are Active Forms!",  # noqa: E501
+            )
+
+        if check_active_case_collections(court_case_old.case_collections):
+            raise_http_exception(
+                request,
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                f"Cannot Update Court Case {court_case_old.id} Status to {status_new}, There are Active Case Collections!",  # noqa: E501
+            )
+
+        if check_active_hearing_calendars(court_case_old.hearing_calendars):
+            raise_http_exception(
+                request,
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                f"Cannot Update Court Case {court_case_old.id} Status to {status_new}, There are Active Hearing Calendars!",  # noqa: E501
+            )
+
+        if check_active_task_calendars(court_case_old.task_calendars):
+            raise_http_exception(
+                request,
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                f"Cannot Update Court Case {court_case_old.id} Status to {status_new}, There are Active Task Calendars!",  # noqa: E501
+            )
 
 
 def _check_dependents(request: Request, court_case: CourtCaseSchema):

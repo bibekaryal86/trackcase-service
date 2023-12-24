@@ -20,7 +20,12 @@ from src.trackcase_service.service.schemas import (
     CaseCollectionResponse,
     CaseCollectionRetrieveRequest,
 )
-from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.commons import (
+    check_active_cash_collections,
+    get_err_msg,
+    raise_http_exception,
+)
+from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (
     convert_case_collection_model_to_schema,
     convert_request_schema_to_model,
@@ -139,7 +144,9 @@ class CaseCollectionService(CrudService):
     def update_one_case_collection(
         self, model_id: int, request: Request, request_object: CaseCollectionRequest
     ) -> CaseCollectionResponse:
-        case_collection_response = self.read_one_case_collection(model_id, request)
+        case_collection_response = self.read_one_case_collection(
+            model_id, request, is_include_extra=True
+        )
 
         if not (case_collection_response and case_collection_response.case_collections):
             raise_http_exception(
@@ -147,6 +154,12 @@ class CaseCollectionService(CrudService):
                 HTTPStatus.NOT_FOUND,
                 f"CaseCollection Not Found By Id: {model_id}!!!",
             )
+
+        _check_dependents_statuses(
+            request,
+            request_object.status,
+            case_collection_response.case_collections[0],
+        )
 
         try:
             data_model: CaseCollectionModel = convert_request_schema_to_model(
@@ -209,6 +222,22 @@ def get_response_multiple(
     multiple: list[CaseCollectionSchema],
 ) -> CaseCollectionResponse:
     return CaseCollectionResponse(case_collections=multiple)
+
+
+def _check_dependents_statuses(
+    request: Request,
+    status_new: str,
+    case_collection_old: CaseCollectionSchema,
+):
+    status_old = case_collection_old.status
+    inactive_statuses = get_statuses().get("cash_collection").get("inactive")
+    if status_new != status_old and status_new in inactive_statuses:
+        if check_active_cash_collections(case_collection_old.cash_collections):
+            raise_http_exception(
+                request,
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                f"Cannot Update Case Collection {case_collection_old.id} Status to {status_new}, There are Active Cash Collections!",  # noqa: E501
+            )
 
 
 def _check_dependents(request: Request, case_collection: CaseCollectionSchema):

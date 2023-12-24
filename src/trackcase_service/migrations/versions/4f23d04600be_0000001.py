@@ -1,8 +1,8 @@
 """0000001
 
-Revision ID: 4da10b509bf9
+Revision ID: 4f23d04600be
 Revises:
-Create Date: 2023-12-22 11:49:03.837046
+Create Date: 2023-12-23 15:05:21.358866
 
 """
 from typing import Sequence, Union
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "4da10b509bf9"
+revision: str = "4f23d04600be"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -51,18 +51,8 @@ def upgrade() -> None:
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
         sa.Column("phone_number", sa.Integer(), nullable=True),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
-        sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("name"),
-    )
-    op.create_table(
-        "form_status",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("created", sa.DateTime(), nullable=False),
-        sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("name", sa.String(length=100), nullable=False),
-        sa.Column("description", sa.String(length=3000), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("name"),
     )
@@ -115,7 +105,7 @@ def upgrade() -> None:
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
         sa.Column("phone_number", sa.Integer(), nullable=True),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_id"], ["court.id"], onupdate="NO ACTION", ondelete="RESTRICT"
@@ -130,7 +120,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_id"], ["court.id"], onupdate="NO ACTION", ondelete="RESTRICT"
@@ -166,7 +156,7 @@ def upgrade() -> None:
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
         sa.Column("phone_number", sa.Integer(), nullable=True),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["judge_id"], ["judge.id"], onupdate="NO ACTION", ondelete="RESTRICT"
@@ -186,7 +176,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_id"], ["court.id"], onupdate="NO ACTION", ondelete="RESTRICT"
@@ -216,7 +206,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_type_id"],
@@ -245,7 +235,7 @@ def upgrade() -> None:
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
         sa.Column("phone_number", sa.Integer(), nullable=True),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["client_id"], ["client.id"], onupdate="NO ACTION", ondelete="RESTRICT"
@@ -276,7 +266,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
@@ -301,7 +291,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_type_id"],
@@ -346,7 +336,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
@@ -393,7 +383,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
@@ -423,23 +413,16 @@ def upgrade() -> None:
         sa.Column("rfe_submit_date", sa.DateTime(), nullable=True),
         sa.Column("decision_date", sa.DateTime(), nullable=True),
         sa.Column("form_type_id", sa.Integer(), nullable=False),
-        sa.Column("form_status_id", sa.Integer(), nullable=False),
         sa.Column("court_case_id", sa.Integer(), nullable=False),
         sa.Column("task_calendar_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
             ["court_case.id"],
-            onupdate="NO ACTION",
-            ondelete="RESTRICT",
-        ),
-        sa.ForeignKeyConstraint(
-            ["form_status_id"],
-            ["form_status.id"],
             onupdate="NO ACTION",
             ondelete="RESTRICT",
         ),
@@ -468,7 +451,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
@@ -523,7 +506,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["collection_method_id"],
@@ -552,13 +535,12 @@ def upgrade() -> None:
         sa.Column("rfe_submit_date", sa.DateTime(), nullable=True),
         sa.Column("decision_date", sa.DateTime(), nullable=True),
         sa.Column("form_type_id", sa.Integer(), nullable=True),
-        sa.Column("form_status_id", sa.Integer(), nullable=True),
         sa.Column("court_case_id", sa.Integer(), nullable=True),
         sa.Column("task_calendar_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["court_case_id"],
@@ -568,12 +550,6 @@ def upgrade() -> None:
         ),
         sa.ForeignKeyConstraint(
             ["form_id"], ["form.id"], onupdate="NO ACTION", ondelete="RESTRICT"
-        ),
-        sa.ForeignKeyConstraint(
-            ["form_status_id"],
-            ["form_status.id"],
-            onupdate="NO ACTION",
-            ondelete="RESTRICT",
         ),
         sa.ForeignKeyConstraint(
             ["form_type_id"],
@@ -613,7 +589,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_collection_id"],
@@ -642,7 +618,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_collection_id"],
@@ -696,7 +672,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=True),
+        sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_collection_id"],
@@ -769,7 +745,6 @@ def downgrade() -> None:
     op.drop_table("task_type")
     op.drop_table("hearing_type")
     op.drop_table("form_type")
-    op.drop_table("form_status")
     op.drop_table("court")
     op.drop_table("collection_method")
     op.drop_table("case_type")

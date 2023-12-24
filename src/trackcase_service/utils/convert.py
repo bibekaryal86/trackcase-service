@@ -243,22 +243,6 @@ def convert_form_model_to_schema(
     return data_schema
 
 
-def convert_form_status_model_to_schema(
-    data_model: models.FormStatus,
-    is_include_extra=False,
-    is_include_history=False,
-) -> schemas.FormStatus:
-    exclusions = ["forms", "history_forms"]
-    data_schema: schemas.FormStatus = convert_data_model_to_schema(
-        data_model, schemas.FormStatus, exclusions
-    )
-    if is_include_extra:
-        setattr(data_schema, "forms", data_model.forms)
-    if is_include_history:
-        pass
-    return data_schema
-
-
 def convert_form_type_model_to_schema(
     data_model: models.FormType,
     is_include_extra=False,
