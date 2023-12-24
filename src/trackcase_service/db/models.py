@@ -28,7 +28,7 @@ class AddressBase:
     city = Column(String(100), nullable=True)
     state = Column(String(10), nullable=True)
     zip_code = Column(String(10), nullable=True)
-    phone_number = Column(Integer, nullable=True)
+    phone_number = Column(String(25), nullable=True)
 
 
 class NoteBase:

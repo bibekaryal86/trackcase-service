@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, ClassVar
 
 from pydantic import BaseModel, condecimal, field_validator
 
@@ -36,7 +36,7 @@ class AddressBase(BaseModel):
     city: Optional[str] = None
     state: Optional[str] = None
     zip_code: Optional[str] = None
-    phone_number: Optional[int] = None
+    phone_number: Optional[str] = None
 
 
 class NoteBase(BaseModel):
@@ -154,11 +154,16 @@ class CourtBase(AddressBase, StatusBase):
     name: str
     dhs_address: Optional[str] = None
 
+    allow_empty_status: ClassVar[bool] = False
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("court").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError(f"Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -199,11 +204,16 @@ class JudgeBase(StatusBase):
     webex: Optional[str] = None
     court_id: int
 
+    allow_empty_status: ClassVar[bool] = False
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("judge").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError(f"Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -248,11 +258,16 @@ class ClientBase(AddressBase, StatusBase):
     email: Optional[str] = None
     judge_id: Optional[int] = None
 
+    allow_empty_status: ClassVar[bool] = False
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("client").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError(f"Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -294,11 +309,16 @@ class CourtCaseBase(StatusBase):
     case_type_id: int
     client_id: int
 
+    allow_empty_status: ClassVar[bool] = False
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("court_case").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError(f"Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -348,11 +368,16 @@ class HearingCalendarBase(StatusBase):
     hearing_type_id: int
     court_case_id: int
 
+    allow_empty_status: ClassVar[bool] = False
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("hearing_calendar").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError(f"Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -398,11 +423,16 @@ class TaskCalendarBase(StatusBase):
     court_case_id: int
     hearing_calendar_id: Optional[int] = None
 
+    allow_empty_status: ClassVar[bool] = False
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("task_calendar").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError(f"Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -453,11 +483,16 @@ class FormBase(StatusBase):
     decision_date: Optional[datetime] = None
     task_calendar_id: Optional[int] = None
 
+    allow_empty_status: ClassVar[bool] = False
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("form").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError(f"Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -503,11 +538,16 @@ class CaseCollectionBase(StatusBase):
     court_case_id: int
     form_id: Optional[int] = None
 
+    allow_empty_status: ClassVar[bool] = False
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("case_collection").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError(f"Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -566,11 +606,16 @@ class CashCollectionBase(StatusBase):
     case_collection_id: int
     collection_method_id: int
 
+    allow_empty_status: ClassVar[bool] = False
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("cash_collection").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError(f"Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 

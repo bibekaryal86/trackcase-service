@@ -1,8 +1,8 @@
 """0000001
 
-Revision ID: 4f23d04600be
+Revision ID: ea36cc56ef6e
 Revises:
-Create Date: 2023-12-23 15:05:21.358866
+Create Date: 2023-12-24 15:42:13.706342
 
 """
 from typing import Sequence, Union
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "4f23d04600be"
+revision: str = "ea36cc56ef6e"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -50,7 +50,7 @@ def upgrade() -> None:
         sa.Column("city", sa.String(length=100), nullable=True),
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
-        sa.Column("phone_number", sa.Integer(), nullable=True),
+        sa.Column("phone_number", sa.String(length=25), nullable=True),
         sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.PrimaryKeyConstraint("id"),
@@ -104,7 +104,7 @@ def upgrade() -> None:
         sa.Column("city", sa.String(length=100), nullable=True),
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
-        sa.Column("phone_number", sa.Integer(), nullable=True),
+        sa.Column("phone_number", sa.String(length=25), nullable=True),
         sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
@@ -155,7 +155,7 @@ def upgrade() -> None:
         sa.Column("city", sa.String(length=100), nullable=True),
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
-        sa.Column("phone_number", sa.Integer(), nullable=True),
+        sa.Column("phone_number", sa.String(length=25), nullable=True),
         sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
@@ -234,7 +234,7 @@ def upgrade() -> None:
         sa.Column("city", sa.String(length=100), nullable=True),
         sa.Column("state", sa.String(length=10), nullable=True),
         sa.Column("zip_code", sa.String(length=10), nullable=True),
-        sa.Column("phone_number", sa.Integer(), nullable=True),
+        sa.Column("phone_number", sa.String(length=25), nullable=True),
         sa.Column("status", sa.String(length=100), nullable=False),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
