@@ -21,7 +21,12 @@ from src.trackcase_service.service.schemas import (
     HearingCalendarRequest,
     HearingCalendarResponse,
 )
-from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.commons import (
+    check_active_task_calendars,
+    get_err_msg,
+    raise_http_exception,
+)
+from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (
     convert_hearing_calendar_model_to_schema,
     convert_request_schema_to_model,
@@ -111,7 +116,9 @@ class HearingCalendarService(CrudService):
     def update_one_hearing_calendar(
         self, model_id: int, request: Request, request_object: HearingCalendarRequest
     ) -> HearingCalendarResponse:
-        hearing_calendar_response = self.read_one_hearing_calendar(model_id, request)
+        hearing_calendar_response = self.read_one_hearing_calendar(
+            model_id, request, is_include_extra=True
+        )
 
         if not (
             hearing_calendar_response and hearing_calendar_response.hearing_calendars
@@ -121,6 +128,12 @@ class HearingCalendarService(CrudService):
                 HTTPStatus.NOT_FOUND,
                 f"HearingCalendar Not Found By Id: {model_id}!!!",
             )
+
+        _check_dependents_statuses(
+            request,
+            request_object.status,
+            hearing_calendar_response.hearing_calendars[0],
+        )
 
         try:
             data_model: HearingCalendarModel = convert_request_schema_to_model(
@@ -185,6 +198,22 @@ def get_response_multiple(
     multiple: list[HearingCalendarSchema],
 ) -> HearingCalendarResponse:
     return HearingCalendarResponse(hearing_calendars=multiple)
+
+
+def _check_dependents_statuses(
+    request: Request,
+    status_new: str,
+    hearing_calendar_old: HearingCalendarSchema,
+):
+    status_old = hearing_calendar_old.status
+    inactive_statuses = get_statuses().get("hearing_calendar").get("inactive")
+    if status_new != status_old and status_new in inactive_statuses:
+        if check_active_task_calendars(hearing_calendar_old.task_calendars):
+            raise_http_exception(
+                request,
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                f"Cannot Update Hearing Calendar {hearing_calendar_old.id} Status to {status_new}, There are Active Task Calendars!",  # noqa: E501
+            )
 
 
 def _check_dependents(request: Request, hearing_calendar: HearingCalendarSchema):

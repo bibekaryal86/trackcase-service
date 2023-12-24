@@ -12,7 +12,12 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import Form as FormSchema
 from src.trackcase_service.service.schemas import FormRequest, FormResponse
-from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
+from src.trackcase_service.utils.commons import (
+    check_active_case_collections,
+    get_err_msg,
+    raise_http_exception,
+)
+from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (
     convert_form_model_to_schema,
     convert_request_schema_to_model,
@@ -96,7 +101,7 @@ class FormService(CrudService):
     def update_one_form(
         self, model_id: int, request: Request, request_object: FormRequest
     ) -> FormResponse:
-        form_response = self.read_one_form(model_id, request)
+        form_response = self.read_one_form(model_id, request, is_include_extra=True)
 
         if not (form_response and form_response.forms):
             raise_http_exception(
@@ -104,6 +109,10 @@ class FormService(CrudService):
                 HTTPStatus.NOT_FOUND,
                 f"Form Not Found By Id: {model_id}!!!",
             )
+
+        _check_dependents_statuses(
+            request, request_object.status, form_response.forms[0]
+        )
 
         try:
             data_model: FormModel = convert_request_schema_to_model(
@@ -160,6 +169,22 @@ def get_response_single(single: FormSchema) -> FormResponse:
 
 def get_response_multiple(multiple: list[FormSchema]) -> FormResponse:
     return FormResponse(forms=multiple)
+
+
+def _check_dependents_statuses(
+    request: Request,
+    status_new: str,
+    form_old: FormSchema,
+):
+    status_old = form_old.status
+    inactive_statuses = get_statuses().get("form").get("inactive")
+    if status_new != status_old and status_new in inactive_statuses:
+        if check_active_case_collections(form_old.case_collections):
+            raise_http_exception(
+                request,
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                f"Cannot Update Form {form_old.id} Status to {status_new}, There are Active Case Collections!",  # noqa: E501
+            )
 
 
 def _check_dependents(request: Request, form: FormSchema):
