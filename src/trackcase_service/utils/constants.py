@@ -67,8 +67,13 @@ def get_statuses():
         },
         "form": {
             "active": ["OPEN", "PROCESSING", "PENDING", "SUBMITTED", "EVIDENCE"],
-            "inactive": ["APPROVED", "DENIED", "WITHDRAWN", "CLOSED",
-        ]},
+            "inactive": [
+                "APPROVED",
+                "DENIED",
+                "WITHDRAWN",
+                "CLOSED",
+            ],
+        },
         "case_collection": {
             "active": ["OPEN", "PENDING"],
             "inactive": ["COMPLETED", "CLOSED"],
@@ -80,6 +85,9 @@ def get_statuses():
     }
 
     for category_status in category_statuses:
-        category_statuses[category_status]["all"] = category_statuses[category_status]["active"] + category_statuses[category_status]["inactive"]
+        category_statuses[category_status]["all"] = (
+            category_statuses[category_status]["active"]
+            + category_statuses[category_status]["inactive"]
+        )
 
     return category_statuses
