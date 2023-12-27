@@ -19,7 +19,7 @@ router = APIRouter(prefix="/trackcase-service/notes", tags=["Notes"])
 
 
 @router.post(
-    "/{note_object_type}/",
+    "/{note_object_type}",
     response_model=schemas.NoteResponse,
     status_code=HTTPStatus.OK,
 )
