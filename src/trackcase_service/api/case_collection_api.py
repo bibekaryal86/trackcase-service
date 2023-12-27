@@ -50,7 +50,7 @@ def find_all(
 
 
 @router.get(
-    "/{case_collection_id}",
+    "/{case_collection_id}/",
     response_model=CaseCollectionResponse,
     status_code=HTTPStatus.OK,
 )
@@ -94,7 +94,7 @@ def insert_one(
 
 
 @router.delete(
-    "/{case_collection_id}",
+    "/{case_collection_id}/",
     response_model=CaseCollectionResponse,
     status_code=HTTPStatus.OK,
 )
@@ -111,7 +111,7 @@ def delete_one(
 
 
 @router.put(
-    "/{case_collection_id}",
+    "/{case_collection_id}/",
     response_model=CaseCollectionResponse,
     status_code=HTTPStatus.OK,
 )

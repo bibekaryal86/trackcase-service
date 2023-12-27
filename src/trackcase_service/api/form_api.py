@@ -30,7 +30,7 @@ def find_all(
     )
 
 
-@router.get("/{form_id}", response_model=FormResponse, status_code=HTTPStatus.OK)
+@router.get("/{form_id}/", response_model=FormResponse, status_code=HTTPStatus.OK)
 def find_one(
     form_id: int,
     request: Request,
@@ -66,7 +66,7 @@ def insert_one(
     return get_form_service(db_session).create_one_form(request, form_request)
 
 
-@router.delete("/{form_id}", response_model=FormResponse, status_code=HTTPStatus.OK)
+@router.delete("/{form_id}/", response_model=FormResponse, status_code=HTTPStatus.OK)
 def delete_one(
     form_id: int,
     request: Request,
@@ -77,7 +77,7 @@ def delete_one(
     return get_form_service(db_session).delete_one_form(form_id, request)
 
 
-@router.put("/{form_id}", response_model=FormResponse, status_code=HTTPStatus.OK)
+@router.put("/{form_id}/", response_model=FormResponse, status_code=HTTPStatus.OK)
 def update_one(
     form_id: int,
     request: Request,

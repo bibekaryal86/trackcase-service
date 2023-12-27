@@ -30,7 +30,7 @@ def find_all(
     )
 
 
-@router.get("/{court_id}", response_model=CourtResponse, status_code=HTTPStatus.OK)
+@router.get("/{court_id}/", response_model=CourtResponse, status_code=HTTPStatus.OK)
 def find_one(
     court_id: int,
     request: Request,
@@ -66,7 +66,7 @@ def insert_one(
     return get_court_service(db_session).create_one_court(request, court_request)
 
 
-@router.delete("/{court_id}", response_model=CourtResponse, status_code=HTTPStatus.OK)
+@router.delete("/{court_id}/", response_model=CourtResponse, status_code=HTTPStatus.OK)
 def delete_one(
     court_id: int,
     request: Request,
@@ -77,7 +77,7 @@ def delete_one(
     return get_court_service(db_session).delete_one_court(court_id, request)
 
 
-@router.put("/{court_id}", response_model=CourtResponse, status_code=HTTPStatus.OK)
+@router.put("/{court_id}/", response_model=CourtResponse, status_code=HTTPStatus.OK)
 def update_one(
     court_id: int,
     request: Request,

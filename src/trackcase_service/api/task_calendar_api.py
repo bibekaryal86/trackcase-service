@@ -36,7 +36,7 @@ def find_all(
 
 
 @router.get(
-    "/{task_calendar_id}",
+    "/{task_calendar_id}/",
     response_model=TaskCalendarResponse,
     status_code=HTTPStatus.OK,
 )
@@ -80,7 +80,7 @@ def insert_one(
 
 
 @router.delete(
-    "/{task_calendar_id}",
+    "/{task_calendar_id}/",
     response_model=TaskCalendarResponse,
     status_code=HTTPStatus.OK,
 )
@@ -97,7 +97,7 @@ def delete_one(
 
 
 @router.put(
-    "/{task_calendar_id}",
+    "/{task_calendar_id}/",
     response_model=TaskCalendarResponse,
     status_code=HTTPStatus.OK,
 )

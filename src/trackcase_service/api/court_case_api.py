@@ -31,7 +31,7 @@ def find_all(
 
 
 @router.get(
-    "/{court_case_id}", response_model=CourtCaseResponse, status_code=HTTPStatus.OK
+    "/{court_case_id}/", response_model=CourtCaseResponse, status_code=HTTPStatus.OK
 )
 def find_one(
     court_case_id: int,
@@ -73,7 +73,7 @@ def insert_one(
 
 
 @router.delete(
-    "/{court_case_id}", response_model=CourtCaseResponse, status_code=HTTPStatus.OK
+    "/{court_case_id}/", response_model=CourtCaseResponse, status_code=HTTPStatus.OK
 )
 def delete_one(
     court_case_id: int,
@@ -88,7 +88,7 @@ def delete_one(
 
 
 @router.put(
-    "/{court_case_id}", response_model=CourtCaseResponse, status_code=HTTPStatus.OK
+    "/{court_case_id}/", response_model=CourtCaseResponse, status_code=HTTPStatus.OK
 )
 def update_one(
     court_case_id: int,

@@ -30,7 +30,7 @@ def find_all(
     )
 
 
-@router.get("/{client_id}", response_model=ClientResponse, status_code=HTTPStatus.OK)
+@router.get("/{client_id}/", response_model=ClientResponse, status_code=HTTPStatus.OK)
 def find_one(
     client_id: int,
     request: Request,
@@ -66,7 +66,7 @@ def insert_one(
     return get_client_service(db_session).create_one_client(request, client_request)
 
 
-@router.delete("/{client_id}", response_model=ClientResponse, status_code=HTTPStatus.OK)
+@router.delete("/{client_id}/", response_model=ClientResponse, status_code=HTTPStatus.OK)
 def delete_one(
     client_id: int,
     request: Request,
@@ -77,7 +77,7 @@ def delete_one(
     return get_client_service(db_session).delete_one_client(client_id, request)
 
 
-@router.put("/{client_id}", response_model=ClientResponse, status_code=HTTPStatus.OK)
+@router.put("/{client_id}/", response_model=ClientResponse, status_code=HTTPStatus.OK)
 def update_one(
     client_id: int,
     request: Request,

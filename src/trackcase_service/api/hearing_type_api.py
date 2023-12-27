@@ -34,7 +34,7 @@ def find_all(
 
 
 @router.get(
-    "/{hearing_type_id}", response_model=HearingTypeResponse, status_code=HTTPStatus.OK
+    "/{hearing_type_id}/", response_model=HearingTypeResponse, status_code=HTTPStatus.OK
 )
 def find_one(
     hearing_type_id: int,
@@ -76,7 +76,7 @@ def insert_one(
 
 
 @router.delete(
-    "/{hearing_type_id}", response_model=HearingTypeResponse, status_code=HTTPStatus.OK
+    "/{hearing_type_id}/", response_model=HearingTypeResponse, status_code=HTTPStatus.OK
 )
 def delete_one(
     hearing_type_id: int,
@@ -91,7 +91,7 @@ def delete_one(
 
 
 @router.put(
-    "/{hearing_type_id}", response_model=HearingTypeResponse, status_code=HTTPStatus.OK
+    "/{hearing_type_id}/", response_model=HearingTypeResponse, status_code=HTTPStatus.OK
 )
 def update_one(
     hearing_type_id: int,

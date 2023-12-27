@@ -19,7 +19,7 @@ router = APIRouter(prefix="/trackcase-service/notes", tags=["Notes"])
 
 
 @router.post(
-    "/{note_object_type}",
+    "/{note_object_type}/",
     response_model=schemas.NoteResponse,
     status_code=HTTPStatus.OK,
 )
@@ -46,7 +46,7 @@ def insert_one(
 
 
 @router.put(
-    "/{note_object_type}/{note_id}",
+    "/{note_object_type}/{note_id}/",
     response_model=schemas.NoteResponse,
     status_code=HTTPStatus.OK,
 )
@@ -76,7 +76,7 @@ def update_one(
 
 
 @router.delete(
-    "/{note_object_type}/{note_id}",
+    "/{note_object_type}/{note_id}/",
     response_model=schemas.NoteResponse,
     status_code=HTTPStatus.OK,
 )
