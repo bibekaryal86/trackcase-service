@@ -66,7 +66,9 @@ def insert_one(
     return get_client_service(db_session).create_one_client(request, client_request)
 
 
-@router.delete("/{client_id}/", response_model=ClientResponse, status_code=HTTPStatus.OK)
+@router.delete(
+    "/{client_id}/", response_model=ClientResponse, status_code=HTTPStatus.OK
+)
 def delete_one(
     client_id: int,
     request: Request,
