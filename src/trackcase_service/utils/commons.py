@@ -5,6 +5,7 @@ import secrets
 from fastapi import HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 import src.trackcase_service.service.schemas as schemas
@@ -94,10 +95,16 @@ def raise_http_exception(
 
 
 def test_database(db_session: Session):
-    test_database_sql = text("SELECT * FROM ZEST_TABLE")
-    result = db_session.execute(test_database_sql)
-    result_rows = result.fetchall()
-    log.info(result_rows)
+    try:
+        test_database_sql = text("SELECT TEST FROM ZEST_TABLE")
+        result = db_session.execute(test_database_sql)
+        result_row = result.fetchone()
+        if result_row:
+            return {"test_db_success": result_row[0]}
+        else:
+            return {"test_db": "maybe_success_but_no_data"}
+    except OperationalError as ex:
+        return {"test_db_failure": str(ex)}
 
 
 def get_err_msg(msg: str, err_msg: str = ""):

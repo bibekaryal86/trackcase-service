@@ -87,11 +87,6 @@ def upgrade() -> None:
         sa.UniqueConstraint("name"),
     )
     op.create_table(
-        "zest_table",
-        sa.Column("test", sa.String(length=100), nullable=False),
-        sa.PrimaryKeyConstraint("test"),
-    )
-    op.create_table(
         "history_court",
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("court_id", sa.Integer(), nullable=False),
@@ -710,6 +705,13 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
     )
+
+    op.create_table(
+        "zest_table",
+        sa.Column("test", sa.String(length=100), nullable=False),
+        sa.PrimaryKeyConstraint("test"),
+    )
+    op.execute("INSERT INTO zest_table (test) VALUES ('database')")
     # ### end Alembic commands ###
 
 
