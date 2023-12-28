@@ -30,7 +30,7 @@ def find_all(
     )
 
 
-@router.get("/{judge_id}", response_model=JudgeResponse, status_code=HTTPStatus.OK)
+@router.get("/{judge_id}/", response_model=JudgeResponse, status_code=HTTPStatus.OK)
 def find_one(
     judge_id: int,
     request: Request,
@@ -56,7 +56,7 @@ def find_one(
 
 
 @router.get(
-    "/court/{court_id}", response_model=JudgeResponse, status_code=HTTPStatus.OK
+    "/court/{court_id}/", response_model=JudgeResponse, status_code=HTTPStatus.OK
 )
 def find_judges_by_court(
     court_id: int,
@@ -95,7 +95,7 @@ def insert_one(
     return get_judge_service(db_session).create_one_judge(request, judge_request)
 
 
-@router.delete("/{judge_id}", response_model=JudgeResponse, status_code=HTTPStatus.OK)
+@router.delete("/{judge_id}/", response_model=JudgeResponse, status_code=HTTPStatus.OK)
 def delete_one(
     judge_id: int,
     request: Request,
@@ -106,7 +106,7 @@ def delete_one(
     return get_judge_service(db_session).delete_one_judge(judge_id, request)
 
 
-@router.put("/{judge_id}", response_model=JudgeResponse, status_code=HTTPStatus.OK)
+@router.put("/{judge_id}/", response_model=JudgeResponse, status_code=HTTPStatus.OK)
 def update_one(
     judge_id: int,
     request: Request,

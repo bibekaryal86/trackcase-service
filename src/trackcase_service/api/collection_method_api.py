@@ -38,7 +38,7 @@ def find_all(
 
 
 @router.get(
-    "/{collection_method_id}",
+    "/{collection_method_id}/",
     response_model=CollectionMethodResponse,
     status_code=HTTPStatus.OK,
 )
@@ -82,7 +82,7 @@ def insert_one(
 
 
 @router.delete(
-    "/{collection_method_id}",
+    "/{collection_method_id}/",
     response_model=CollectionMethodResponse,
     status_code=HTTPStatus.OK,
 )
@@ -99,7 +99,7 @@ def delete_one(
 
 
 @router.put(
-    "/{collection_method_id}",
+    "/{collection_method_id}/",
     response_model=CollectionMethodResponse,
     status_code=HTTPStatus.OK,
 )

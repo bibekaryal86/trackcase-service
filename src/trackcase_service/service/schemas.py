@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import ClassVar, Optional
 
 from pydantic import BaseModel, condecimal, field_validator
 
@@ -36,7 +36,7 @@ class AddressBase(BaseModel):
     city: Optional[str] = None
     state: Optional[str] = None
     zip_code: Optional[str] = None
-    phone_number: Optional[int] = None
+    phone_number: Optional[str] = None
 
 
 class NoteBase(BaseModel):
@@ -60,7 +60,6 @@ class FormTypeBase(NameDescBase):
 class FormType(FormTypeBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
     forms: list["Form"] = []
-    history_forms: list["HistoryForm"] = []
 
 
 class FormTypeRequest(FormTypeBase, BaseModel):
@@ -80,8 +79,6 @@ class CollectionMethod(CollectionMethodBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
     cash_collections: list["CashCollection"] = []
     case_collections: list["CaseCollection"] = []
-    history_cash_collections: list["HistoryCashCollection"] = []
-    history_case_collections: list["HistoryCaseCollection"] = []
 
 
 class CollectionMethodRequest(CollectionMethodBase, BaseModel):
@@ -100,7 +97,6 @@ class HearingTypeBase(NameDescBase):
 class HearingType(HearingTypeBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
     hearing_calendars: list["HearingCalendar"] = []
-    history_hearing_calendars: list["HistoryHearingCalendar"] = []
 
 
 class HearingTypeRequest(HearingTypeBase, BaseModel):
@@ -119,7 +115,6 @@ class TaskTypeBase(NameDescBase):
 class TaskType(TaskTypeBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
     task_calendars: list["TaskCalendar"] = []
-    history_task_calendars: list["HistoryTaskCalendar"] = []
 
 
 class TaskTypeRequest(TaskTypeBase, BaseModel):
@@ -138,7 +133,6 @@ class CaseTypeBase(NameDescBase):
 class CaseType(CaseTypeBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
     court_cases: list["CourtCase"] = []
-    history_court_cases: list["HistoryCourtCase"] = []
 
 
 class CaseTypeRequest(CaseTypeBase, BaseModel):
@@ -154,11 +148,17 @@ class CourtBase(AddressBase, StatusBase):
     name: str
     dhs_address: Optional[str] = None
 
+    allow_empty_status: ClassVar[bool] = False
+
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("court").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError("Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -167,15 +167,11 @@ class Court(CourtBase, BaseModelSchema):
     judges: list["Judge"] = []
     note_courts: list["NoteCourt"] = []
     history_courts: list["HistoryCourt"] = []
-    history_judges: list["HistoryJudge"] = []
 
 
-class NoteCourtBase(NoteBase):
-    court_id: int
-
-
-class NoteCourt(NoteCourtBase, BaseModelSchema):
+class NoteCourt(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    court_id: int
     court: Optional[Court] = None
 
 
@@ -196,25 +192,23 @@ class CourtResponse(ResponseBase):
     courts: list[Court] = []
 
 
-class NoteCourtRequest(NoteCourtBase, BaseModel):
-    pass
-
-
-class NoteCourtResponse(ResponseBase):
-    note_courts: list[NoteCourt] = []
-
-
 # judge
 class JudgeBase(StatusBase):
     name: str
     webex: Optional[str] = None
     court_id: int
 
+    allow_empty_status: ClassVar[bool] = False
+
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("judge").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError("Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -224,15 +218,11 @@ class Judge(JudgeBase, BaseModelSchema):
     clients: list["Client"] = []
     note_judges: list["NoteJudge"] = []
     history_judges: list["HistoryJudge"] = []
-    history_clients: list["HistoryClient"] = []
 
 
-class NoteJudgeBase(NoteBase):
-    judge_id: int
-
-
-class NoteJudge(NoteJudgeBase, BaseModelSchema):
+class NoteJudge(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    judge_id: int
     judge: Optional[Judge] = None
 
 
@@ -254,14 +244,6 @@ class JudgeResponse(ResponseBase):
     judges: list[Judge] = []
 
 
-class NoteJudgeRequest(NoteJudgeBase, BaseModel):
-    pass
-
-
-class NoteJudgeResponse(ResponseBase):
-    note_judges: list[NoteJudge] = []
-
-
 # client
 class ClientBase(AddressBase, StatusBase):
     name: str
@@ -270,11 +252,17 @@ class ClientBase(AddressBase, StatusBase):
     email: Optional[str] = None
     judge_id: Optional[int] = None
 
+    allow_empty_status: ClassVar[bool] = False
+
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("client").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError("Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -284,15 +272,11 @@ class Client(ClientBase, BaseModelSchema):
     court_cases: list["CourtCase"] = []
     note_clients: list["NoteClient"] = []
     history_clients: list["HistoryClient"] = []
-    history_court_cases: list["HistoryCourtCase"] = []
 
 
-class NoteClientBase(NoteBase):
-    client_id: int
-
-
-class NoteClient(NoteClientBase, BaseModelSchema):
+class NoteClient(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    client_id: int
     client: Optional[Client] = None
 
 
@@ -314,24 +298,22 @@ class ClientResponse(ResponseBase):
     clients: list[Client] = []
 
 
-class NoteClientRequest(NoteClientBase, BaseModel):
-    pass
-
-
-class NoteClientResponse(ResponseBase):
-    note_clients: list[NoteClient] = []
-
-
 # court_case
 class CourtCaseBase(StatusBase):
     case_type_id: int
     client_id: int
 
+    allow_empty_status: ClassVar[bool] = False
+
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("court_case").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError("Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -345,18 +327,11 @@ class CourtCase(CourtCaseBase, BaseModelSchema):
     task_calendars: list["TaskCalendar"] = []
     note_court_cases: list["NoteCourtCase"] = []
     history_court_cases: list["HistoryCourtCase"] = []
-    history_hearing_calendars: list["HistoryHearingCalendar"] = []
-    history_task_calendars: list["HistoryTaskCalendar"] = []
-    history_forms: list["HistoryForm"] = []
-    history_case_collections: list["HistoryCaseCollection"] = []
 
 
-class NoteCourtCaseBase(NoteBase):
-    court_case_id: int
-
-
-class NoteCourtCase(NoteCourtCaseBase, BaseModelSchema):
+class NoteCourtCase(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    court_case_id: int
     court_case: Optional[CourtCase] = None
 
 
@@ -378,25 +353,23 @@ class CourtCaseResponse(ResponseBase):
     court_cases: list[CourtCase] = []
 
 
-class NoteCourtCaseRequest(NoteCourtCaseBase, BaseModel):
-    pass
-
-
-class NoteCourtCaseResponse(ResponseBase):
-    note_court_cases: list[NoteCourtCase] = []
-
-
 # hearing_calendar
 class HearingCalendarBase(StatusBase):
     hearing_date: datetime
     hearing_type_id: int
     court_case_id: int
 
+    allow_empty_status: ClassVar[bool] = False
+
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("hearing_calendar").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError("Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -407,15 +380,11 @@ class HearingCalendar(HearingCalendarBase, BaseModelSchema):
     task_calendars: list["TaskCalendar"] = []
     note_hearing_calendars: list["NoteHearingCalendar"] = []
     history_hearing_calendars: list["HistoryHearingCalendar"] = []
-    history_task_calendars: list["HistoryTaskCalendar"] = []
 
 
-class NoteHearingCalendarBase(NoteBase):
-    hearing_calendar_id: int
-
-
-class NoteHearingCalendar(NoteHearingCalendarBase, BaseModelSchema):
+class NoteHearingCalendar(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    hearing_calendar_id: int
     hearing_calendar: Optional[HearingCalendar] = None
 
 
@@ -438,14 +407,6 @@ class HearingCalendarResponse(ResponseBase):
     hearing_calendars: list[HearingCalendar] = []
 
 
-class NoteHearingCalendarRequest(NoteHearingCalendarBase, BaseModel):
-    pass
-
-
-class NoteHearingCalendarResponse(ResponseBase):
-    note_hearing_calendars: list[NoteHearingCalendar] = []
-
-
 # task_calendar
 class TaskCalendarBase(StatusBase):
     task_date: datetime
@@ -453,11 +414,17 @@ class TaskCalendarBase(StatusBase):
     court_case_id: int
     hearing_calendar_id: Optional[int] = None
 
+    allow_empty_status: ClassVar[bool] = False
+
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("task_calendar").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError("Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -469,15 +436,11 @@ class TaskCalendar(TaskCalendarBase, BaseModelSchema):
     forms: list["Form"] = []
     note_task_calendars: list["NoteTaskCalendar"] = []
     history_task_calendars: list["HistoryTaskCalendar"] = []
-    history_forms: list["HistoryForm"] = []
 
 
-class NoteTaskCalendarBase(NoteBase):
-    hearing_calendar_id: int
-
-
-class NoteTaskCalendar(NoteTaskCalendarBase, BaseModelSchema):
+class NoteTaskCalendar(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    task_calendar_id: int
     task_calendar: Optional[TaskCalendar] = None
 
 
@@ -500,14 +463,6 @@ class TaskCalendarResponse(ResponseBase):
     task_calendars: list[TaskCalendar] = []
 
 
-class NoteTaskCalendarRequest(NoteTaskCalendarBase, BaseModel):
-    pass
-
-
-class NoteTaskCalendarResponse(ResponseBase):
-    note_task_calendars: list[NoteTaskCalendar] = []
-
-
 # form
 class FormBase(StatusBase):
     form_type_id: int
@@ -519,11 +474,17 @@ class FormBase(StatusBase):
     decision_date: Optional[datetime] = None
     task_calendar_id: Optional[int] = None
 
+    allow_empty_status: ClassVar[bool] = False
+
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("form").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError("Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -535,15 +496,11 @@ class Form(FormBase, BaseModelSchema):
     case_collections: list["CaseCollection"] = []
     note_forms: list["NoteForm"] = []
     history_forms: list["HistoryForm"] = []
-    history_case_collections: list["HistoryCaseCollection"] = []
 
 
-class NoteFormBase(NoteBase):
-    form_id: int
-
-
-class NoteForm(NoteFormBase, BaseModelSchema):
+class NoteForm(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    form_id: int
     form: Optional[Form] = None
 
 
@@ -563,14 +520,6 @@ class FormResponse(ResponseBase):
     forms: list[Form] = []
 
 
-class NoteFormRequest(NoteFormBase, BaseModel):
-    pass
-
-
-class NoteFormResponse(ResponseBase):
-    note_forms: list[NoteForm] = []
-
-
 # case_collection
 class CaseCollectionBase(StatusBase):
     quote_date: datetime
@@ -580,11 +529,17 @@ class CaseCollectionBase(StatusBase):
     court_case_id: int
     form_id: Optional[int] = None
 
+    allow_empty_status: ClassVar[bool] = False
+
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("case_collection").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError("Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -596,15 +551,11 @@ class CaseCollection(CaseCollectionBase, BaseModelSchema):
     cash_collections: list["CashCollection"] = []
     note_case_collections: list["NoteCaseCollection"] = []
     history_case_collections: list["HistoryCaseCollection"] = []
-    history_cash_collections: list["HistoryCashCollection"] = []
 
 
-class NoteCaseCollectionBase(NoteBase):
-    case_collection_id: int
-
-
-class NoteCaseCollection(NoteCaseCollectionBase, BaseModelSchema):
+class NoteCaseCollection(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    case_collection_id: int
     case_collection: Optional[CaseCollection] = None
 
 
@@ -637,14 +588,6 @@ class CaseCollectionResponse(ResponseBase):
     case_collections: list[CaseCollection] = []
 
 
-class NoteCaseCollectionRequest(NoteCaseCollectionBase, BaseModel):
-    pass
-
-
-class NoteCaseCollectionResponse(ResponseBase):
-    note_case_collections: list[NoteCaseCollection] = []
-
-
 # cash_collection
 class CashCollectionBase(StatusBase):
     collection_date: datetime
@@ -654,11 +597,17 @@ class CashCollectionBase(StatusBase):
     case_collection_id: int
     collection_method_id: int
 
+    allow_empty_status: ClassVar[bool] = False
+
     @field_validator("status")
     @classmethod
     def check_status(cls, v: str) -> str | None:
-        if v is not None and v not in get_statuses().get("cash_collection").get("all"):
-            raise ValueError(f"Invalid status value: {v}")
+        if v is None:
+            raise ValueError("Invalid status value of None")
+        elif cls.allow_empty_status and v.strip() == "":
+            pass
+        elif v not in get_statuses().get("court").get("all"):
+            raise ValueError(f"Invalid status value of: {v}")
         return v
 
 
@@ -670,12 +619,9 @@ class CashCollection(CashCollectionBase, BaseModelSchema):
     history_cash_collections: list["HistoryCashCollection"] = []
 
 
-class NoteCashCollectionBase(NoteBase):
-    cash_collection_id: int
-
-
-class NoteCashCollection(NoteCashCollectionBase, BaseModelSchema):
+class NoteCashCollection(NoteBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    cash_collection_id: int
     cash_collection: Optional[CashCollection] = None
 
 
@@ -697,11 +643,3 @@ class CashCollectionRequest(CashCollectionBase, BaseModel):
 
 class CashCollectionResponse(ResponseBase):
     cash_collections: list[CashCollection] = []
-
-
-class NoteCashCollectionRequest(NoteCashCollectionBase, BaseModel):
-    pass
-
-
-class NoteCashCollectionResponse(ResponseBase):
-    note_cash_collections: list[NoteCashCollection] = []

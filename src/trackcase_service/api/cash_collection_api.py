@@ -38,7 +38,7 @@ def find_all(
 
 
 @router.get(
-    "/{cash_collection_id}",
+    "/{cash_collection_id}/",
     response_model=CashCollectionResponse,
     status_code=HTTPStatus.OK,
 )
@@ -82,7 +82,7 @@ def insert_one(
 
 
 @router.delete(
-    "/{cash_collection_id}",
+    "/{cash_collection_id}/",
     response_model=CashCollectionResponse,
     status_code=HTTPStatus.OK,
 )
@@ -99,7 +99,7 @@ def delete_one(
 
 
 @router.put(
-    "/{cash_collection_id}",
+    "/{cash_collection_id}/",
     response_model=CashCollectionResponse,
     status_code=HTTPStatus.OK,
 )

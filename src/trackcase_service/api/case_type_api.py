@@ -31,7 +31,7 @@ def find_all(
 
 
 @router.get(
-    "/{case_type_id}", response_model=CaseTypeResponse, status_code=HTTPStatus.OK
+    "/{case_type_id}/", response_model=CaseTypeResponse, status_code=HTTPStatus.OK
 )
 def find_one(
     case_type_id: int,
@@ -73,7 +73,7 @@ def insert_one(
 
 
 @router.delete(
-    "/{case_type_id}", response_model=CaseTypeResponse, status_code=HTTPStatus.OK
+    "/{case_type_id}/", response_model=CaseTypeResponse, status_code=HTTPStatus.OK
 )
 def delete_one(
     case_type_id: int,
@@ -86,7 +86,7 @@ def delete_one(
 
 
 @router.put(
-    "/{case_type_id}", response_model=CaseTypeResponse, status_code=HTTPStatus.OK
+    "/{case_type_id}/", response_model=CaseTypeResponse, status_code=HTTPStatus.OK
 )
 def update_one(
     case_type_id: int,

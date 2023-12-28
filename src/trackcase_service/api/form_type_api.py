@@ -31,7 +31,7 @@ def find_all(
 
 
 @router.get(
-    "/{form_type_id}", response_model=FormTypeResponse, status_code=HTTPStatus.OK
+    "/{form_type_id}/", response_model=FormTypeResponse, status_code=HTTPStatus.OK
 )
 def find_one(
     form_type_id: int,
@@ -73,7 +73,7 @@ def insert_one(
 
 
 @router.delete(
-    "/{form_type_id}", response_model=FormTypeResponse, status_code=HTTPStatus.OK
+    "/{form_type_id}/", response_model=FormTypeResponse, status_code=HTTPStatus.OK
 )
 def delete_one(
     form_type_id: int,
@@ -86,7 +86,7 @@ def delete_one(
 
 
 @router.put(
-    "/{form_type_id}", response_model=FormTypeResponse, status_code=HTTPStatus.OK
+    "/{form_type_id}/", response_model=FormTypeResponse, status_code=HTTPStatus.OK
 )
 def update_one(
     form_type_id: int,

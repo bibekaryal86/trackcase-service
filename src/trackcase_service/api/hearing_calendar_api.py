@@ -38,7 +38,7 @@ def find_all(
 
 
 @router.get(
-    "/{hearing_calendar_id}",
+    "/{hearing_calendar_id}/",
     response_model=HearingCalendarResponse,
     status_code=HTTPStatus.OK,
 )
@@ -82,7 +82,7 @@ def insert_one(
 
 
 @router.delete(
-    "/{hearing_calendar_id}",
+    "/{hearing_calendar_id}/",
     response_model=HearingCalendarResponse,
     status_code=HTTPStatus.OK,
 )
@@ -99,7 +99,7 @@ def delete_one(
 
 
 @router.put(
-    "/{hearing_calendar_id}",
+    "/{hearing_calendar_id}/",
     response_model=HearingCalendarResponse,
     status_code=HTTPStatus.OK,
 )

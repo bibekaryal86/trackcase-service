@@ -26,11 +26,17 @@ def _get_default_value(field: FieldInfo):
 # this is required because Pydantic doesn't allow creating empty instance
 # so create an instance with default empty values according to type
 def _create_default_schema_instance(destination_class):
+    is_allow_empty_status = hasattr(destination_class, "allow_empty_status")
+    if is_allow_empty_status:
+        destination_class.allow_empty_status = True
     fields = destination_class.__fields__
     required_fields = {
         name: _get_default_value(field) for name, field in fields.items()
     }
-    return destination_class(**required_fields)
+    destination_object = destination_class(**required_fields)
+    if is_allow_empty_status:
+        destination_class.allow_empty_status = False
+    return destination_object
 
 
 def _copy_objects(
