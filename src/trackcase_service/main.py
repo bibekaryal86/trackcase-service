@@ -114,8 +114,7 @@ def test_database(
     db_session: Session = Depends(commons.get_db_session),
 ):
     commons.validate_http_basic_credentials(request, http_basic_credentials, True)
-    commons.test_database(db_session)
-    return {"test_db": "successful"}
+    return commons.test_database(db_session)
 
 
 @app.get("/trackcase-service/tests/status", tags=["Main"], summary="Get Status Dict")
