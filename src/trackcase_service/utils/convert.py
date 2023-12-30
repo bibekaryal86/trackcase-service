@@ -61,11 +61,13 @@ def _copy_objects(
             and (is_copy_all or not getattr(destination_object, attr))
         ):
             value = getattr(source_object, attr)
-            if isinstance(value, str):
+            if value and isinstance(value, str):
                 trimmed_value = value.strip()
                 setattr(destination_object, attr, trimmed_value)
-            else:
+            elif value:
                 setattr(destination_object, attr, value)
+            else:
+                setattr(destination_object, attr, None)
     return destination_object
 
 
