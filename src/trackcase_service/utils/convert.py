@@ -62,9 +62,8 @@ def _copy_objects(
         ):
             value = getattr(source_object, attr)
             if value and isinstance(value, str):
-                trimmed_value = value.strip()
-                setattr(destination_object, attr, trimmed_value)
-            elif value:
+                setattr(destination_object, attr, value.strip())
+            elif value or attr.startswith("note_"):
                 setattr(destination_object, attr, value)
             else:
                 setattr(destination_object, attr, None)
