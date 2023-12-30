@@ -87,22 +87,27 @@ class CrudService:
 
 
 def _copy_key_values(model_data, db_record):
-    auto_generated_attributes = ["id", "created", "modified", "metadata", "registry"]
     # Get a list of attributes for the db_record object
-    model_attributes = [
-        attr
-        for attr in dir(model_data)
-        if not callable(getattr(model_data, attr)) and not attr.startswith("_")
-    ]
+    db_attributes_and_types = {
+        attr: type(getattr(db_record, attr))
+        for attr in dir(db_record)
+        if not callable(getattr(db_record, attr)) and not attr.startswith("_")
+    }
 
-    for attr_name in model_attributes:
+    for attr_name, attr_type in db_attributes_and_types.items():
         attr_value = getattr(model_data, attr_name)
-        if (
-            attr_value is not None
-            and hasattr(db_record, attr_name)
-            and attr_name not in auto_generated_attributes
-            and not isinstance(attr_value, list)
-        ):
+        if _is_should_set_attr_value(model_data, attr_name, attr_value, attr_type):
             setattr(db_record, attr_name, attr_value)
-
     return db_record
+
+
+def _is_should_set_attr_value(model_data, attr_name, attr_value, attr_type) -> bool:
+    auto_generated_attributes = ["id", "created", "modified", "metadata", "registry"]
+    if hasattr(model_data, attr_name):
+        if attr_name not in auto_generated_attributes:
+            if not isinstance(attr_value, list):
+                if attr_value is None:
+                    return attr_type == str or attr_type == int or attr_type == bool
+                else:
+                    return True
+    return False
