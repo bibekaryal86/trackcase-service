@@ -248,7 +248,6 @@ class JudgeResponse(ResponseBase):
 class ClientBase(AddressBase, StatusBase):
     name: str
     a_number: Optional[str] = None
-    phone: str
     email: Optional[str] = None
     judge_id: Optional[int] = None
 
@@ -287,7 +286,6 @@ class HistoryClient(Client):
     client: Optional[Client] = None
     # make NOT optional inherited fields optional in history
     name: Optional[str] = None
-    phone: Optional[str] = None
 
 
 class ClientRequest(ClientBase, BaseModel):
