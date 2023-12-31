@@ -82,7 +82,8 @@ class CourtCaseService(CrudService):
         is_include_history: bool = False,
     ) -> CourtCaseResponse:
         try:
-            data_models: List[CourtCaseModel] = super().read_all()
+            sort_config = {"name": "asc"}
+            data_models: List[CourtCaseModel] = super().read_all(sort_config)
             schema_models: List[CourtCaseSchema] = [
                 convert_court_case_model_to_schema(
                     data_model,

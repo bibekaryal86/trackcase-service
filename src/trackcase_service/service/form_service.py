@@ -79,9 +79,8 @@ class FormService(CrudService):
         is_include_history: bool = False,
     ) -> FormResponse:
         try:
-            data_models: List[FormModel] = super().read_all(
-                sort_direction="desc", sort_by="submit_date"
-            )
+            sort_config = {"submit_date": "desc"}
+            data_models: List[FormModel] = super().read_all(sort_config)
             schema_models: List[FormSchema] = [
                 convert_form_model_to_schema(
                     data_model,

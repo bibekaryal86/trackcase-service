@@ -69,9 +69,8 @@ class FormTypeService(CrudService):
         is_include_history: bool = False,
     ) -> FormTypeResponse:
         try:
-            data_models: List[FormTypeModel] = super().read_all(
-                sort_direction="asc", sort_by="name"
-            )
+            sort_config = {"name": "asc"}
+            data_models: List[FormTypeModel] = super().read_all(sort_config)
             schema_models: List[FormTypeSchema] = [
                 convert_form_type_model_to_schema(
                     data_model,

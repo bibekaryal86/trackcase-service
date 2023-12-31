@@ -79,9 +79,8 @@ class JudgeService(CrudService):
         is_include_history: bool = False,
     ) -> JudgeResponse:
         try:
-            data_models: List[JudgeModel] = super().read_all(
-                sort_direction="asc", sort_by="court_id"
-            )
+            sort_config = {"court_id": "asc", "name": "asc"}
+            data_models: List[JudgeModel] = super().read_all(sort_config)
             schema_models: List[JudgeSchema] = [
                 convert_judge_model_to_schema(
                     data_model,
@@ -97,36 +96,6 @@ class JudgeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Retrieving Judges. Please Try Again!!!", str(ex)),
-            )
-
-    def read_many_judges_by_court_id(
-        self,
-        court_id,
-        request: Request,
-        is_include_extra: bool = False,
-        is_include_history: bool = False,
-    ) -> JudgeResponse:
-        try:
-            data_models: List[JudgeModel] = super().read_many(
-                sort_direction="asc", sort_by="name", **{"court_id": court_id}
-            )
-            schema_models: List[JudgeSchema] = [
-                convert_judge_model_to_schema(
-                    data_model,
-                    is_include_extra,
-                    is_include_history,
-                )
-                for data_model in data_models
-            ]
-            return get_response_multiple(schema_models)
-        except Exception as ex:
-            raise_http_exception(
-                request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
-                get_err_msg(
-                    f"Error Retrieving Judges By Court {court_id}. Please Try Again!!!",
-                    str(ex),
-                ),
             )
 
     def update_one_judge(

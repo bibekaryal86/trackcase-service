@@ -79,9 +79,8 @@ class CourtService(CrudService):
         is_include_history: bool = False,
     ) -> CourtResponse:
         try:
-            data_models: List[CourtModel] = super().read_all(
-                sort_direction="asc", sort_by="name"
-            )
+            sort_config = {"name": "asc"}
+            data_models: List[CourtModel] = super().read_all(sort_config)
             schema_models: List[CourtSchema] = [
                 convert_court_model_to_schema(
                     data_model,
