@@ -88,9 +88,8 @@ class TaskCalendarService(CrudService):
         is_include_history: bool = False,
     ) -> TaskCalendarResponse:
         try:
-            data_models: List[TaskCalendarModel] = super().read_all(
-                sort_direction="desc", sort_by="task_date"
-            )
+            sort_config = {"task_date": "desc"}
+            data_models: List[TaskCalendarModel] = super().read_all(sort_config)
             schema_models: List[TaskCalendarSchema] = [
                 convert_task_calendar_model_to_schema(
                     data_model,

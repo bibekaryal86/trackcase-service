@@ -18,7 +18,6 @@ from src.trackcase_service.service.schemas import CaseCollection as CaseCollecti
 from src.trackcase_service.service.schemas import (
     CaseCollectionRequest,
     CaseCollectionResponse,
-    CaseCollectionRetrieveRequest,
 )
 from src.trackcase_service.utils.commons import (
     check_active_cash_collections,
@@ -91,9 +90,8 @@ class CaseCollectionService(CrudService):
         is_include_history: bool = False,
     ) -> CaseCollectionResponse:
         try:
-            data_models: List[CaseCollectionModel] = super().read_all(
-                sort_direction="desc", sort_by="quote_date"
-            )
+            sort_config = {"quote_date": "desc"}
+            data_models: List[CaseCollectionModel] = super().read_all(sort_config)
             schema_models: List[CaseCollectionSchema] = [
                 convert_case_collection_model_to_schema(
                     data_model,
@@ -110,35 +108,6 @@ class CaseCollectionService(CrudService):
                 get_err_msg(
                     "Error Retrieving CaseCollections. Please Try Again!!!", str(ex)
                 ),
-            )
-
-    def read_many_case_collections(
-        self,
-        request: Request,
-        case_collection_retrieve_request: CaseCollectionRetrieveRequest,
-        is_include_extra: bool = False,
-        is_include_history: bool = False,
-    ):
-        filters = case_collection_retrieve_request.to_dict()
-
-        if filters:
-            data_models: List[CaseCollectionModel] = super().read_many(
-                sort_direction="desc", sort_by="quote_date", **filters
-            )
-            schema_models: List[CaseCollectionSchema] = [
-                convert_case_collection_model_to_schema(
-                    data_model,
-                    is_include_extra,
-                    is_include_history,
-                )
-                for data_model in data_models
-            ]
-            return get_response_multiple(schema_models)
-        else:
-            self.read_all_case_collections(
-                request,
-                is_include_extra,
-                is_include_history,
             )
 
     def update_one_case_collection(

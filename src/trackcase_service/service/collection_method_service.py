@@ -78,9 +78,8 @@ class CollectionMethodService(CrudService):
         is_include_history: bool = False,
     ) -> CollectionMethodResponse:
         try:
-            data_models: List[CollectionMethodModel] = super().read_all(
-                sort_direction="asc", sort_by="name"
-            )
+            sort_config = {"name": "asc"}
+            data_models: List[CollectionMethodModel] = super().read_all(sort_config)
             schema_models: List[CollectionMethodSchema] = [
                 convert_collection_method_model_to_schema(
                     data_model,

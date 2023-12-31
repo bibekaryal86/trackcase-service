@@ -74,9 +74,8 @@ class HearingTypeService(CrudService):
         is_include_history: bool = False,
     ) -> HearingTypeResponse:
         try:
-            data_models: List[HearingTypeModel] = super().read_all(
-                sort_direction="asc", sort_by="name"
-            )
+            sort_config = {"name": "asc"}
+            data_models: List[HearingTypeModel] = super().read_all(sort_config)
             schema_models: List[HearingTypeSchema] = [
                 convert_hearing_type_model_to_schema(
                     data_model,

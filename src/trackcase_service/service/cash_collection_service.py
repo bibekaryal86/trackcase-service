@@ -85,9 +85,8 @@ class CashCollectionService(CrudService):
         is_include_history: bool = False,
     ) -> CashCollectionResponse:
         try:
-            data_models: List[CashCollectionModel] = super().read_all(
-                sort_direction="desc", sort_by="collection_date"
-            )
+            sort_config = {"collection_date": "desc"}
+            data_models: List[CashCollectionModel] = super().read_all(sort_config)
             schema_models: List[CashCollectionSchema] = [
                 convert_cash_collection_model_to_schema(
                     data_model,

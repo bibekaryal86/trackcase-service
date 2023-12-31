@@ -30,43 +30,28 @@ class CrudService:
 
     def read_all(
         self,
-        sort_direction: str = None,
-        sort_by: str = None,
+        sort_config: dict = None,
         skip: int = 0,
         limit: int = 1000,
     ) -> List[ModelBase]:
-        if sort_direction and sort_by:
-            if sort_direction == "asc":
-                return (
-                    self.db_session.query(self.db_model)
-                    .order_by(asc(sort_by))
-                    .offset(skip)
-                    .limit(limit)
-                    .all()
-                )
-            return (
-                self.db_session.query(self.db_model)
-                .order_by(desc(sort_by))
-                .offset(skip)
-                .limit(limit)
-                .all()
-            )
-        return self.db_session.query(self.db_model).offset(skip).limit(limit).all()
+        query = self.db_session.query(self.db_model)
+        if sort_config:
+            order_by_conditions = [
+                asc(col) if direction.lower() == "asc" else desc(col)
+                for col, direction in sort_config.items()
+            ]
+            query = query.order_by(*order_by_conditions)
+        return query.offset(skip).limit(limit).all()
 
-    def read_many(
-        self, sort_direction: str, sort_by: str, **kwargs: Dict[str, Any]
-    ) -> List[ModelBase]:
-        if sort_direction and sort_by:
-            if sort_direction == "asc":
-                query = self.db_session.query(self.db_model).order_by(asc(sort_by))
-            else:
-                query = self.db_session.query(self.db_model).order_by(desc(sort_by))
-        else:
-            query = self.db_session.query(self.db_model)
-
+    def read_many(self, sort_map: dict, **kwargs: Dict[str, Any]) -> List[ModelBase]:
+        query = self.db_session.query(self.db_model)
+        order_by_conditions = [
+            asc(col) if direction.lower() == "asc" else desc(col)
+            for col, direction in sort_map.items()
+        ]
+        query = query.order_by(*order_by_conditions)
         for column, value in kwargs.items():
             query = query.filter(getattr(self.db_model, column) == value)
-
         return query.all()
 
     def update(self, model_id: int, model_data: ModelBase) -> ModelBase:

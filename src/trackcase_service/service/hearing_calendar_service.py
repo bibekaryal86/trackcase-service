@@ -92,9 +92,8 @@ class HearingCalendarService(CrudService):
         is_include_history: bool = False,
     ) -> HearingCalendarResponse:
         try:
-            data_models: List[HearingCalendarModel] = super().read_all(
-                sort_direction="desc", sort_by="hearing_date"
-            )
+            sort_config = {"hearing_date": "desc"}
+            data_models: List[HearingCalendarModel] = super().read_all(sort_config)
             schema_models: List[HearingCalendarSchema] = [
                 convert_hearing_calendar_model_to_schema(
                     data_model,

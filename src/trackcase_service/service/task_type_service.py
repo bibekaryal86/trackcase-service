@@ -69,9 +69,8 @@ class TaskTypeService(CrudService):
         is_include_history: bool = False,
     ) -> TaskTypeResponse:
         try:
-            data_models: List[TaskTypeModel] = super().read_all(
-                sort_direction="asc", sort_by="name"
-            )
+            sort_config = {"name": "asc"}
+            data_models: List[TaskTypeModel] = super().read_all(sort_config)
             schema_models: List[TaskTypeSchema] = [
                 convert_task_type_model_to_schema(
                     data_model,
