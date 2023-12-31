@@ -79,8 +79,7 @@ class JudgeService(CrudService):
         is_include_history: bool = False,
     ) -> JudgeResponse:
         try:
-            sort_config = {"court_id": "asc", "name": "asc"}
-            data_models: List[JudgeModel] = super().read_all(sort_config)
+            data_models: List[JudgeModel] = super().read_all()
             schema_models: List[JudgeSchema] = [
                 convert_judge_model_to_schema(
                     data_model,
