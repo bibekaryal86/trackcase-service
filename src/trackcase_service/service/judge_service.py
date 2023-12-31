@@ -175,7 +175,7 @@ def _sort_judge_by_court_name(
 ) -> List[JudgeSchema]:
     return sorted(
         judges,
-        key=lambda x: x.court.name if (x.court and x.court.name) else "",
+        key=lambda x: (x.court.name if x.court else "", x.name if x.name else ""),
     )
 
 
