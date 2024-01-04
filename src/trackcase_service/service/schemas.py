@@ -1,22 +1,31 @@
 from datetime import datetime
 from typing import ClassVar, Optional
 
-from pydantic import BaseModel, condecimal, field_validator
+from pydantic import BaseModel, ConfigDict, condecimal, field_validator
+from pydantic.alias_generators import to_camel
 
 from src.trackcase_service.utils.constants import get_statuses
 
 
-class BaseModelSchema(BaseModel):
+class BaseSchema(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+        from_attributes=True,
+    )
+
+
+class BaseModelSchema(BaseSchema):
     id: Optional[int] = None
     created: Optional[datetime] = None
     modified: Optional[datetime] = None
 
 
-class ErrorDetail(BaseModel):
+class ErrorDetail(BaseSchema):
     error: Optional[str] = None
 
 
-class ResponseBase(BaseModel):
+class ResponseBase(BaseSchema):
     delete_count: Optional[int] = 0
     detail: Optional[ErrorDetail] = None
 
@@ -26,12 +35,12 @@ class NameDescBase:
     description: str
 
 
-class StatusBase(BaseModel):
+class StatusBase(BaseSchema):
     status: str
     comments: Optional[str] = None
 
 
-class AddressBase(BaseModel):
+class AddressBase(BaseSchema):
     street_address: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
@@ -39,7 +48,7 @@ class AddressBase(BaseModel):
     phone_number: Optional[str] = None
 
 
-class NoteBase(BaseModel):
+class NoteBase(BaseSchema):
     user_name: str
     note: str
 
@@ -62,7 +71,7 @@ class FormType(FormTypeBase, BaseModelSchema):
     forms: list["Form"] = []
 
 
-class FormTypeRequest(FormTypeBase, BaseModel):
+class FormTypeRequest(FormTypeBase, BaseSchema):
     pass
 
 
@@ -81,7 +90,7 @@ class CollectionMethod(CollectionMethodBase, BaseModelSchema):
     case_collections: list["CaseCollection"] = []
 
 
-class CollectionMethodRequest(CollectionMethodBase, BaseModel):
+class CollectionMethodRequest(CollectionMethodBase, BaseSchema):
     pass
 
 
@@ -99,7 +108,7 @@ class HearingType(HearingTypeBase, BaseModelSchema):
     hearing_calendars: list["HearingCalendar"] = []
 
 
-class HearingTypeRequest(HearingTypeBase, BaseModel):
+class HearingTypeRequest(HearingTypeBase, BaseSchema):
     pass
 
 
@@ -117,7 +126,7 @@ class TaskType(TaskTypeBase, BaseModelSchema):
     task_calendars: list["TaskCalendar"] = []
 
 
-class TaskTypeRequest(TaskTypeBase, BaseModel):
+class TaskTypeRequest(TaskTypeBase, BaseSchema):
     pass
 
 
@@ -135,7 +144,7 @@ class CaseType(CaseTypeBase, BaseModelSchema):
     court_cases: list["CourtCase"] = []
 
 
-class CaseTypeRequest(CaseTypeBase, BaseModel):
+class CaseTypeRequest(CaseTypeBase, BaseSchema):
     pass
 
 
@@ -184,7 +193,7 @@ class HistoryCourt(Court):
     name: Optional[str] = None
 
 
-class CourtRequest(CourtBase, BaseModel):
+class CourtRequest(CourtBase, BaseSchema):
     pass
 
 
@@ -236,7 +245,7 @@ class HistoryJudge(Judge):
     court_id: Optional[int] = None
 
 
-class JudgeRequest(JudgeBase, BaseModel):
+class JudgeRequest(JudgeBase, BaseSchema):
     pass
 
 
@@ -288,7 +297,7 @@ class HistoryClient(Client):
     name: Optional[str] = None
 
 
-class ClientRequest(ClientBase, BaseModel):
+class ClientRequest(ClientBase, BaseSchema):
     pass
 
 
@@ -343,7 +352,7 @@ class HistoryCourtCase(CourtCase):
     client_id: Optional[int] = None
 
 
-class CourtCaseRequest(CourtCaseBase, BaseModel):
+class CourtCaseRequest(CourtCaseBase, BaseSchema):
     pass
 
 
@@ -397,7 +406,7 @@ class HistoryHearingCalendar(HearingCalendar):
     court_case_id: Optional[int] = None
 
 
-class HearingCalendarRequest(HearingCalendarBase, BaseModel):
+class HearingCalendarRequest(HearingCalendarBase, BaseSchema):
     pass
 
 
@@ -453,7 +462,7 @@ class HistoryTaskCalendar(TaskCalendar):
     court_case_id: Optional[int] = None
 
 
-class TaskCalendarRequest(TaskCalendarBase, BaseModel):
+class TaskCalendarRequest(TaskCalendarBase, BaseSchema):
     pass
 
 
@@ -510,7 +519,7 @@ class HistoryForm(Form):
     form_type_id: Optional[int] = None
 
 
-class FormRequest(FormBase, BaseModel):
+class FormRequest(FormBase, BaseSchema):
     pass
 
 
@@ -569,11 +578,11 @@ class HistoryCaseCollection(CaseCollection):
     court_case_id: Optional[int] = None
 
 
-class CaseCollectionRequest(CaseCollectionBase, BaseModel):
+class CaseCollectionRequest(CaseCollectionBase, BaseSchema):
     pass
 
 
-class CaseCollectionRetrieveRequest(BaseModel):
+class CaseCollectionRetrieveRequest(BaseSchema):
     collection_method_id: Optional[int] = None
     court_case_id: Optional[int] = None
     form_id: Optional[int] = None
@@ -635,7 +644,7 @@ class HistoryCashCollection(CashCollection):
     collection_method_id: Optional[int] = None
 
 
-class CashCollectionRequest(CashCollectionBase, BaseModel):
+class CashCollectionRequest(CashCollectionBase, BaseSchema):
     pass
 
 
