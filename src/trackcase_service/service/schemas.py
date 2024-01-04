@@ -310,7 +310,7 @@ class CourtCaseBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("court").get("all"):
+        elif v not in get_statuses().get("court_case").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
