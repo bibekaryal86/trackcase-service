@@ -207,7 +207,7 @@ class JudgeBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("court").get("all"):
+        elif v not in get_statuses().get("judge").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
@@ -260,7 +260,7 @@ class ClientBase(AddressBase, StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("court").get("all"):
+        elif v not in get_statuses().get("client").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
@@ -366,7 +366,7 @@ class HearingCalendarBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("court").get("all"):
+        elif v not in get_statuses().get("hearing_calendar").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
@@ -421,7 +421,7 @@ class TaskCalendarBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("court").get("all"):
+        elif v not in get_statuses().get("task_calendar").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
@@ -481,7 +481,7 @@ class FormBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("court").get("all"):
+        elif v not in get_statuses().get("form").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
@@ -536,7 +536,7 @@ class CaseCollectionBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("court").get("all"):
+        elif v not in get_statuses().get("case_collection").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
@@ -604,7 +604,7 @@ class CashCollectionBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("court").get("all"):
+        elif v not in get_statuses().get("cash_collection").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
