@@ -473,7 +473,7 @@ class TaskCalendarResponse(ResponseBase):
 # form
 class FormBase(StatusBase):
     form_type_id: int
-    court_case_id: Optional[int] = None
+    court_case_id: int
     submit_date: Optional[datetime] = None
     receipt_date: Optional[datetime] = None
     rfe_date: Optional[datetime] = None
