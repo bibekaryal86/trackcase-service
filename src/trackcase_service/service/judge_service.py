@@ -79,8 +79,7 @@ class JudgeService(CrudService):
         is_include_history: bool = False,
     ) -> JudgeResponse:
         try:
-            sort_config = {"court_id": "asc", "name": "asc"}
-            data_models: List[JudgeModel] = super().read_all(sort_config)
+            data_models: List[JudgeModel] = super().read_all()
             schema_models: List[JudgeSchema] = [
                 convert_judge_model_to_schema(
                     data_model,
@@ -176,7 +175,7 @@ def _sort_judge_by_court_name(
 ) -> List[JudgeSchema]:
     return sorted(
         judges,
-        key=lambda x: x.court.name if (x.court and x.court.name) else "",
+        key=lambda x: (x.court.name if x.court else "", x.name if x.name else ""),
     )
 
 
