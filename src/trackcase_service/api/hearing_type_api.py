@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -12,9 +11,7 @@ from src.trackcase_service.service.schemas import (
 )
 from src.trackcase_service.utils.commons import (
     raise_http_exception,
-    validate_http_basic_credentials,
 )
-from src.trackcase_service.utils.constants import http_basic_security
 
 router = APIRouter(prefix="/trackcase-service/hearing_types", tags=["HearingTypes"])
 
@@ -24,10 +21,8 @@ def find_all(
     request: Request,
     is_include_extra: bool = False,
     is_include_history: bool = False,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_hearing_type_service(db_session).read_all_hearing_types(
         request, is_include_extra, is_include_history
     )
@@ -41,10 +36,8 @@ def find_one(
     request: Request,
     is_include_extra: bool = False,
     is_include_history: bool = False,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     hearing_type_response: HearingTypeResponse = get_hearing_type_service(
         db_session
     ).read_one_hearing_type(
@@ -66,10 +59,8 @@ def find_one(
 def insert_one(
     request: Request,
     hearing_type_request: HearingTypeRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_hearing_type_service(db_session).create_one_hearing_type(
         request, hearing_type_request
     )
@@ -81,10 +72,8 @@ def insert_one(
 def delete_one(
     hearing_type_id: int,
     request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_hearing_type_service(db_session).delete_one_hearing_type(
         hearing_type_id, request
     )
@@ -97,10 +86,8 @@ def update_one(
     hearing_type_id: int,
     request: Request,
     hearing_type_request: HearingTypeRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_hearing_type_service(db_session).update_one_hearing_type(
         hearing_type_id, request, hearing_type_request
     )

@@ -2,7 +2,6 @@ import http
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -10,9 +9,7 @@ from src.trackcase_service.service import schemas
 from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.utils.commons import (
     raise_http_exception,
-    validate_http_basic_credentials,
 )
-from src.trackcase_service.utils.constants import http_basic_security
 from src.trackcase_service.utils.convert import convert_note_request_to_note_model
 
 router = APIRouter(prefix="/trackcase-service/notes", tags=["Notes"])
@@ -27,10 +24,8 @@ def insert_one(
     request: Request,
     note_object_type: str,
     note_request: schemas.NoteRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     note_model_class, note_model = convert_note_request_to_note_model(
         note_object_type, note_request
     )
@@ -55,10 +50,8 @@ def update_one(
     request: Request,
     note_object_type: str,
     note_request: schemas.NoteRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     note_model_class, note_model = convert_note_request_to_note_model(
         note_object_type, note_request
     )
@@ -84,10 +77,8 @@ def delete_one(
     note_id: int,
     note_object_type: str,
     request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     note_model_class, note_model = convert_note_request_to_note_model(
         note_object_type,
     )

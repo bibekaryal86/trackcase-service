@@ -2,12 +2,10 @@ import os
 from enum import Enum
 from functools import lru_cache
 
-from fastapi.security import HTTPBasic
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Constants
 ENV_APP_PORT = "APP_PORT"
-http_basic_security = HTTPBasic()
 USERNAME_HEADER = "x-user-name"
 
 

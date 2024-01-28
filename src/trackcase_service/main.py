@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.security import HTTPBasicCredentials
+from fastapi.security import HTTPBasicCredentials, HTTPBasic
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.api import (
@@ -27,6 +27,7 @@ from src.trackcase_service.api import (
     task_type_api,
 )
 from src.trackcase_service.utils import commons, constants, logger
+from src.trackcase_service.utils.commons import validate_http_basic_credentials
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
 
@@ -59,25 +60,30 @@ def user_name_header(
     return x_user_name
 
 
-app.include_router(case_collection_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(case_type_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(cash_collection_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(client_api.router, dependencies=[Depends(user_name_header)])
+def validate_credentials(
+    request: Request,
+    http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
+):
+    validate_http_basic_credentials(request, http_basic_credentials)
+
+
+app.include_router(case_collection_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(case_type_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(cash_collection_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(client_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
 app.include_router(
-    collection_method_api.router, dependencies=[Depends(user_name_header)]
-)
-app.include_router(court_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(court_case_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(form_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(form_type_api.router, dependencies=[Depends(user_name_header)])
+    collection_method_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(court_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(court_case_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(form_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(form_type_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
 app.include_router(
-    hearing_calendar_api.router, dependencies=[Depends(user_name_header)]
-)
-app.include_router(hearing_type_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(judge_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(task_calendar_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(task_type_api.router, dependencies=[Depends(user_name_header)])
-app.include_router(note_api.router, dependencies=[Depends(user_name_header)])
+    hearing_calendar_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(hearing_type_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(judge_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(task_calendar_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(task_type_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+app.include_router(note_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
 
 
 @app.middleware("http")
@@ -108,9 +114,7 @@ def reset(request: Request):
 @app.get("/trackcase-service/tests/database", tags=["Main"], summary="Ping Database")
 def test_database(
     request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(
-        constants.http_basic_security
-    ),
+    http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
     db_session: Session = Depends(commons.get_db_session),
 ):
     commons.validate_http_basic_credentials(request, http_basic_credentials, True)
@@ -120,9 +124,7 @@ def test_database(
 @app.get("/trackcase-service/tests/status", tags=["Main"], summary="Get Status Dict")
 def get_statuses(
     request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(
-        constants.http_basic_security
-    ),
+    http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
 ):
     commons.validate_http_basic_credentials(request, http_basic_credentials, True)
     return constants.get_statuses()
@@ -139,9 +141,7 @@ def log_level(level: constants.LogLevelOptions):
 @app.get("/trackcase-service/docs", include_in_schema=False)
 async def custom_docs_url(
     request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(
-        constants.http_basic_security
-    ),
+    http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
 ):
     commons.validate_http_basic_credentials(request, http_basic_credentials, True)
     root_path = request.scope.get("root_path", "").rstrip("/")

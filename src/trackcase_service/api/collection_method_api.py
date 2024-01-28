@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -14,9 +13,7 @@ from src.trackcase_service.service.schemas import (
 )
 from src.trackcase_service.utils.commons import (
     raise_http_exception,
-    validate_http_basic_credentials,
 )
-from src.trackcase_service.utils.constants import http_basic_security
 
 router = APIRouter(
     prefix="/trackcase-service/collection_methods", tags=["CollectionMethods"]
@@ -28,10 +25,8 @@ def find_all(
     request: Request,
     is_include_extra: bool = False,
     is_include_history: bool = False,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_collection_method_service(db_session).read_all_collection_methods(
         request, is_include_extra, is_include_history
     )
@@ -47,10 +42,8 @@ def find_one(
     request: Request,
     is_include_extra: bool = False,
     is_include_history: bool = False,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     collection_method_response: CollectionMethodResponse = (
         get_collection_method_service(db_session).read_one_collection_method(
             collection_method_id,
@@ -72,10 +65,8 @@ def find_one(
 def insert_one(
     request: Request,
     collection_method_request: CollectionMethodRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_collection_method_service(db_session).create_one_collection_method(
         request, collection_method_request
     )
@@ -89,10 +80,8 @@ def insert_one(
 def delete_one(
     collection_method_id: int,
     request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_collection_method_service(db_session).delete_one_collection_method(
         collection_method_id, request
     )
@@ -107,10 +96,8 @@ def update_one(
     collection_method_id: int,
     request: Request,
     collection_method_request: CollectionMethodRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_collection_method_service(db_session).update_one_collection_method(
         collection_method_id, request, collection_method_request
     )
