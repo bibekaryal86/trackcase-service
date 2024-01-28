@@ -4,6 +4,7 @@ from typing import Type, TypeVar, Union
 from fastapi import Request
 from pydantic import BaseModel
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Base
@@ -16,8 +17,8 @@ log = logger.Logger(logging.getLogger(__name__), __name__)
 
 
 class HistoryService(CrudService):
-    def __init__(self, db_model: Type[ModelBase]):
-        super(HistoryService, self).__init__(db_model)
+    def __init__(self, db_session: Session, db_model: Type[ModelBase]):
+        super(HistoryService, self).__init__(db_session, db_model)
 
     def add_to_history(
         self,
@@ -37,7 +38,7 @@ class HistoryService(CrudService):
             history_object_id_value,
         )
         try:
-            self.create(history_data_model)
+            super().create(history_data_model)
         except Exception as ex:
             err_msg = f"{parent_type} Action Successful! BUT!! Something went wrong inserting {history_type}!!!"  # noqa: E501
             log.error(err_msg)
@@ -52,11 +53,9 @@ class HistoryService(CrudService):
         parent_type: str,
         history_type: str,
     ):
-        query = text(
-            f"""DELETE FROM {history_table_name} WHERE {id_key} = {id_value}"""
-        )
+        sql = text(f"""DELETE FROM {history_table_name} WHERE {id_key} = {id_value}""")
         try:
-            self.execute_raw_query(query)
+            self.db_session.execute(sql)
         except Exception as ex:
             err_msg = (
                 f"Something went wrong deleting all {history_type} for {parent_type}!!!"
@@ -66,5 +65,7 @@ class HistoryService(CrudService):
             raise Exception(err_msg)
 
 
-def get_history_service(db_model: Type[ModelBase]) -> HistoryService:
-    return HistoryService(db_model)
+def get_history_service(
+    db_session: Session, db_model: Type[ModelBase]
+) -> HistoryService:
+    return HistoryService(db_session, db_model)

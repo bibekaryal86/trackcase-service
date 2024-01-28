@@ -2,7 +2,9 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPBasicCredentials
+from sqlalchemy.orm import Session
 
+from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.schemas import (
     TaskCalendarRequest,
     TaskCalendarResponse,
@@ -25,9 +27,10 @@ def find_all(
     is_include_extra: bool = False,
     is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
+    db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_task_calendar_service().read_all_task_calendars(
+    return get_task_calendar_service(db_session).read_all_task_calendars(
         request, is_include_extra, is_include_history
     )
 
@@ -43,15 +46,16 @@ def find_one(
     is_include_extra: bool = False,
     is_include_history: bool = False,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
+    db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    task_calendar_response: TaskCalendarResponse = (
-        get_task_calendar_service().read_one_task_calendar(
-            task_calendar_id,
-            request,
-            is_include_extra,
-            is_include_history,
-        )
+    task_calendar_response: TaskCalendarResponse = get_task_calendar_service(
+        db_session
+    ).read_one_task_calendar(
+        task_calendar_id,
+        request,
+        is_include_extra,
+        is_include_history,
     )
     if task_calendar_response is None:
         raise_http_exception(
@@ -67,9 +71,10 @@ def insert_one(
     request: Request,
     task_calendar_request: TaskCalendarRequest,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
+    db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_task_calendar_service().create_one_task_calendar(
+    return get_task_calendar_service(db_session).create_one_task_calendar(
         request, task_calendar_request
     )
 
@@ -83,9 +88,10 @@ def delete_one(
     task_calendar_id: int,
     request: Request,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
+    db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_task_calendar_service().delete_one_task_calendar(
+    return get_task_calendar_service(db_session).delete_one_task_calendar(
         task_calendar_id, request
     )
 
@@ -100,8 +106,9 @@ def update_one(
     request: Request,
     task_calendar_request: TaskCalendarRequest,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
+    db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
-    return get_task_calendar_service().update_one_task_calendar(
+    return get_task_calendar_service(db_session).update_one_task_calendar(
         task_calendar_id, request, task_calendar_request
     )

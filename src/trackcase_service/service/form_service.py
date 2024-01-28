@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Form as FormModel
@@ -24,8 +25,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class FormService(CrudService):
-    def __init__(self):
-        super(FormService, self).__init__(FormModel)
+    def __init__(self, db_session: Session):
+        super(FormService, self).__init__(db_session, FormModel)
 
     def create_one_form(
         self, request: Request, request_object: FormRequest
@@ -34,8 +35,8 @@ class FormService(CrudService):
             data_model: FormModel = convert_request_schema_to_model(
                 request_object, FormModel
             )
-            data_model = self.create(data_model)
-            _handle_history(request, data_model.id, request_object)
+            data_model = super().create(data_model)
+            _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_form_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -53,7 +54,7 @@ class FormService(CrudService):
         is_include_history: bool = False,
     ) -> FormResponse:
         try:
-            data_model: FormModel = self.read_one(model_id)
+            data_model: FormModel = super().read_one(model_id)
             if data_model:
                 schema_model: FormSchema = convert_form_model_to_schema(
                     data_model,
@@ -79,7 +80,7 @@ class FormService(CrudService):
     ) -> FormResponse:
         try:
             sort_config = {"submit_date": "desc"}
-            data_models: List[FormModel] = self.read_all(sort_config)
+            data_models: List[FormModel] = super().read_all(sort_config)
             schema_models: List[FormSchema] = [
                 convert_form_model_to_schema(
                     data_model,
@@ -116,8 +117,8 @@ class FormService(CrudService):
             data_model: FormModel = convert_request_schema_to_model(
                 request_object, FormModel
             )
-            data_model = self.update(model_id, data_model)
-            _handle_history(request, model_id, request_object)
+            data_model = super().update(model_id, data_model)
+            _handle_history(self.db_session, request, model_id, request_object)
             schema_model = convert_form_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -141,10 +142,10 @@ class FormService(CrudService):
             )
 
         _check_dependents(request, form_response.forms[0])
-        _handle_history(request, model_id, is_delete=True)
+        _handle_history(self.db_session, request, model_id, is_delete=True)
 
         try:
-            self.delete(model_id)
+            super().delete(model_id)
             return FormResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
@@ -157,8 +158,8 @@ class FormService(CrudService):
             )
 
 
-def get_form_service() -> FormService:
-    return FormService()
+def get_form_service(db_session: Session) -> FormService:
+    return FormService(db_session)
 
 
 def get_response_single(single: FormSchema) -> FormResponse:
@@ -195,14 +196,15 @@ def _check_dependents(request: Request, form: FormSchema):
 
 
 def _handle_history(
+    db_session: Session,
     request: Request,
     form_id: int,
     request_object: FormRequest = None,
     is_delete: bool = False,
 ):
-    history_service = get_history_service(HistoryFormModel)
+    history_service = get_history_service(db_session, HistoryFormModel)
     if is_delete:
-        note_service = get_note_service(NoteFormModel)
+        note_service = get_note_service(db_session, NoteFormModel)
         note_service.delete_note_before_delete_object(
             NoteFormModel.__tablename__, "form_id", form_id, "Form", "NoteForm"
         )

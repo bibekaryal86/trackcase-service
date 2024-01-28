@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import CashCollection as CashCollectionModel
@@ -26,8 +27,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class CashCollectionService(CrudService):
-    def __init__(self):
-        super(CashCollectionService, self).__init__(CashCollectionModel)
+    def __init__(self, db_session: Session):
+        super(CashCollectionService, self).__init__(db_session, CashCollectionModel)
 
     def create_one_cash_collection(
         self, request: Request, request_object: CashCollectionRequest
@@ -36,8 +37,8 @@ class CashCollectionService(CrudService):
             data_model: CashCollectionModel = convert_request_schema_to_model(
                 request_object, CashCollectionModel
             )
-            data_model = self.create(data_model)
-            _handle_history(request, data_model.id, request_object)
+            data_model = super().create(data_model)
+            _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_cash_collection_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -57,7 +58,7 @@ class CashCollectionService(CrudService):
         is_include_history: bool = False,
     ) -> CashCollectionResponse:
         try:
-            data_model: CashCollectionModel = self.read_one(model_id)
+            data_model: CashCollectionModel = super().read_one(model_id)
             if data_model:
                 schema_model: CashCollectionSchema = (
                     convert_cash_collection_model_to_schema(
@@ -85,7 +86,7 @@ class CashCollectionService(CrudService):
     ) -> CashCollectionResponse:
         try:
             sort_config = {"collection_date": "desc"}
-            data_models: List[CashCollectionModel] = self.read_all(sort_config)
+            data_models: List[CashCollectionModel] = super().read_all(sort_config)
             schema_models: List[CashCollectionSchema] = [
                 convert_cash_collection_model_to_schema(
                     data_model,
@@ -120,8 +121,8 @@ class CashCollectionService(CrudService):
             data_model: CashCollectionModel = convert_request_schema_to_model(
                 request_object, CashCollectionModel
             )
-            data_model = self.update(model_id, data_model)
-            _handle_history(request, model_id, request_object)
+            data_model = super().update(model_id, data_model)
+            _handle_history(self.db_session, request, model_id, request_object)
             schema_model = convert_cash_collection_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -146,10 +147,10 @@ class CashCollectionService(CrudService):
                 f"CashCollection Not Found By Id: {model_id}!!!",
             )
 
-        _handle_history(request, model_id, is_delete=True)
+        _handle_history(self.db_session, request, model_id, is_delete=True)
 
         try:
-            self.delete(model_id)
+            super().delete(model_id)
             return CashCollectionResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
@@ -162,8 +163,8 @@ class CashCollectionService(CrudService):
             )
 
 
-def get_cash_collection_service() -> CashCollectionService:
-    return CashCollectionService()
+def get_cash_collection_service(db_session: Session) -> CashCollectionService:
+    return CashCollectionService(db_session)
 
 
 def get_response_single(single: CashCollectionSchema) -> CashCollectionResponse:
@@ -177,14 +178,15 @@ def get_response_multiple(
 
 
 def _handle_history(
+    db_session: Session,
     request: Request,
     cash_collection_id: int,
     request_object: CashCollectionRequest = None,
     is_delete: bool = False,
 ):
-    history_service = get_history_service(HistoryCashCollectionModel)
+    history_service = get_history_service(db_session, HistoryCashCollectionModel)
     if is_delete:
-        note_service = get_note_service(NoteCashCollectionModel)
+        note_service = get_note_service(db_session, NoteCashCollectionModel)
         note_service.delete_note_before_delete_object(
             NoteCashCollectionModel.__tablename__,
             "cash_collection_id",

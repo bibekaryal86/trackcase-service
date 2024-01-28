@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import HearingType as HearingTypeModel
@@ -18,8 +19,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class HearingTypeService(CrudService):
-    def __init__(self):
-        super(HearingTypeService, self).__init__(HearingTypeModel)
+    def __init__(self, db_session: Session):
+        super(HearingTypeService, self).__init__(db_session, HearingTypeModel)
 
     def create_one_hearing_type(
         self, request: Request, request_object: HearingTypeRequest
@@ -28,7 +29,7 @@ class HearingTypeService(CrudService):
             data_model: HearingTypeModel = convert_request_schema_to_model(
                 request_object, HearingTypeModel
             )
-            data_model = self.create(data_model)
+            data_model = super().create(data_model)
             schema_model = convert_hearing_type_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -48,7 +49,7 @@ class HearingTypeService(CrudService):
         is_include_history: bool = False,
     ) -> HearingTypeResponse:
         try:
-            data_model: HearingTypeModel = self.read_one(model_id)
+            data_model: HearingTypeModel = super().read_one(model_id)
             if data_model:
                 schema_model: HearingTypeSchema = convert_hearing_type_model_to_schema(
                     data_model,
@@ -74,7 +75,7 @@ class HearingTypeService(CrudService):
     ) -> HearingTypeResponse:
         try:
             sort_config = {"name": "asc"}
-            data_models: List[HearingTypeModel] = self.read_all(sort_config)
+            data_models: List[HearingTypeModel] = super().read_all(sort_config)
             schema_models: List[HearingTypeSchema] = [
                 convert_hearing_type_model_to_schema(
                     data_model,
@@ -109,7 +110,7 @@ class HearingTypeService(CrudService):
             data_model: HearingTypeModel = convert_request_schema_to_model(
                 request_object, HearingTypeModel
             )
-            data_model = self.update(model_id, data_model)
+            data_model = super().update(model_id, data_model)
             schema_model = convert_hearing_type_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -135,7 +136,7 @@ class HearingTypeService(CrudService):
             )
 
         try:
-            self.delete(model_id)
+            super().delete(model_id)
             return HearingTypeResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
@@ -148,8 +149,8 @@ class HearingTypeService(CrudService):
             )
 
 
-def get_hearing_type_service() -> HearingTypeService:
-    return HearingTypeService()
+def get_hearing_type_service(db_session: Session) -> HearingTypeService:
+    return HearingTypeService(db_session)
 
 
 def get_response_single(single: HearingTypeSchema) -> HearingTypeResponse:

@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import CaseCollection as CaseCollectionModel
@@ -31,8 +32,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class CaseCollectionService(CrudService):
-    def __init__(self):
-        super(CaseCollectionService, self).__init__(CaseCollectionModel)
+    def __init__(self, db_session: Session):
+        super(CaseCollectionService, self).__init__(db_session, CaseCollectionModel)
 
     def create_one_case_collection(
         self, request: Request, request_object: CaseCollectionRequest
@@ -42,7 +43,7 @@ class CaseCollectionService(CrudService):
                 request_object, CaseCollectionModel
             )
             data_model = super().create(data_model)
-            _handle_history(request, data_model.id, request_object)
+            _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_case_collection_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -134,7 +135,7 @@ class CaseCollectionService(CrudService):
                 request_object, CaseCollectionModel
             )
             data_model = super().update(model_id, data_model)
-            _handle_history(request, model_id, request_object)
+            _handle_history(self.db_session, request, model_id, request_object)
             schema_model = convert_case_collection_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -162,7 +163,7 @@ class CaseCollectionService(CrudService):
             )
 
         _check_dependents(request, case_collection_response.case_collections[0])
-        _handle_history(request, model_id, is_delete=True)
+        _handle_history(self.db_session, request, model_id, is_delete=True)
 
         try:
             super().delete(model_id)
@@ -178,8 +179,8 @@ class CaseCollectionService(CrudService):
             )
 
 
-def get_case_collection_service() -> CaseCollectionService:
-    return CaseCollectionService()
+def get_case_collection_service(db_session: Session) -> CaseCollectionService:
+    return CaseCollectionService(db_session)
 
 
 def get_response_single(single: CaseCollectionSchema) -> CaseCollectionResponse:
@@ -218,14 +219,15 @@ def _check_dependents(request: Request, case_collection: CaseCollectionSchema):
 
 
 def _handle_history(
+    db_session: Session,
     request: Request,
     case_collection_id: int,
     request_object: CaseCollectionRequest = None,
     is_delete: bool = False,
 ):
-    history_service = get_history_service(HistoryCaseCollectionModel)
+    history_service = get_history_service(db_session, HistoryCaseCollectionModel)
     if is_delete:
-        note_service = get_note_service(NoteCaseCollectionModel)
+        note_service = get_note_service(db_session, NoteCaseCollectionModel)
         note_service.delete_note_before_delete_object(
             NoteCaseCollectionModel.__tablename__,
             "case_collection_id",

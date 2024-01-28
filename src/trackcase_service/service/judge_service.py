@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import HistoryJudge as HistoryJudgeModel
@@ -24,8 +25,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class JudgeService(CrudService):
-    def __init__(self):
-        super(JudgeService, self).__init__(JudgeModel)
+    def __init__(self, db_session: Session):
+        super(JudgeService, self).__init__(db_session, JudgeModel)
 
     def create_one_judge(
         self, request: Request, request_object: JudgeRequest
@@ -34,8 +35,8 @@ class JudgeService(CrudService):
             data_model: JudgeModel = convert_request_schema_to_model(
                 request_object, JudgeModel
             )
-            data_model = self.create(data_model)
-            _handle_history(request, data_model.id, request_object)
+            data_model = super().create(data_model)
+            _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_judge_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -53,7 +54,7 @@ class JudgeService(CrudService):
         is_include_history: bool = False,
     ) -> JudgeResponse:
         try:
-            data_model: JudgeModel = self.read_one(model_id)
+            data_model: JudgeModel = super().read_one(model_id)
             if data_model:
                 schema_model: JudgeSchema = convert_judge_model_to_schema(
                     data_model,
@@ -78,7 +79,7 @@ class JudgeService(CrudService):
         is_include_history: bool = False,
     ) -> JudgeResponse:
         try:
-            data_models: List[JudgeModel] = self.read_all()
+            data_models: List[JudgeModel] = super().read_all()
             schema_models: List[JudgeSchema] = [
                 convert_judge_model_to_schema(
                     data_model,
@@ -116,8 +117,8 @@ class JudgeService(CrudService):
             data_model: JudgeModel = convert_request_schema_to_model(
                 request_object, JudgeModel
             )
-            data_model = self.update(model_id, data_model)
-            _handle_history(request, model_id, request_object)
+            data_model = super().update(model_id, data_model)
+            _handle_history(self.db_session, request, model_id, request_object)
             schema_model = convert_judge_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -141,10 +142,10 @@ class JudgeService(CrudService):
             )
 
         _check_dependents(request, judge_response.judges[0])
-        _handle_history(request, model_id, is_delete=True)
+        _handle_history(self.db_session, request, model_id, is_delete=True)
 
         try:
-            self.delete(model_id)
+            super().delete(model_id)
             return JudgeResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
@@ -157,8 +158,8 @@ class JudgeService(CrudService):
             )
 
 
-def get_judge_service() -> JudgeService:
-    return JudgeService()
+def get_judge_service(db_session: Session) -> JudgeService:
+    return JudgeService(db_session)
 
 
 def get_response_single(single: JudgeSchema) -> JudgeResponse:
@@ -204,14 +205,15 @@ def _check_dependents(request: Request, judge: JudgeSchema):
 
 
 def _handle_history(
+    db_session: Session,
     request: Request,
     judge_id: int,
     request_object: JudgeRequest = None,
     is_delete: bool = False,
 ):
-    history_service = get_history_service(HistoryJudgeModel)
+    history_service = get_history_service(db_session, HistoryJudgeModel)
     if is_delete:
-        note_service = get_note_service(NoteJudgeModel)
+        note_service = get_note_service(db_session, NoteJudgeModel)
         note_service.delete_note_before_delete_object(
             NoteJudgeModel.__tablename__, "judge_id", judge_id, "Judge", "NoteJudge"
         )

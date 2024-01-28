@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Court as CourtModel
@@ -24,8 +25,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class CourtService(CrudService):
-    def __init__(self):
-        super(CourtService, self).__init__(CourtModel)
+    def __init__(self, db_session: Session):
+        super(CourtService, self).__init__(db_session, CourtModel)
 
     def create_one_court(
         self, request: Request, request_object: CourtRequest
@@ -34,8 +35,8 @@ class CourtService(CrudService):
             data_model: CourtModel = convert_request_schema_to_model(
                 request_object, CourtModel
             )
-            data_model = self.create(data_model)
-            _handle_history(request, data_model.id, request_object)
+            data_model = super().create(data_model)
+            _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_court_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -53,7 +54,7 @@ class CourtService(CrudService):
         is_include_history: bool = False,
     ) -> CourtResponse:
         try:
-            data_model: CourtModel = self.read_one(model_id)
+            data_model: CourtModel = super().read_one(model_id)
             if data_model:
                 schema_model: CourtSchema = convert_court_model_to_schema(
                     data_model,
@@ -79,7 +80,7 @@ class CourtService(CrudService):
     ) -> CourtResponse:
         try:
             sort_config = {"name": "asc"}
-            data_models: List[CourtModel] = self.read_all(sort_config)
+            data_models: List[CourtModel] = super().read_all(sort_config)
             schema_models: List[CourtSchema] = [
                 convert_court_model_to_schema(
                     data_model,
@@ -116,8 +117,8 @@ class CourtService(CrudService):
             data_model: CourtModel = convert_request_schema_to_model(
                 request_object, CourtModel
             )
-            data_model = self.update(model_id, data_model)
-            _handle_history(request, model_id, request_object)
+            data_model = super().update(model_id, data_model)
+            _handle_history(self.db_session, request, model_id, request_object)
             schema_model = convert_court_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -141,10 +142,10 @@ class CourtService(CrudService):
             )
 
         _check_dependents(request, court_response.courts[0])
-        _handle_history(request, model_id, is_delete=True)
+        _handle_history(self.db_session, request, model_id, is_delete=True)
 
         try:
-            self.delete(model_id)
+            super().delete(model_id)
             return CourtResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
@@ -157,8 +158,8 @@ class CourtService(CrudService):
             )
 
 
-def get_court_service() -> CourtService:
-    return CourtService()
+def get_court_service(db_session: Session) -> CourtService:
+    return CourtService(db_session)
 
 
 def get_response_single(single: CourtSchema) -> CourtResponse:
@@ -195,14 +196,15 @@ def _check_dependents(request: Request, court: CourtSchema):
 
 
 def _handle_history(
+    db_session: Session,
     request: Request,
     court_id: int,
     request_object: CourtRequest = None,
     is_delete: bool = False,
 ):
-    history_service = get_history_service(HistoryCourtModel)
+    history_service = get_history_service(db_session, HistoryCourtModel)
     if is_delete:
-        note_service = get_note_service(NoteCourtModel)
+        note_service = get_note_service(db_session, NoteCourtModel)
         note_service.delete_note_before_delete_object(
             NoteCourtModel.__tablename__, "court_id", court_id, "Court", "NoteCourt"
         )

@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Client as ClientModel
@@ -24,8 +25,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class ClientService(CrudService):
-    def __init__(self):
-        super(ClientService, self).__init__(ClientModel)
+    def __init__(self, db_session: Session):
+        super(ClientService, self).__init__(db_session, ClientModel)
 
     def create_one_client(
         self, request: Request, request_object: ClientRequest
@@ -34,8 +35,8 @@ class ClientService(CrudService):
             data_model: ClientModel = convert_request_schema_to_model(
                 request_object, ClientModel
             )
-            data_model = self.create(data_model)
-            _handle_history(request, data_model.id, request_object)
+            data_model = super().create(data_model)
+            _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_client_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -53,7 +54,7 @@ class ClientService(CrudService):
         is_include_history: bool = False,
     ) -> ClientResponse:
         try:
-            data_model: ClientModel = self.read_one(model_id)
+            data_model: ClientModel = super().read_one(model_id)
             if data_model:
                 schema_model: ClientSchema = convert_client_model_to_schema(
                     data_model,
@@ -79,7 +80,7 @@ class ClientService(CrudService):
     ) -> ClientResponse:
         try:
             sort_config = {"name": "asc"}
-            data_models: List[ClientModel] = self.read_all(sort_config)
+            data_models: List[ClientModel] = super().read_all(sort_config)
             schema_models: List[ClientSchema] = [
                 convert_client_model_to_schema(
                     data_model,
@@ -116,8 +117,8 @@ class ClientService(CrudService):
             data_model: ClientModel = convert_request_schema_to_model(
                 request_object, ClientModel
             )
-            data_model = self.update(model_id, data_model)
-            _handle_history(request, model_id, request_object)
+            data_model = super().update(model_id, data_model)
+            _handle_history(self.db_session, request, model_id, request_object)
             schema_model = convert_client_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -141,10 +142,10 @@ class ClientService(CrudService):
             )
 
         _check_dependents(request, client_response.clients[0])
-        _handle_history(request, model_id, is_delete=True)
+        _handle_history(self.db_session, request, model_id, is_delete=True)
 
         try:
-            self.delete(model_id)
+            super().delete(model_id)
             return ClientResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
@@ -157,8 +158,8 @@ class ClientService(CrudService):
             )
 
 
-def get_client_service() -> ClientService:
-    return ClientService()
+def get_client_service(db_session: Session) -> ClientService:
+    return ClientService(db_session)
 
 
 def get_response_single(single: ClientSchema) -> ClientResponse:
@@ -195,14 +196,15 @@ def _check_dependents(request: Request, client: ClientSchema):
 
 
 def _handle_history(
+    db_session: Session,
     request: Request,
     client_id: int,
     request_object: ClientRequest = None,
     is_delete: bool = False,
 ):
-    history_service = get_history_service(HistoryClientModel)
+    history_service = get_history_service(db_session, HistoryClientModel)
     if is_delete:
-        note_service = get_note_service(NoteClientModel)
+        note_service = get_note_service(db_session, NoteClientModel)
         note_service.delete_note_before_delete_object(
             NoteClientModel.__tablename__,
             "client_id",

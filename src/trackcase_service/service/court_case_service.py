@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import CourtCase as CourtCaseModel
@@ -27,8 +28,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class CourtCaseService(CrudService):
-    def __init__(self):
-        super(CourtCaseService, self).__init__(CourtCaseModel)
+    def __init__(self, db_session: Session):
+        super(CourtCaseService, self).__init__(db_session, CourtCaseModel)
 
     def create_one_court_case(
         self, request: Request, request_object: CourtCaseRequest
@@ -37,8 +38,8 @@ class CourtCaseService(CrudService):
             data_model: CourtCaseModel = convert_request_schema_to_model(
                 request_object, CourtCaseModel
             )
-            data_model = self.create(data_model)
-            _handle_history(request, data_model.id, request_object)
+            data_model = super().create(data_model)
+            _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_court_case_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -56,7 +57,7 @@ class CourtCaseService(CrudService):
         is_include_history: bool = False,
     ) -> CourtCaseResponse:
         try:
-            data_model: CourtCaseModel = self.read_one(model_id)
+            data_model: CourtCaseModel = super().read_one(model_id)
             if data_model:
                 schema_model: CourtCaseSchema = convert_court_case_model_to_schema(
                     data_model,
@@ -81,7 +82,7 @@ class CourtCaseService(CrudService):
         is_include_history: bool = False,
     ) -> CourtCaseResponse:
         try:
-            data_models: List[CourtCaseModel] = self.read_all()
+            data_models: List[CourtCaseModel] = super().read_all()
             schema_models: List[CourtCaseSchema] = [
                 convert_court_case_model_to_schema(
                     data_model,
@@ -125,8 +126,8 @@ class CourtCaseService(CrudService):
             data_model: CourtCaseModel = convert_request_schema_to_model(
                 request_object, CourtCaseModel
             )
-            data_model = self.update(model_id, data_model)
-            _handle_history(request, model_id, request_object)
+            data_model = super().update(model_id, data_model)
+            _handle_history(self.db_session, request, model_id, request_object)
             schema_model = convert_court_case_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -154,10 +155,10 @@ class CourtCaseService(CrudService):
             )
 
         _check_dependents(request, court_case_response.court_case[0])
-        _handle_history(request, model_id, is_delete=True)
+        _handle_history(self.db_session, request, model_id, is_delete=True)
 
         try:
-            self.delete(model_id)
+            super().delete(model_id)
             return CourtCaseResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
@@ -170,8 +171,8 @@ class CourtCaseService(CrudService):
             )
 
 
-def get_court_case_service() -> CourtCaseService:
-    return CourtCaseService()
+def get_court_case_service(db_session: Session) -> CourtCaseService:
+    return CourtCaseService(db_session)
 
 
 def get_response_single(single: CourtCaseSchema) -> CourtCaseResponse:
@@ -259,14 +260,15 @@ def _check_dependents(request: Request, court_case: CourtCaseSchema):
 
 
 def _handle_history(
+    db_session: Session,
     request: Request,
     court_case_id: int,
     request_object: CourtCaseRequest = None,
     is_delete: bool = False,
 ):
-    history_service = get_history_service(HistoryCourtCaseModel)
+    history_service = get_history_service(db_session, HistoryCourtCaseModel)
     if is_delete:
-        note_service = get_note_service(NoteCourtCaseModel)
+        note_service = get_note_service(db_session, NoteCourtCaseModel)
         note_service.delete_note_before_delete_object(
             NoteCourtCaseModel.__tablename__,
             "court_case_id",

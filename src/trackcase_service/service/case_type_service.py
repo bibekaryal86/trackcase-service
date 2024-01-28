@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
+from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import CaseType as CaseTypeModel
@@ -15,8 +16,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class CaseTypeService(CrudService):
-    def __init__(self):
-        super(CaseTypeService, self).__init__(CaseTypeModel)
+    def __init__(self, db_session: Session):
+        super(CaseTypeService, self).__init__(db_session, CaseTypeModel)
 
     def create_one_case_type(
         self, request: Request, request_object: CaseTypeRequest
@@ -25,7 +26,7 @@ class CaseTypeService(CrudService):
             data_model: CaseTypeModel = convert_request_schema_to_model(
                 request_object, CaseTypeModel
             )
-            data_model = self.create(data_model)
+            data_model = super().create(data_model)
             schema_model = convert_case_type_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -43,7 +44,7 @@ class CaseTypeService(CrudService):
         is_include_history: bool = False,
     ) -> CaseTypeResponse:
         try:
-            data_model: CaseTypeModel = self.read_one(model_id)
+            data_model: CaseTypeModel = super().read_one(model_id)
             if data_model:
                 schema_model: CaseTypeSchema = convert_case_type_model_to_schema(
                     data_model,
@@ -69,7 +70,7 @@ class CaseTypeService(CrudService):
     ) -> CaseTypeResponse:
         try:
             sort_config = {"name": "asc"}
-            data_models: List[CaseTypeModel] = self.read_all(sort_config)
+            data_models: List[CaseTypeModel] = super().read_all(sort_config)
             schema_models: List[CaseTypeSchema] = [
                 convert_case_type_model_to_schema(
                     data_model,
@@ -102,7 +103,7 @@ class CaseTypeService(CrudService):
             data_model: CaseTypeModel = convert_request_schema_to_model(
                 request_object, CaseTypeModel
             )
-            data_model = self.update(model_id, data_model)
+            data_model = super().update(model_id, data_model)
             schema_model = convert_case_type_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -126,7 +127,7 @@ class CaseTypeService(CrudService):
             )
 
         try:
-            self.delete(model_id)
+            super().delete(model_id)
             return CaseTypeResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
@@ -139,8 +140,8 @@ class CaseTypeService(CrudService):
             )
 
 
-def get_case_type_service() -> CaseTypeService:
-    return CaseTypeService()
+def get_case_type_service(db_session: Session) -> CaseTypeService:
+    return CaseTypeService(db_session)
 
 
 def get_response_single(single: CaseTypeSchema) -> CaseTypeResponse:
