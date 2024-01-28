@@ -4,7 +4,6 @@ from typing import Type, TypeVar
 
 from fastapi import Request
 from sqlalchemy import text
-from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Base
@@ -16,15 +15,15 @@ log = logger.Logger(logging.getLogger(__name__), __name__)
 
 
 class NoteService(CrudService):
-    def __init__(self, db_session: Session, db_model: Type[ModelBase]):
-        super(NoteService, self).__init__(db_session, db_model)
+    def __init__(self, db_model: Type[ModelBase]):
+        super(NoteService, self).__init__(db_model)
 
     def insert_note(
         self,
         note_model: ModelBase,
     ):
         try:
-            super().create(note_model)
+            self.create(note_model)
         except Exception as ex:
             err_msg = f"Something went wrong inserting {self.db_model}!!!"
             log.error(err_msg)
@@ -46,7 +45,7 @@ class NoteService(CrudService):
             )
 
         try:
-            super().update(note_id, note_model)
+            self.update(note_id, note_model)
         except Exception as ex:
             raise_http_exception(
                 request,
@@ -67,7 +66,7 @@ class NoteService(CrudService):
             )
 
         try:
-            super().delete(note_id)
+            self.delete(note_id)
         except Exception as ex:
             raise_http_exception(
                 request,
@@ -86,9 +85,9 @@ class NoteService(CrudService):
         parent_type: str,
         note_type: str,
     ):
-        sql = text(f"""DELETE FROM {note_table_name} WHERE {id_key} = {id_value}""")
+        query = text(f"""DELETE FROM {note_table_name} WHERE {id_key} = {id_value}""")
         try:
-            self.db_session.execute(sql)
+            self.execute_raw_query(query)
         except Exception as ex:
             err_msg = (
                 f"Something went wrong deleting all {note_type} for {parent_type}!!!"
@@ -98,5 +97,5 @@ class NoteService(CrudService):
             raise Exception(err_msg)
 
 
-def get_note_service(db_session: Session, db_model: Type[ModelBase]) -> NoteService:
-    return NoteService(db_session, db_model)
+def get_note_service(db_model: Type[ModelBase]) -> NoteService:
+    return NoteService(db_model)

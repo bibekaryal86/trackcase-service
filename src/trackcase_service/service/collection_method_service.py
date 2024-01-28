@@ -2,7 +2,6 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
-from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import CollectionMethod as CollectionMethodModel
@@ -21,8 +20,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class CollectionMethodService(CrudService):
-    def __init__(self, db_session: Session):
-        super(CollectionMethodService, self).__init__(db_session, CollectionMethodModel)
+    def __init__(self):
+        super(CollectionMethodService, self).__init__(CollectionMethodModel)
 
     def create_one_collection_method(
         self, request: Request, request_object: CollectionMethodRequest
@@ -31,7 +30,7 @@ class CollectionMethodService(CrudService):
             data_model: CollectionMethodModel = convert_request_schema_to_model(
                 request_object, CollectionMethodModel
             )
-            data_model = super().create(data_model)
+            data_model = self.create(data_model)
             schema_model = convert_collection_method_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -51,7 +50,7 @@ class CollectionMethodService(CrudService):
         is_include_history: bool = False,
     ) -> CollectionMethodResponse:
         try:
-            data_model: CollectionMethodModel = super().read_one(model_id)
+            data_model: CollectionMethodModel = self.read_one(model_id)
             if data_model:
                 schema_model: CollectionMethodSchema = (
                     convert_collection_method_model_to_schema(
@@ -79,7 +78,7 @@ class CollectionMethodService(CrudService):
     ) -> CollectionMethodResponse:
         try:
             sort_config = {"name": "asc"}
-            data_models: List[CollectionMethodModel] = super().read_all(sort_config)
+            data_models: List[CollectionMethodModel] = self.read_all(sort_config)
             schema_models: List[CollectionMethodSchema] = [
                 convert_collection_method_model_to_schema(
                     data_model,
@@ -116,7 +115,7 @@ class CollectionMethodService(CrudService):
             data_model: CollectionMethodModel = convert_request_schema_to_model(
                 request_object, CollectionMethodModel
             )
-            data_model = super().update(model_id, data_model)
+            data_model = self.update(model_id, data_model)
             schema_model = convert_collection_method_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -144,7 +143,7 @@ class CollectionMethodService(CrudService):
             )
 
         try:
-            super().delete(model_id)
+            self.delete(model_id)
             return CollectionMethodResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
@@ -157,8 +156,8 @@ class CollectionMethodService(CrudService):
             )
 
 
-def get_collection_method_service(db_session: Session) -> CollectionMethodService:
-    return CollectionMethodService(db_session)
+def get_collection_method_service() -> CollectionMethodService:
+    return CollectionMethodService()
 
 
 def get_response_single(single: CollectionMethodSchema) -> CollectionMethodResponse:

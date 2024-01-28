@@ -2,7 +2,6 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
-from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import (
@@ -30,8 +29,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class TaskCalendarService(CrudService):
-    def __init__(self, db_session: Session):
-        super(TaskCalendarService, self).__init__(db_session, TaskCalendarModel)
+    def __init__(self):
+        super(TaskCalendarService, self).__init__(TaskCalendarModel)
 
     def create_one_task_calendar(
         self, request: Request, request_object: TaskCalendarRequest
@@ -40,8 +39,8 @@ class TaskCalendarService(CrudService):
             data_model: TaskCalendarModel = convert_request_schema_to_model(
                 request_object, TaskCalendarModel
             )
-            data_model = super().create(data_model)
-            _handle_history(self.db_session, request, data_model.id, request_object)
+            data_model = self.create(data_model)
+            _handle_history(request, data_model.id, request_object)
             schema_model = convert_task_calendar_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -61,7 +60,7 @@ class TaskCalendarService(CrudService):
         is_include_history: bool = False,
     ) -> TaskCalendarResponse:
         try:
-            data_model: TaskCalendarModel = super().read_one(model_id)
+            data_model: TaskCalendarModel = self.read_one(model_id)
             if data_model:
                 schema_model: TaskCalendarSchema = (
                     convert_task_calendar_model_to_schema(
@@ -89,7 +88,7 @@ class TaskCalendarService(CrudService):
     ) -> TaskCalendarResponse:
         try:
             sort_config = {"task_date": "desc"}
-            data_models: List[TaskCalendarModel] = super().read_all(sort_config)
+            data_models: List[TaskCalendarModel] = self.read_all(sort_config)
             schema_models: List[TaskCalendarSchema] = [
                 convert_task_calendar_model_to_schema(
                     data_model,
@@ -130,8 +129,8 @@ class TaskCalendarService(CrudService):
             data_model: TaskCalendarModel = convert_request_schema_to_model(
                 request_object, TaskCalendarModel
             )
-            data_model = super().update(model_id, data_model)
-            _handle_history(self.db_session, request, model_id, request_object)
+            data_model = self.update(model_id, data_model)
+            _handle_history(request, model_id, request_object)
             schema_model = convert_task_calendar_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -159,10 +158,10 @@ class TaskCalendarService(CrudService):
             )
 
         _check_dependents(request, task_calendar_response.task_calendars[0])
-        _handle_history(self.db_session, request, model_id, is_delete=True)
+        _handle_history(request, model_id, is_delete=True)
 
         try:
-            super().delete(model_id)
+            self.delete(model_id)
             return TaskCalendarResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
@@ -175,8 +174,8 @@ class TaskCalendarService(CrudService):
             )
 
 
-def get_task_calendar_service(db_session: Session) -> TaskCalendarService:
-    return TaskCalendarService(db_session)
+def get_task_calendar_service() -> TaskCalendarService:
+    return TaskCalendarService()
 
 
 def get_response_single(single: TaskCalendarSchema) -> TaskCalendarResponse:
@@ -213,15 +212,14 @@ def _check_dependents(request: Request, task_calendar: TaskCalendarSchema):
 
 
 def _handle_history(
-    db_session: Session,
     request: Request,
     task_calendar_id: int,
     request_object: TaskCalendarRequest = None,
     is_delete: bool = False,
 ):
-    history_service = get_history_service(db_session, HistoryTaskCalendarModel)
+    history_service = get_history_service(HistoryTaskCalendarModel)
     if is_delete:
-        note_service = get_note_service(db_session, NoteTaskCalendarModel)
+        note_service = get_note_service(NoteTaskCalendarModel)
         note_service.delete_note_before_delete_object(
             NoteTaskCalendarModel.__tablename__,
             "task_calendar_id",

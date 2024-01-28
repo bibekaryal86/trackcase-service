@@ -3,9 +3,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPBasicCredentials
-from sqlalchemy.orm import Session
 
-from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service import schemas
 from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.utils.commons import (
@@ -28,14 +26,13 @@ def insert_one(
     note_object_type: str,
     note_request: schemas.NoteRequest,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
-    db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     note_model_class, note_model = convert_note_request_to_note_model(
         note_object_type, note_request
     )
     if note_model:
-        get_note_service(db_session, note_model_class).insert_note(note_model)
+        get_note_service(note_model_class).insert_note(note_model)
         return schemas.NoteResponse(success=True)
     else:
         raise_http_exception(
@@ -56,16 +53,13 @@ def update_one(
     note_object_type: str,
     note_request: schemas.NoteRequest,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
-    db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     note_model_class, note_model = convert_note_request_to_note_model(
         note_object_type, note_request
     )
     if note_model:
-        get_note_service(db_session, note_model_class).update_note(
-            note_id, request, note_model
-        )
+        get_note_service(note_model_class).update_note(note_id, request, note_model)
         return schemas.NoteResponse(success=True)
     else:
         raise_http_exception(
@@ -85,14 +79,13 @@ def delete_one(
     note_object_type: str,
     request: Request,
     http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
-    db_session: Session = Depends(get_db_session),
 ):
     validate_http_basic_credentials(request, http_basic_credentials)
     note_model_class, note_model = convert_note_request_to_note_model(
         note_object_type,
     )
     if note_model_class:
-        get_note_service(db_session, note_model_class).delete_note(note_id, request)
+        get_note_service(note_model_class).delete_note(note_id, request)
         return schemas.NoteResponse(success=True, delete_count=1)
     else:
         raise_http_exception(

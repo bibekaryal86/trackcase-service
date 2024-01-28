@@ -582,15 +582,6 @@ class CaseCollectionRequest(CaseCollectionBase, BaseSchema):
     pass
 
 
-class CaseCollectionRetrieveRequest(BaseSchema):
-    collection_method_id: Optional[int] = None
-    court_case_id: Optional[int] = None
-    form_id: Optional[int] = None
-
-    def to_dict(self) -> dict:
-        return {key: value for key, value in self.__dict__.items() if value is not None}
-
-
 class CaseCollectionResponse(ResponseBase):
     case_collections: list[CaseCollection] = []
 

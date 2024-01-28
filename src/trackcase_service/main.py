@@ -7,7 +7,6 @@ import uvicorn
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasicCredentials
-from sqlalchemy.orm import Session
 
 from src.trackcase_service.api import (
     case_collection_api,
@@ -33,10 +32,10 @@ log = logger.Logger(logging.getLogger(__name__), __name__)
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):
+    log.info("Starting App...")
     commons.validate_input()
-    commons.startup_db_client()
     yield
-    commons.shutdown_db_client()
+    log.info("Shutting Down App...")
 
 
 app = FastAPI(
@@ -103,18 +102,6 @@ def ping():
 def reset(request: Request):
     # TODO: placeholder to reset cache
     return {"reset": "successful"}
-
-
-@app.get("/trackcase-service/tests/database", tags=["Main"], summary="Ping Database")
-def test_database(
-    request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(
-        constants.http_basic_security
-    ),
-    db_session: Session = Depends(commons.get_db_session),
-):
-    commons.validate_http_basic_credentials(request, http_basic_credentials, True)
-    return commons.test_database(db_session)
 
 
 @app.get("/trackcase-service/tests/status", tags=["Main"], summary="Get Status Dict")

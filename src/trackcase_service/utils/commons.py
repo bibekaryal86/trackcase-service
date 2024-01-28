@@ -4,14 +4,10 @@ import secrets
 
 from fastapi import HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
-from sqlalchemy import text
-from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm import Session
 
 import src.trackcase_service.service.schemas as schemas
 import src.trackcase_service.utils.constants as constants
 import src.trackcase_service.utils.logger as logger
-from src.trackcase_service.db.session import get_db_session
 
 log = logger.Logger(logging.getLogger(__name__), __name__)
 
@@ -39,16 +35,6 @@ def validate_input():
         raise ValueError(
             "The following env variables are missing: {}".format(missing_variables)
         )
-
-
-def startup_db_client():
-    log.info("App Starting...")
-    get_db_session()
-    log.info("Created DB Session...")
-
-
-def shutdown_db_client():
-    log.info("App Shutting Down...")
 
 
 def validate_http_basic_credentials(
@@ -92,19 +78,6 @@ def raise_http_exception(
         "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
     )
     raise HTTPException(status_code=sts_code, detail={"error": error})
-
-
-def test_database(db_session: Session):
-    try:
-        test_database_sql = text("SELECT TEST FROM ZEST_TABLE")
-        result = db_session.execute(test_database_sql)
-        result_row = result.fetchone()
-        if result_row:
-            return {"test_db_success": result_row[0]}
-        else:
-            return {"test_db": "maybe_success_but_no_data"}
-    except OperationalError as ex:
-        return {"test_db_failure": str(ex)}
 
 
 def get_err_msg(msg: str, err_msg: str = ""):

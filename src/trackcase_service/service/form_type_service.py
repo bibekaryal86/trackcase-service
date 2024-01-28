@@ -2,7 +2,6 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import Request
-from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import FormType as FormTypeModel
@@ -16,8 +15,8 @@ from src.trackcase_service.utils.convert import (
 
 
 class FormTypeService(CrudService):
-    def __init__(self, db_session: Session):
-        super(FormTypeService, self).__init__(db_session, FormTypeModel)
+    def __init__(self):
+        super(FormTypeService, self).__init__(FormTypeModel)
 
     def create_one_form_type(
         self, request: Request, request_object: FormTypeRequest
@@ -26,7 +25,7 @@ class FormTypeService(CrudService):
             data_model: FormTypeModel = convert_request_schema_to_model(
                 request_object, FormTypeModel
             )
-            data_model = super().create(data_model)
+            data_model = self.create(data_model)
             schema_model = convert_form_type_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -44,7 +43,7 @@ class FormTypeService(CrudService):
         is_include_history: bool = False,
     ) -> FormTypeResponse:
         try:
-            data_model: FormTypeModel = super().read_one(model_id)
+            data_model: FormTypeModel = self.read_one(model_id)
             if data_model:
                 schema_model: FormTypeSchema = convert_form_type_model_to_schema(
                     data_model,
@@ -70,7 +69,7 @@ class FormTypeService(CrudService):
     ) -> FormTypeResponse:
         try:
             sort_config = {"name": "asc"}
-            data_models: List[FormTypeModel] = super().read_all(sort_config)
+            data_models: List[FormTypeModel] = self.read_all(sort_config)
             schema_models: List[FormTypeSchema] = [
                 convert_form_type_model_to_schema(
                     data_model,
@@ -103,7 +102,7 @@ class FormTypeService(CrudService):
             data_model: FormTypeModel = convert_request_schema_to_model(
                 request_object, FormTypeModel
             )
-            data_model = super().update(model_id, data_model)
+            data_model = self.update(model_id, data_model)
             schema_model = convert_form_type_model_to_schema(data_model)
             return get_response_single(schema_model)
         except Exception as ex:
@@ -127,7 +126,7 @@ class FormTypeService(CrudService):
             )
 
         try:
-            super().delete(model_id)
+            self.delete(model_id)
             return FormTypeResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
@@ -140,8 +139,8 @@ class FormTypeService(CrudService):
             )
 
 
-def get_form_type_service(db_session: Session) -> FormTypeService:
-    return FormTypeService(db_session)
+def get_form_type_service() -> FormTypeService:
+    return FormTypeService()
 
 
 def get_response_single(single: FormTypeSchema) -> FormTypeResponse:
