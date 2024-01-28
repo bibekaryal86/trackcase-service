@@ -476,6 +476,8 @@ class FormBase(StatusBase):
     court_case_id: int
     submit_date: Optional[datetime] = None
     receipt_date: Optional[datetime] = None
+    receipt_number: Optional[str] = None
+    priority_date: Optional[datetime] = None
     rfe_date: Optional[datetime] = None
     rfe_submit_date: Optional[datetime] = None
     decision_date: Optional[datetime] = None

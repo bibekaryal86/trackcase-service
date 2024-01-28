@@ -414,6 +414,8 @@ class Form(TableBase, StatusBase, Base):
     __tablename__ = "form"
     submit_date = Column(DateTime, nullable=True)
     receipt_date = Column(DateTime, nullable=True)
+    receipt_number = Column(String(100), nullable=True)
+    priority_date = Column(DateTime, nullable=True)
     rfe_date = Column(DateTime, nullable=True)
     rfe_submit_date = Column(DateTime, nullable=True)
     decision_date = Column(DateTime, nullable=True)
@@ -460,6 +462,8 @@ class HistoryForm(TableBase, StatusBase, Base):
     )
     submit_date = Column(DateTime, nullable=True)
     receipt_date = Column(DateTime, nullable=True)
+    receipt_number = Column(String(100), nullable=True)
+    priority_date = Column(DateTime, nullable=True)
     rfe_date = Column(DateTime, nullable=True)
     rfe_submit_date = Column(DateTime, nullable=True)
     decision_date = Column(DateTime, nullable=True)
