@@ -6,9 +6,7 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.judge_service import get_judge_service
 from src.trackcase_service.service.schemas import JudgeRequest, JudgeResponse
-from src.trackcase_service.utils.commons import (
-    raise_http_exception,
-)
+from src.trackcase_service.utils.commons import raise_http_exception
 
 router = APIRouter(prefix="/trackcase-service/judges", tags=["Judges"])
 

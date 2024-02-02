@@ -11,9 +11,7 @@ from src.trackcase_service.service.schemas import (
     HearingCalendarRequest,
     HearingCalendarResponse,
 )
-from src.trackcase_service.utils.commons import (
-    raise_http_exception,
-)
+from src.trackcase_service.utils.commons import raise_http_exception
 
 router = APIRouter(
     prefix="/trackcase-service/hearing_calendars", tags=["HearingCalendars"]

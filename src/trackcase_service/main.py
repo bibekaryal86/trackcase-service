@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.security import HTTPBasicCredentials, HTTPBasic
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.api import (
@@ -67,23 +67,66 @@ def validate_credentials(
     validate_http_basic_credentials(request, http_basic_credentials)
 
 
-app.include_router(case_collection_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(case_type_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(cash_collection_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(client_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
 app.include_router(
-    collection_method_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(court_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(court_case_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(form_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(form_type_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+    case_collection_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
 app.include_router(
-    hearing_calendar_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(hearing_type_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(judge_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(task_calendar_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(task_type_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
-app.include_router(note_api.router, dependencies=[Depends(user_name_header), Depends(validate_credentials)])
+    case_type_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    cash_collection_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    client_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    collection_method_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    court_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    court_case_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    form_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    form_type_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    hearing_calendar_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    hearing_type_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    judge_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    task_calendar_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    task_type_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    note_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
 
 
 @app.middleware("http")

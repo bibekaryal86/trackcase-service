@@ -11,9 +11,7 @@ from src.trackcase_service.service.schemas import (
 from src.trackcase_service.service.task_calendar_service import (
     get_task_calendar_service,
 )
-from src.trackcase_service.utils.commons import (
-    raise_http_exception,
-)
+from src.trackcase_service.utils.commons import raise_http_exception
 
 router = APIRouter(prefix="/trackcase-service/task_calendars", tags=["TaskCalendars"])
 

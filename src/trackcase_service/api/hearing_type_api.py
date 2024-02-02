@@ -9,9 +9,7 @@ from src.trackcase_service.service.schemas import (
     HearingTypeRequest,
     HearingTypeResponse,
 )
-from src.trackcase_service.utils.commons import (
-    raise_http_exception,
-)
+from src.trackcase_service.utils.commons import raise_http_exception
 
 router = APIRouter(prefix="/trackcase-service/hearing_types", tags=["HearingTypes"])
 

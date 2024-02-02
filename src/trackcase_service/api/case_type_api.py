@@ -6,9 +6,7 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.case_type_service import get_case_type_service
 from src.trackcase_service.service.schemas import CaseTypeRequest, CaseTypeResponse
-from src.trackcase_service.utils.commons import (
-    raise_http_exception,
-)
+from src.trackcase_service.utils.commons import raise_http_exception
 
 router = APIRouter(prefix="/trackcase-service/case_types", tags=["CaseTypes"])
 

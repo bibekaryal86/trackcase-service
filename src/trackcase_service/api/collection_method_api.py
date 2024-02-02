@@ -11,9 +11,7 @@ from src.trackcase_service.service.schemas import (
     CollectionMethodRequest,
     CollectionMethodResponse,
 )
-from src.trackcase_service.utils.commons import (
-    raise_http_exception,
-)
+from src.trackcase_service.utils.commons import raise_http_exception
 
 router = APIRouter(
     prefix="/trackcase-service/collection_methods", tags=["CollectionMethods"]
