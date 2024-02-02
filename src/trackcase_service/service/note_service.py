@@ -12,7 +12,7 @@ from src.trackcase_service.utils import logger
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 
 ModelBase = TypeVar("ModelBase", bound=Base)
-log = logger.Logger(logging.getLogger(__name__), __name__)
+log = logger.Logger(logging.getLogger(__name__))
 
 
 class NoteService(CrudService):

@@ -19,7 +19,7 @@ class Logger:
         self.stream_handler.setLevel(logging.INFO)
 
         self.formatter = logging.Formatter(
-            "[%(asctime)s][trackcase-service][%(name)s][%(threadName)s]"
+            "[%(asctime)s][trackcase-service][%(name)s]"
             "[%(levelname)s] %(message)s | %(extra)s"
         )
 

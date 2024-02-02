@@ -13,7 +13,7 @@ import src.trackcase_service.utils.constants as constants
 import src.trackcase_service.utils.logger as logger
 from src.trackcase_service.db.session import get_db_session
 
-log = logger.Logger(logging.getLogger(__name__), __name__)
+log = logger.Logger(logging.getLogger(__name__))
 
 
 def is_production():

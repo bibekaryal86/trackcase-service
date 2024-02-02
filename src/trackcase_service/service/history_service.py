@@ -13,7 +13,7 @@ from src.trackcase_service.utils.constants import USERNAME_HEADER
 from src.trackcase_service.utils.convert import convert_request_schema_to_history_model
 
 ModelBase = TypeVar("ModelBase", bound=Base)
-log = logger.Logger(logging.getLogger(__name__), __name__)
+log = logger.Logger(logging.getLogger(__name__))
 
 
 class HistoryService(CrudService):

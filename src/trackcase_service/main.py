@@ -29,7 +29,7 @@ from src.trackcase_service.api import (
 from src.trackcase_service.utils import commons, constants, logger
 from src.trackcase_service.utils.commons import validate_http_basic_credentials
 
-log = logger.Logger(logging.getLogger(__name__), __name__)
+log = logger.Logger(logging.getLogger(__name__))
 
 
 @asynccontextmanager
