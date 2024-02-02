@@ -27,8 +27,7 @@ class NoteService(CrudService):
             super().create(note_model)
         except Exception as ex:
             err_msg = f"Something went wrong inserting {self.db_model}!!!"
-            log.error(err_msg)
-            log.error(str(ex))
+            log.error(err_msg, extra=ex)
             raise Exception(err_msg)
 
     def update_note(
@@ -93,8 +92,7 @@ class NoteService(CrudService):
             err_msg = (
                 f"Something went wrong deleting all {note_type} for {parent_type}!!!"
             )
-            log.error(err_msg)
-            log.error(str(ex))
+            log.error(err_msg, extra=ex)
             raise Exception(err_msg)
 
 
