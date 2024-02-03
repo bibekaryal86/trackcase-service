@@ -55,11 +55,7 @@ def get_statuses():
             "active": ["OPEN"],
             "inactive": ["CLOSED"],
         },
-        "hearing_calendar": {
-            "active": ["OPEN", "PROCESSING"],
-            "inactive": ["COMPLETED", "CLOSED"],
-        },
-        "task_calendar": {
+        "calendars": {
             "active": ["OPEN", "PROCESSING"],
             "inactive": ["COMPLETED", "CLOSED"],
         },
@@ -72,13 +68,9 @@ def get_statuses():
                 "CLOSED",
             ],
         },
-        "case_collection": {
+        "collections": {
             "active": ["OPEN", "PENDING"],
-            "inactive": ["COMPLETED", "CLOSED"],
-        },
-        "cash_collection": {
-            "active": ["PENDING"],
-            "inactive": ["RECEIVED", "WAIVED", "CLOSED"],
+            "inactive": ["RECEIVED", "WAIVED", "COMPLETED", "CLOSED"],
         },
     }
 
