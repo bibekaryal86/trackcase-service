@@ -417,6 +417,7 @@ class HearingCalendarResponse(ResponseBase):
 # task_calendar
 class TaskCalendarBase(StatusBase):
     task_date: datetime
+    due_date: datetime
     task_type_id: int
     court_case_id: int
     hearing_calendar_id: Optional[int] = None

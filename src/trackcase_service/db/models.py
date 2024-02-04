@@ -340,6 +340,7 @@ class HistoryHearingCalendar(TableBase, StatusBase, Base):
 class TaskCalendar(TableBase, StatusBase, Base):
     __tablename__ = "task_calendar"
     task_date = Column(DateTime, nullable=False)
+    due_date = Column(DateTime, nullable=False)
     task_type_id = Column(
         ForeignKey("task_type.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=False,
@@ -386,6 +387,7 @@ class HistoryTaskCalendar(TableBase, StatusBase, Base):
         nullable=False,
     )
     task_date = Column(DateTime, nullable=True)
+    due_date = Column(DateTime, nullable=True)
     task_type_id = Column(
         ForeignKey("task_type.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=True,
