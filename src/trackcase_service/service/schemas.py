@@ -331,7 +331,6 @@ class CourtCase(CourtCaseBase, BaseModelSchema):
     forms: list["Form"] = []
     case_collections: list["CaseCollection"] = []
     hearing_calendars: list["HearingCalendar"] = []
-    task_calendars: list["TaskCalendar"] = []
     note_court_cases: list["NoteCourtCase"] = []
     history_court_cases: list["HistoryCourtCase"] = []
 
@@ -419,8 +418,8 @@ class TaskCalendarBase(StatusBase):
     task_date: datetime
     due_date: datetime
     task_type_id: int
-    court_case_id: int
     hearing_calendar_id: Optional[int] = None
+    form_id: Optional[int] = None
 
     allow_empty_status: ClassVar[bool] = False
 
@@ -439,9 +438,8 @@ class TaskCalendarBase(StatusBase):
 class TaskCalendar(TaskCalendarBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
     task_type: Optional[TaskType] = None
-    court_case: Optional[CourtCase] = None
     hearing_calendar: Optional[HearingCalendar] = None
-    forms: list["Form"] = []
+    form: Optional["Form"] = None
     note_task_calendars: list["NoteTaskCalendar"] = []
     history_task_calendars: list["HistoryTaskCalendar"] = []
 
@@ -459,8 +457,8 @@ class HistoryTaskCalendar(TaskCalendar):
     task_calendar: Optional[TaskCalendar] = None
     # make NOT optional inherited fields optional in history
     task_date: Optional[datetime] = None
+    due_date: Optional[datetime] = None
     task_type_id: Optional[int] = None
-    court_case_id: Optional[int] = None
 
 
 class TaskCalendarRequest(TaskCalendarBase, BaseSchema):
@@ -482,7 +480,6 @@ class FormBase(StatusBase):
     rfe_date: Optional[datetime] = None
     rfe_submit_date: Optional[datetime] = None
     decision_date: Optional[datetime] = None
-    task_calendar_id: Optional[int] = None
 
     allow_empty_status: ClassVar[bool] = False
 
@@ -501,8 +498,8 @@ class FormBase(StatusBase):
 class Form(FormBase, BaseModelSchema):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
     form_type: Optional[FormType] = None
-    task_calendar: Optional[TaskCalendar] = None
     court_case: Optional[CourtCase] = None
+    task_calendars: list[TaskCalendar] = []
     case_collections: list["CaseCollection"] = []
     note_forms: list["NoteForm"] = []
     history_forms: list["HistoryForm"] = []

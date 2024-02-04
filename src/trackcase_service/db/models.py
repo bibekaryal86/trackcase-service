@@ -222,9 +222,6 @@ class CourtCase(TableBase, StatusBase, Base):
     hearing_calendars: Mapped[List["HearingCalendar"]] = relationship(
         back_populates="court_case"
     )
-    task_calendars: Mapped[List["TaskCalendar"]] = relationship(
-        back_populates="court_case"
-    )
     note_court_cases: Mapped[List["NoteCourtCase"]] = relationship(
         back_populates="court_case"
     )
@@ -233,9 +230,6 @@ class CourtCase(TableBase, StatusBase, Base):
     )
     history_hearing_calendars: Mapped[List["HistoryHearingCalendar"]] = relationship(
         "HistoryHearingCalendar"
-    )
-    history_task_calendars: Mapped[List["HistoryTaskCalendar"]] = relationship(
-        "HistoryTaskCalendar"
     )
     history_forms: Mapped[List["HistoryForm"]] = relationship("HistoryForm")
     history_case_collections: Mapped[List["HistoryCaseCollection"]] = relationship(
@@ -345,27 +339,27 @@ class TaskCalendar(TableBase, StatusBase, Base):
         ForeignKey("task_type.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=False,
     )
-    court_case_id = Column(
-        ForeignKey("court_case.id", onupdate="NO ACTION", ondelete="RESTRICT"),
-        nullable=False,
-    )
     hearing_calendar_id = Column(
         ForeignKey("hearing_calendar.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=True,
     )
+    form_id = Column(
+        ForeignKey("form.id", onupdate="NO ACTION", ondelete="RESTRICT"),
+        nullable=True,
+    )
     task_type: Mapped[TaskType] = relationship(back_populates="task_calendars")
-    court_case: Mapped[CourtCase] = relationship(back_populates="task_calendars")
     hearing_calendar: Mapped[HearingCalendar] = relationship(
         back_populates="task_calendars"
     )
-    forms: Mapped[List["Form"]] = relationship(back_populates="task_calendar")
+    form: Mapped["Form"] = relationship(
+        back_populates="task_calendars"
+    )
     note_task_calendars: Mapped[List["NoteTaskCalendar"]] = relationship(
         back_populates="task_calendar"
     )
     history_task_calendars: Mapped[List["HistoryTaskCalendar"]] = relationship(
         back_populates="task_calendar"
     )
-    history_forms: Mapped[List["HistoryForm"]] = relationship("HistoryForm")
 
 
 class NoteTaskCalendar(TableBase, NoteBase, Base):
@@ -392,22 +386,22 @@ class HistoryTaskCalendar(TableBase, StatusBase, Base):
         ForeignKey("task_type.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=True,
     )
-    court_case_id = Column(
-        ForeignKey("court_case.id", onupdate="NO ACTION", ondelete="RESTRICT"),
-        nullable=True,
-    )
     hearing_calendar_id = Column(
         ForeignKey("hearing_calendar.id", onupdate="NO ACTION", ondelete="RESTRICT"),
+        nullable=True,
+    )
+    form_id = Column(
+        ForeignKey("form.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=True,
     )
     task_calendar: Mapped[TaskCalendar] = relationship(
         back_populates="history_task_calendars"
     )
     task_type: Mapped[TaskType] = relationship(back_populates="history_task_calendars")
-    court_case: Mapped[CourtCase] = relationship(
+    hearing_calendar: Mapped[HearingCalendar] = relationship(
         back_populates="history_task_calendars"
     )
-    hearing_calendar: Mapped[HearingCalendar] = relationship(
+    form: Mapped["Form"] = relationship(
         back_populates="history_task_calendars"
     )
 
@@ -429,13 +423,11 @@ class Form(TableBase, StatusBase, Base):
         ForeignKey("court_case.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=False,
     )
-    task_calendar_id = Column(
-        ForeignKey("task_calendar.id", onupdate="NO ACTION", ondelete="RESTRICT"),
-        nullable=True,
-    )
     form_type: Mapped[FormType] = relationship(back_populates="forms")
-    task_calendar: Mapped[TaskCalendar] = relationship(back_populates="forms")
     court_case: Mapped[CourtCase] = relationship(back_populates="forms")
+    task_calendars: Mapped[List["TaskCalendar"]] = relationship(
+        back_populates="form"
+    )
     case_collections: Mapped[List["CaseCollection"]] = relationship(
         back_populates="form"
     )
@@ -443,6 +435,9 @@ class Form(TableBase, StatusBase, Base):
     history_forms: Mapped[List["HistoryForm"]] = relationship(back_populates="form")
     history_case_collections: Mapped[List["HistoryCaseCollection"]] = relationship(
         "HistoryCaseCollection"
+    )
+    history_task_calendars: Mapped[List["HistoryTaskCalendar"]] = relationship(
+        "HistoryTaskCalendar"
     )
 
 
@@ -483,7 +478,6 @@ class HistoryForm(TableBase, StatusBase, Base):
     )
     form: Mapped[Form] = relationship(back_populates="history_forms")
     form_type: Mapped[FormType] = relationship(back_populates="history_forms")
-    task_calendar: Mapped[TaskCalendar] = relationship(back_populates="history_forms")
     court_case: Mapped[CourtCase] = relationship(back_populates="history_forms")
 
 
