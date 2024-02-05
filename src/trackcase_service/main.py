@@ -164,13 +164,36 @@ def test_database(
     return commons.test_database(db_session)
 
 
-@app.get("/trackcase-service/tests/status", tags=["Main"], summary="Get Status Dict")
+@app.get("/trackcase-service/tests/status", tags=["Main"], summary="Get Statuses")
 def get_statuses(
     request: Request,
     http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
 ):
     commons.validate_http_basic_credentials(request, http_basic_credentials, True)
     return constants.get_statuses()
+
+
+@app.get("/trackcase-service/ref_types/all", tags=["Main"], summary="Get All Ref Types")
+def get_all_ref_types(
+        request: Request,
+        db_session: Session = Depends(commons.get_db_session),
+        http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic())
+):
+    commons.validate_http_basic_credentials(request, http_basic_credentials, True)
+    statuses = constants.get_statuses()
+    case_types = case_type_api.get_case_type_service(db_session).read_all()
+    collection_methods = collection_method_api.get_collection_method_service(db_session).read_all()
+    form_types = form_type_api.get_form_type_service(db_session).read_all()
+    hearing_types = hearing_type_api.get_hearing_type_service(db_session).read_all()
+    task_types = task_type_api.get_task_type_service(db_session).read_all()
+    return {
+        'statuses': statuses,
+        'case_types': case_types,
+        'collection_methods': collection_methods,
+        'form_types': form_types,
+        'hearing_types': hearing_types,
+        'task_types': task_types
+    }
 
 
 @app.get("/trackcase-service/tests/log-level", tags=["Main"], summary="Set Log Level")
