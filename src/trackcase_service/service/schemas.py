@@ -374,7 +374,7 @@ class HearingCalendarBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("hearing_calendar").get("all"):
+        elif v not in get_statuses().get("calendars").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
@@ -430,7 +430,7 @@ class TaskCalendarBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("task_calendar").get("all"):
+        elif v not in get_statuses().get("calendars").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 

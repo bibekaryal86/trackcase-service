@@ -239,7 +239,7 @@ def convert_form_model_to_schema(
     is_include_extra=False,
     is_include_history=False,
 ) -> schemas.Form:
-    exclusions = ["case_collections", "history_forms", "history_case_collections"]
+    exclusions = ["case_collections", "task_calendars", "history_forms", "history_case_collections"]
     data_schema: schemas.Form = convert_data_model_to_schema(
         data_model, schemas.Form, exclusions
     )
@@ -327,7 +327,7 @@ def convert_task_calendar_model_to_schema(
     is_include_extra=False,
     is_include_history=False,
 ) -> schemas.TaskCalendar:
-    exclusions = ["forms", "history_task_calendars", "history_forms"]
+    exclusions = ["history_task_calendars", "history_forms"]
     data_schema: schemas.TaskCalendar = convert_data_model_to_schema(
         data_model, schemas.TaskCalendar, exclusions
     )

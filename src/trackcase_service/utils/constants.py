@@ -81,3 +81,10 @@ def get_statuses():
         )
 
     return category_statuses
+
+
+HEARING_TO_TASK_CALENDAR_DATE = {
+    'MASTER': 30,
+    'MERIT': 15,
+    'DEFAULT': 15
+}
