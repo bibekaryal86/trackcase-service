@@ -402,6 +402,7 @@ def upgrade() -> None:
             ondelete="RESTRICT",
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("court_case_id")
     )
     op.create_table(
         "form",

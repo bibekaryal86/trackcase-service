@@ -272,6 +272,7 @@ class HearingCalendar(TableBase, StatusBase, Base):
     hearing_type_id = Column(
         ForeignKey("hearing_type.id", onupdate="NO ACTION", ondelete="RESTRICT"),
         nullable=False,
+        unique=True,
     )
     court_case_id = Column(
         ForeignKey("court_case.id", onupdate="NO ACTION", ondelete="RESTRICT"),
