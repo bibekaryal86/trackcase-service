@@ -288,6 +288,7 @@ def _create_task_calendar(
         due_date=due_date,
         task_type_id=TASK_ID_DUE_AT_HEARING,
         hearing_calendar_id=hearing_calendar.id,
+        status=hearing_calendar.status
     )
     get_task_calendar_service(db_session).create_one_task_calendar(
         request=request, request_object=task_calendar_request
