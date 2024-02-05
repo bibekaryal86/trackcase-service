@@ -57,6 +57,7 @@ class HearingCalendarService(CrudService):
             data_model = super().create(data_model)
             _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_hearing_calendar_model_to_schema(data_model)
+            _create_task_calendar(self.db_session, request, schema_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
