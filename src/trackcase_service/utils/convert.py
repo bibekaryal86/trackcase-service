@@ -239,7 +239,12 @@ def convert_form_model_to_schema(
     is_include_extra=False,
     is_include_history=False,
 ) -> schemas.Form:
-    exclusions = ["case_collections", "task_calendars", "history_forms", "history_case_collections"]
+    exclusions = [
+        "case_collections",
+        "task_calendars",
+        "history_forms",
+        "history_case_collections",
+    ]
     data_schema: schemas.Form = convert_data_model_to_schema(
         data_model, schemas.Form, exclusions
     )

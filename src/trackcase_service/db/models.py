@@ -351,9 +351,7 @@ class TaskCalendar(TableBase, StatusBase, Base):
     hearing_calendar: Mapped[HearingCalendar] = relationship(
         back_populates="task_calendars"
     )
-    form: Mapped["Form"] = relationship(
-        back_populates="task_calendars"
-    )
+    form: Mapped["Form"] = relationship(back_populates="task_calendars")
     note_task_calendars: Mapped[List["NoteTaskCalendar"]] = relationship(
         back_populates="task_calendar"
     )
@@ -401,9 +399,7 @@ class HistoryTaskCalendar(TableBase, StatusBase, Base):
     hearing_calendar: Mapped[HearingCalendar] = relationship(
         back_populates="history_task_calendars"
     )
-    form: Mapped["Form"] = relationship(
-        back_populates="history_task_calendars"
-    )
+    form: Mapped["Form"] = relationship(back_populates="history_task_calendars")
 
 
 class Form(TableBase, StatusBase, Base):
@@ -425,9 +421,7 @@ class Form(TableBase, StatusBase, Base):
     )
     form_type: Mapped[FormType] = relationship(back_populates="forms")
     court_case: Mapped[CourtCase] = relationship(back_populates="forms")
-    task_calendars: Mapped[List["TaskCalendar"]] = relationship(
-        back_populates="form"
-    )
+    task_calendars: Mapped[List["TaskCalendar"]] = relationship(back_populates="form")
     case_collections: Mapped[List["CaseCollection"]] = relationship(
         back_populates="form"
     )

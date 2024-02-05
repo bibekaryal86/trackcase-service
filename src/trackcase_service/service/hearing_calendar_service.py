@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from http import HTTPStatus
 from typing import List
 
@@ -20,13 +21,22 @@ from src.trackcase_service.service.schemas import (
 from src.trackcase_service.service.schemas import (
     HearingCalendarRequest,
     HearingCalendarResponse,
+    TaskCalendarRequest,
+)
+from src.trackcase_service.service.task_calendar_service import (
+    get_task_calendar_service,
 )
 from src.trackcase_service.utils.commons import (
     check_active_task_calendars,
     get_err_msg,
     raise_http_exception,
 )
-from src.trackcase_service.utils.constants import get_statuses
+from src.trackcase_service.utils.constants import (
+    DEFAULT_HEARING_TO_TASK_CALENDAR_DATE,
+    HEARING_TO_TASK_CALENDAR_DATE,
+    TASK_ID_DUE_AT_HEARING,
+    get_statuses,
+)
 from src.trackcase_service.utils.convert import (
     convert_hearing_calendar_model_to_schema,
     convert_request_schema_to_model,
@@ -257,3 +267,27 @@ def _handle_history(
             "HearingCalendar",
             "HistoryHearingCalendar",
         )
+
+
+def _create_task_calendar(
+    db_session: Session, request: Request, hearing_calendar: HearingCalendarSchema
+):
+    task_date_diff: int = (
+        HEARING_TO_TASK_CALENDAR_DATE.get(hearing_calendar.hearing_type.name)
+        or DEFAULT_HEARING_TO_TASK_CALENDAR_DATE
+    )
+    task_date: datetime = hearing_calendar.hearing_date - timedelta(days=task_date_diff)
+    due_date: datetime = hearing_calendar.hearing_date - timedelta(days=3)
+    current_date = datetime.now()
+    if task_date < current_date:
+        task_date = current_date
+
+    task_calendar_request = TaskCalendarRequest(
+        task_date=task_date,
+        due_date=due_date,
+        task_type=TASK_ID_DUE_AT_HEARING,
+        hearing_calendar_id=hearing_calendar.id,
+    )
+    get_task_calendar_service(db_session).create_one_task_calendar(
+        request=request, request_object=task_calendar_request
+    )

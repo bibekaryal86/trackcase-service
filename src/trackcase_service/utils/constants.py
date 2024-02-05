@@ -83,8 +83,9 @@ def get_statuses():
     return category_statuses
 
 
-HEARING_TO_TASK_CALENDAR_DATE = {
-    'MASTER': 30,
-    'MERIT': 15,
-    'DEFAULT': 15
+TASK_ID_DUE_AT_HEARING = 1
+DEFAULT_HEARING_TO_TASK_CALENDAR_DATE = 15
+HEARING_TO_TASK_CALENDAR_DATE: dict[str, int] = {
+    "MASTER": 30,
+    "MERIT": 15,
 }
