@@ -532,7 +532,6 @@ class CaseCollection(TableBase, StatusBase, Base):
     __tablename__ = "case_collection"
     quote_date = Column(DateTime, nullable=False)
     quote_amount = Column(BigInteger, nullable=False)
-    initial_payment = Column(BigInteger, nullable=False)
     court_case_id = Column(
         ForeignKey(
             "court_case.id",
@@ -569,7 +568,6 @@ class HistoryCaseCollection(TableBase, StatusBase, Base):
     )
     quote_date = Column(DateTime, nullable=True)
     quote_amount = Column(BigInteger, nullable=True)
-    initial_payment = Column(BigInteger, nullable=True)
     court_case_id = Column(
         ForeignKey(
             "court_case.id",

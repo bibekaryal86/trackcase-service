@@ -163,7 +163,6 @@ class Court(CourtBase, BaseModelSchema):
     history_courts: list["HistoryCourt"] = []
 
 
-
 class HistoryCourt(Court):
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
     user_name: str
@@ -468,7 +467,6 @@ class FormResponse(ResponseBase):
 class CaseCollectionBase(StatusBase):
     quote_date: datetime
     quote_amount: condecimal(max_digits=5, decimal_places=2)
-    initial_payment: condecimal(max_digits=5, decimal_places=2)
     court_case_id: int
 
     allow_empty_status: ClassVar[bool] = False
@@ -499,7 +497,6 @@ class HistoryCaseCollection(CaseCollection):
     # make NOT optional inherited fields optional in history
     quote_date: Optional[datetime] = None
     quote_amount: Optional[condecimal(max_digits=5, decimal_places=2)] = None
-    initial_payment: Optional[condecimal(max_digits=5, decimal_places=2)] = None
     court_case_id: Optional[int] = None
 
 
