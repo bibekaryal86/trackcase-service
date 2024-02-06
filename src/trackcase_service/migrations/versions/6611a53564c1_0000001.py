@@ -86,7 +86,9 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("name"),
     )
-    op.execute("INSERT INTO task_type (name, description) VALUES ('Due at Hearing', 'Task for Hearing (Master/Merit)')")  # MANUAL
+    op.execute(
+        "INSERT INTO task_type (name, description) VALUES ('Due at Hearing', 'Task for Hearing (Master/Merit)')"
+    )  # MANUAL
     op.create_table(
         "history_court",
         sa.Column("user_name", sa.String(length=100), nullable=False),
@@ -277,7 +279,7 @@ def upgrade() -> None:
             ondelete="RESTRICT",
         ),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("hearing_date", "court_case_id")    # MANUAL
+        sa.UniqueConstraint("hearing_date", "court_case_id"),  # MANUAL
     )
     op.create_table(
         "history_court_case",
@@ -402,7 +404,7 @@ def upgrade() -> None:
             ondelete="RESTRICT",
         ),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("court_case_id")
+        sa.UniqueConstraint("court_case_id"),
     )
     op.create_table(
         "form",
@@ -720,7 +722,7 @@ def upgrade() -> None:
         sa.Column("test", sa.String(length=100), nullable=False),
         sa.PrimaryKeyConstraint("test"),
     )
-    op.execute("INSERT INTO zest_table (test) VALUES ('database')")     # MANUAL
+    op.execute("INSERT INTO zest_table (test) VALUES ('database')")  # MANUAL
     # ### end Alembic commands ###
 
 
