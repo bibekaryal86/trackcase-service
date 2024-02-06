@@ -624,6 +624,33 @@ def upgrade() -> None:
         """INSERT INTO task_type (created, modified, name, description) VALUES (now(), now(), 'Due at Hearing', 'Due at Hearing')"""  # noqa: E501
     )
     op.execute(
+        """INSERT INTO hearing_type (created, modified, name, description) VALUES (now(), now(), 'MASTER', 'Master Hearing')"""     # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO hearing_type (created, modified, name, description) VALUES (now(), now(), 'MERIT', 'Merit Hearing')"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO form_type (created, modified, name, description) VALUES (now(), now(), 'I-589', 'Application for Asylum and for Withholding of Removal')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO form_type (created, modified, name, description) VALUES (now(), now(), 'I-765', 'Application for Employment Authorization')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO collection_method (created, modified, name, description) VALUES (now(), now(), 'Zelle', 'Paid via Zelle Transfer')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO collection_method (created, modified, name, description) VALUES (now(), now(), 'Money Order', 'Paid with Money Order')"""   # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO collection_method (created, modified, name, description) VALUES (now(), now(), 'Check', 'Paid with Personal Check')"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO collection_method (created, modified, name, description) VALUES (now(), now(), 'Cash', 'Paid with Cash')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO case_type (created, modified, name, description) VALUES (now(), now(), 'Asylum', 'Filing for Asylum with USCIS or BIA')""" # noqa: E501
+    )
+    op.execute(
         """CREATE UNIQUE INDEX task_calendar_hearing_calendar_id_1 ON task_calendar (hearing_calendar_id) WHERE hearing_calendar_id IS NOT NULL"""  # noqa: E501
     )
     op.execute(
