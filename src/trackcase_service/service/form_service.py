@@ -11,9 +11,8 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.schemas import Form as FormSchema
 from src.trackcase_service.service.schemas import FormRequest, FormResponse
 from src.trackcase_service.utils.commons import (
-    check_active_case_collections,
     get_err_msg,
-    raise_http_exception,
+    raise_http_exception, check_active_task_calendars,
 )
 from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (
@@ -176,20 +175,20 @@ def _check_dependents_statuses(
     status_old = form_old.status
     inactive_statuses = get_statuses().get("form").get("inactive")
     if status_new != status_old and status_new in inactive_statuses:
-        if check_active_case_collections(form_old.case_collections):
+        if check_active_task_calendars(form_old.task_calendars):
             raise_http_exception(
                 request,
                 HTTPStatus.UNPROCESSABLE_ENTITY,
-                f"Cannot Update Form {form_old.id} Status to {status_new}, There are Active Case Collections!",  # noqa: E501
+                f"Cannot Update Form {form_old.id} Status to {status_new}, There are Active Task Calendars!",  # noqa: E501
             )
 
 
 def _check_dependents(request: Request, form: FormSchema):
-    if form.case_collections:
+    if form.task_calendars:
         raise_http_exception(
             request,
             HTTPStatus.UNPROCESSABLE_ENTITY,
-            f"Cannot Delete Form {form.id}, There are Linked Case Collection!",
+            f"Cannot Delete Form {form.id}, There are Linked Task Calendars!",
         )
 
 

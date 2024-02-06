@@ -14,7 +14,6 @@ from src.trackcase_service.utils.commons import (
     check_active_case_collections,
     check_active_forms,
     check_active_hearing_calendars,
-    check_active_task_calendars,
     get_err_msg,
     raise_http_exception,
 )
@@ -219,13 +218,6 @@ def _check_dependents_statuses(
                 f"Cannot Update Court Case {court_case_old.id} Status to {status_new}, There are Active Hearing Calendars!",  # noqa: E501
             )
 
-        if check_active_task_calendars(court_case_old.task_calendars):
-            raise_http_exception(
-                request,
-                HTTPStatus.UNPROCESSABLE_ENTITY,
-                f"Cannot Update Court Case {court_case_old.id} Status to {status_new}, There are Active Task Calendars!",  # noqa: E501
-            )
-
 
 def _check_dependents(request: Request, court_case: CourtCaseSchema):
     if court_case.forms:
@@ -247,13 +239,6 @@ def _check_dependents(request: Request, court_case: CourtCaseSchema):
             request,
             HTTPStatus.UNPROCESSABLE_ENTITY,
             f"Cannot Delete Court Case {court_case.id}, There are Linked Hearing Calendars!",  # noqa: E501
-        )
-
-    if court_case.task_calendars:
-        raise_http_exception(
-            request,
-            HTTPStatus.UNPROCESSABLE_ENTITY,
-            f"Cannot Delete Court Case {court_case.id}, There are Linked Task Calendars!",  # noqa: E501
         )
 
 

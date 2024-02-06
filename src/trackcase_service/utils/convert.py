@@ -174,16 +174,13 @@ def convert_collection_method_model_to_schema(
 ) -> schemas.CollectionMethod:
     exclusions = [
         "cash_collections",
-        "case_collections",
         "history_cash_collections",
-        "history_case_collections",
     ]
     data_schema: schemas.CollectionMethod = convert_data_model_to_schema(
         data_model, schemas.CollectionMethod, exclusions
     )
     if is_include_extra:
         setattr(data_schema, "cash_collections", data_model.cash_collections)
-        setattr(data_schema, "case_collections", data_model.case_collections)
     if is_include_history:
         pass
     return data_schema
@@ -198,10 +195,8 @@ def convert_court_case_model_to_schema(
         "forms",
         "case_collections",
         "hearing_calendars",
-        "task_calendars",
         "history_court_cases",
         "history_hearing_calendars",
-        "history_task_calendars",
         "history_forms",
         "history_case_collections",
     ]
@@ -212,7 +207,6 @@ def convert_court_case_model_to_schema(
         setattr(data_schema, "forms", data_model.forms)
         setattr(data_schema, "case_collections", data_model.case_collections)
         setattr(data_schema, "hearing_calendars", data_model.hearing_calendars)
-        setattr(data_schema, "task_calendars", data_model.task_calendars)
     if is_include_history:
         setattr(data_schema, "history_court_cases", data_model.history_court_cases)
     return data_schema
@@ -240,16 +234,15 @@ def convert_form_model_to_schema(
     is_include_history=False,
 ) -> schemas.Form:
     exclusions = [
-        "case_collections",
         "task_calendars",
         "history_forms",
-        "history_case_collections",
+        "history_task_calendars",
     ]
     data_schema: schemas.Form = convert_data_model_to_schema(
         data_model, schemas.Form, exclusions
     )
     if is_include_extra:
-        setattr(data_schema, "case_collections", data_model.case_collections)
+        setattr(data_schema, "task_calendars", data_model.task_calendars)
     if is_include_history:
         setattr(data_schema, "history_forms", data_model.history_forms)
     return data_schema
@@ -337,7 +330,7 @@ def convert_task_calendar_model_to_schema(
         data_model, schemas.TaskCalendar, exclusions
     )
     if is_include_extra:
-        setattr(data_schema, "forms", data_model.forms)
+        pass
     if is_include_history:
         setattr(
             data_schema, "history_task_calendars", data_model.history_task_calendars

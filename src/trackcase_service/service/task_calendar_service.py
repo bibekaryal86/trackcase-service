@@ -16,11 +16,9 @@ from src.trackcase_service.service.schemas import (
     TaskCalendarResponse,
 )
 from src.trackcase_service.utils.commons import (
-    check_active_forms,
     get_err_msg,
     raise_http_exception,
 )
-from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (
     convert_request_schema_to_model,
     convert_task_calendar_model_to_schema,
@@ -120,10 +118,6 @@ class TaskCalendarService(CrudService):
                 f"TaskCalendar Not Found By Id: {model_id}!!!",
             )
 
-        _check_dependents_statuses(
-            request, request_object.status, task_calendar_response.task_calendars[0]
-        )
-
         try:
             data_model: TaskCalendarModel = convert_request_schema_to_model(
                 request_object, TaskCalendarModel
@@ -156,7 +150,6 @@ class TaskCalendarService(CrudService):
                 f"TaskCalendar Not Found By Id: {model_id}!!!",
             )
 
-        _check_dependents(request, task_calendar_response.task_calendars[0])
         _handle_history(self.db_session, request, model_id, is_delete=True)
 
         try:
@@ -183,31 +176,6 @@ def get_response_single(single: TaskCalendarSchema) -> TaskCalendarResponse:
 
 def get_response_multiple(multiple: list[TaskCalendarSchema]) -> TaskCalendarResponse:
     return TaskCalendarResponse(task_calendars=multiple)
-
-
-def _check_dependents_statuses(
-    request: Request,
-    status_new: str,
-    task_calendar_old: TaskCalendarSchema,
-):
-    status_old = task_calendar_old.status
-    inactive_statuses = get_statuses().get("task_calendar").get("inactive")
-    if status_new != status_old and status_new in inactive_statuses:
-        if check_active_forms(task_calendar_old.forms):
-            raise_http_exception(
-                request,
-                HTTPStatus.UNPROCESSABLE_ENTITY,
-                f"Cannot Update Task Calendar {task_calendar_old.id} Status to {status_new}, There are Active Forms!",  # noqa: E501
-            )
-
-
-def _check_dependents(request: Request, task_calendar: TaskCalendarSchema):
-    if task_calendar.forms:
-        raise_http_exception(
-            request,
-            HTTPStatus.UNPROCESSABLE_ENTITY,
-            f"Cannot Delete Task Calendar {task_calendar.id}, There are Linked Forms!",
-        )
 
 
 def _handle_history(

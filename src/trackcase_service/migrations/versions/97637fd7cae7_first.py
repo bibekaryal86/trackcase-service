@@ -624,6 +624,9 @@ def upgrade() -> None:
         """INSERT INTO task_type (created, modified, name, description) VALUES (now(), now(), 'Due at Hearing', 'Due at Hearing')"""  # noqa: E501
     )
     op.execute(
+        """INSERT INTO task_type (created, modified, name, description) VALUES (now(), now(), 'Evidence Collection', 'Collect and Prepare Evidence from Clients')"""    # noqa: E501
+    )
+    op.execute(
         """INSERT INTO hearing_type (created, modified, name, description) VALUES (now(), now(), 'MASTER', 'Master Hearing')"""     # noqa: E501
     )
     op.execute(
