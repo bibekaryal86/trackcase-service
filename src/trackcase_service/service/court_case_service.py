@@ -7,9 +7,7 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import CourtCase as CourtCaseModel
 from src.trackcase_service.db.models import HistoryCourtCase as HistoryCourtCaseModel
-from src.trackcase_service.db.models import NoteCourtCase as NoteCourtCaseModel
 from src.trackcase_service.service.history_service import get_history_service
-from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import CourtCase as CourtCaseSchema
 from src.trackcase_service.service.schemas import CourtCaseRequest, CourtCaseResponse
 from src.trackcase_service.utils.commons import (
@@ -268,14 +266,6 @@ def _handle_history(
 ):
     history_service = get_history_service(db_session, HistoryCourtCaseModel)
     if is_delete:
-        note_service = get_note_service(db_session, NoteCourtCaseModel)
-        note_service.delete_note_before_delete_object(
-            NoteCourtCaseModel.__tablename__,
-            "court_case_id",
-            court_case_id,
-            "CourtCase",
-            "NoteCourtCase",
-        )
         history_service.delete_history_before_delete_object(
             HistoryCourtCaseModel.__tablename__,
             "court_case_id",

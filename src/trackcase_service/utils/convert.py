@@ -63,7 +63,7 @@ def _copy_objects(
             value = getattr(source_object, attr)
             if value and isinstance(value, str):
                 setattr(destination_object, attr, value.strip())
-            elif value or attr.startswith("note_"):
+            elif value:
                 setattr(destination_object, attr, value)
             else:
                 setattr(destination_object, attr, None)
@@ -359,60 +359,3 @@ def convert_task_type_model_to_schema(
     if is_include_history:
         pass
     return data_schema
-
-
-def convert_note_request_to_note_model(
-    note_object_type: str, note_request: schemas.NoteRequest = None
-):
-    note_class = None
-    note_model = None
-    match note_object_type:
-        case "court":
-            note_class = models.NoteCourt
-            if note_request:
-                note_model = models.NoteCourt()
-                note_model.court_id = note_request.note_object_id
-        case "judge":
-            note_class = models.NoteJudge
-            if note_request:
-                note_model = models.NoteJudge()
-                note_model.judge_id = note_request.note_object_id
-        case "client":
-            note_class = models.NoteClient
-            if note_request:
-                note_model = models.NoteClient()
-                note_model.client_id = note_request.note_object_id
-        case "court_case":
-            note_class = models.NoteCourtCase
-            if note_request:
-                note_model = models.NoteCourtCase()
-                note_model.court_case_id = note_request.note_object_id
-        case "hearing_calendar":
-            note_class = models.NoteHearingCalendar
-            if note_request:
-                note_model = models.NoteHearingCalendar()
-                note_model.hearing_calendar_id = note_request.note_object_id
-        case "task_calendar":
-            note_class = models.NoteTaskCalendar
-            if note_request:
-                note_model = models.NoteTaskCalendar()
-                note_model.task_calendar_id = note_request.note_object_id
-        case "form":
-            note_class = models.NoteForm
-            if note_request:
-                note_model = models.NoteForm()
-                note_model.form_id = note_request.note_object_id
-        case "case_collection":
-            note_class = models.NoteCaseCollection
-            if note_request:
-                note_model = models.NoteCaseCollection()
-                note_model.case_collection_id = note_request.note_object_id
-        case "cash_collection":
-            note_class = models.NoteCashCollection
-            if note_request:
-                note_model = models.NoteCashCollection()
-                note_model.cash_collection_id = note_request.note_object_id
-    if note_model:
-        note_model.user_name = note_request.user_name
-        note_model.note = note_request.note
-    return note_class, note_model

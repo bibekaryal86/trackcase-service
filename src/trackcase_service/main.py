@@ -22,7 +22,6 @@ from src.trackcase_service.api import (
     hearing_calendar_api,
     hearing_type_api,
     judge_api,
-    note_api,
     task_calendar_api,
     task_type_api,
 )
@@ -121,10 +120,6 @@ app.include_router(
 )
 app.include_router(
     task_type_api.router,
-    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
-)
-app.include_router(
-    note_api.router,
     dependencies=[Depends(user_name_header), Depends(validate_credentials)],
 )
 

@@ -8,10 +8,8 @@ from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import (
     HistoryTaskCalendar as HistoryTaskCalendarModel,
 )
-from src.trackcase_service.db.models import NoteTaskCalendar as NoteTaskCalendarModel
 from src.trackcase_service.db.models import TaskCalendar as TaskCalendarModel
 from src.trackcase_service.service.history_service import get_history_service
-from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import TaskCalendar as TaskCalendarSchema
 from src.trackcase_service.service.schemas import (
     TaskCalendarRequest,
@@ -221,14 +219,6 @@ def _handle_history(
 ):
     history_service = get_history_service(db_session, HistoryTaskCalendarModel)
     if is_delete:
-        note_service = get_note_service(db_session, NoteTaskCalendarModel)
-        note_service.delete_note_before_delete_object(
-            NoteTaskCalendarModel.__tablename__,
-            "task_calendar_id",
-            task_calendar_id,
-            "TaskCalendar",
-            "NoteTaskCalendar",
-        )
         history_service.delete_history_before_delete_object(
             HistoryTaskCalendarModel.__tablename__,
             "task_calendar_id",
