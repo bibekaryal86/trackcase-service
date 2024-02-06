@@ -671,8 +671,8 @@ def downgrade() -> None:
     op.drop_constraint("task_calendar_task_type_id", "task_calendar")
     op.drop_constraint("task_calendar_hearing_calendar_id", "task_calendar")
     op.drop_constraint("task_calendar_form_id", "task_calendar")
-    op.drop_constraint("task_calendar_hearing_calendar_id_1", "task_calendar")
-    op.drop_constraint("task_calendar_form_id_1", "task_calendar")
+    # op.drop_constraint("task_calendar_hearing_calendar_id_1", "task_calendar")
+    # op.drop_constraint("task_calendar_form_id_1", "task_calendar")
     op.drop_constraint(
         "history_cash_collection_case_collection_id", "history_cash_collection"
     )

@@ -96,7 +96,7 @@ def raise_http_exception(
 
 def test_database(db_session: Session):
     try:
-        test_database_sql = text("SELECT VERSION FROM ALEMBIC_VERSION")
+        test_database_sql = text("SELECT VERSION_NUM FROM ALEMBIC_VERSION")
         result = db_session.execute(test_database_sql)
         result_row = result.fetchone()
         if result_row:
