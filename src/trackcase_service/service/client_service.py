@@ -7,9 +7,7 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Client as ClientModel
 from src.trackcase_service.db.models import HistoryClient as HistoryClientModel
-from src.trackcase_service.db.models import NoteClient as NoteClientModel
 from src.trackcase_service.service.history_service import get_history_service
-from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import Client as ClientSchema
 from src.trackcase_service.service.schemas import ClientRequest, ClientResponse
 from src.trackcase_service.utils.commons import (
@@ -204,14 +202,6 @@ def _handle_history(
 ):
     history_service = get_history_service(db_session, HistoryClientModel)
     if is_delete:
-        note_service = get_note_service(db_session, NoteClientModel)
-        note_service.delete_note_before_delete_object(
-            NoteClientModel.__tablename__,
-            "client_id",
-            client_id,
-            "Client",
-            "NoteClient",
-        )
         history_service.delete_history_before_delete_object(
             HistoryClientModel.__tablename__,
             "client_id",

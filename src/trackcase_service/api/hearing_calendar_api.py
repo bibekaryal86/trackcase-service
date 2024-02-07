@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -12,11 +11,7 @@ from src.trackcase_service.service.schemas import (
     HearingCalendarRequest,
     HearingCalendarResponse,
 )
-from src.trackcase_service.utils.commons import (
-    raise_http_exception,
-    validate_http_basic_credentials,
-)
-from src.trackcase_service.utils.constants import http_basic_security
+from src.trackcase_service.utils.commons import raise_http_exception
 
 router = APIRouter(
     prefix="/trackcase-service/hearing_calendars", tags=["HearingCalendars"]
@@ -28,10 +23,8 @@ def find_all(
     request: Request,
     is_include_extra: bool = False,
     is_include_history: bool = False,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_hearing_calendar_service(db_session).read_all_hearing_calendars(
         request, is_include_extra, is_include_history
     )
@@ -47,10 +40,8 @@ def find_one(
     request: Request,
     is_include_extra: bool = False,
     is_include_history: bool = False,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     hearing_calendar_response: HearingCalendarResponse = get_hearing_calendar_service(
         db_session
     ).read_one_hearing_calendar(
@@ -72,10 +63,8 @@ def find_one(
 def insert_one(
     request: Request,
     hearing_calendar_request: HearingCalendarRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_hearing_calendar_service(db_session).create_one_hearing_calendar(
         request, hearing_calendar_request
     )
@@ -89,10 +78,8 @@ def insert_one(
 def delete_one(
     hearing_calendar_id: int,
     request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_hearing_calendar_service(db_session).delete_one_hearing_calendar(
         hearing_calendar_id, request
     )
@@ -107,10 +94,8 @@ def update_one(
     hearing_calendar_id: int,
     request: Request,
     hearing_calendar_request: HearingCalendarRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_hearing_calendar_service(db_session).update_one_hearing_calendar(
         hearing_calendar_id, request, hearing_calendar_request
     )

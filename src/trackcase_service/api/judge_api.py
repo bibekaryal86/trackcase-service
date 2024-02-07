@@ -1,17 +1,12 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.judge_service import get_judge_service
 from src.trackcase_service.service.schemas import JudgeRequest, JudgeResponse
-from src.trackcase_service.utils.commons import (
-    raise_http_exception,
-    validate_http_basic_credentials,
-)
-from src.trackcase_service.utils.constants import http_basic_security
+from src.trackcase_service.utils.commons import raise_http_exception
 
 router = APIRouter(prefix="/trackcase-service/judges", tags=["Judges"])
 
@@ -21,10 +16,8 @@ def find_all(
     request: Request,
     is_include_extra: bool = False,
     is_include_history: bool = False,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_judge_service(db_session).read_all_judges(
         request, is_include_extra, is_include_history
     )
@@ -36,10 +29,8 @@ def find_one(
     request: Request,
     is_include_extra: bool = False,
     is_include_history: bool = False,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     judge_response: JudgeResponse = get_judge_service(db_session).read_one_judge(
         judge_id,
         request,
@@ -55,43 +46,12 @@ def find_one(
     return judge_response
 
 
-@router.get(
-    "/court/{court_id}/", response_model=JudgeResponse, status_code=HTTPStatus.OK
-)
-def find_judges_by_court(
-    court_id: int,
-    request: Request,
-    is_include_extra: bool = False,
-    is_include_history: bool = False,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
-    db_session: Session = Depends(get_db_session),
-):
-    validate_http_basic_credentials(request, http_basic_credentials)
-    judge_response: JudgeResponse = get_judge_service(
-        db_session
-    ).read_many_judges_by_court_id(
-        court_id,
-        request,
-        is_include_extra,
-        is_include_history,
-    )
-    if judge_response is None or len(judge_response.judges) == 0:
-        raise_http_exception(
-            request,
-            HTTPStatus.NOT_FOUND,
-            f"Judges Not Found By Court Id: {court_id}!!!",
-        )
-    return judge_response
-
-
 @router.post("/", response_model=JudgeResponse, status_code=HTTPStatus.OK)
 def insert_one(
     request: Request,
     judge_request: JudgeRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_judge_service(db_session).create_one_judge(request, judge_request)
 
 
@@ -99,10 +59,8 @@ def insert_one(
 def delete_one(
     judge_id: int,
     request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_judge_service(db_session).delete_one_judge(judge_id, request)
 
 
@@ -111,10 +69,8 @@ def update_one(
     judge_id: int,
     request: Request,
     judge_request: JudgeRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_judge_service(db_session).update_one_judge(
         judge_id, request, judge_request
     )

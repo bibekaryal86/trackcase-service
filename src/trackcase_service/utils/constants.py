@@ -2,12 +2,10 @@ import os
 from enum import Enum
 from functools import lru_cache
 
-from fastapi.security import HTTPBasic
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Constants
 ENV_APP_PORT = "APP_PORT"
-http_basic_security = HTTPBasic()
 USERNAME_HEADER = "x-user-name"
 
 
@@ -57,12 +55,8 @@ def get_statuses():
             "active": ["OPEN"],
             "inactive": ["CLOSED"],
         },
-        "hearing_calendar": {
-            "active": ["OPEN", "PROCESSING"],
-            "inactive": ["COMPLETED", "CLOSED"],
-        },
-        "task_calendar": {
-            "active": ["OPEN", "PROCESSING"],
+        "calendars": {
+            "active": ["OPEN", "PROCESSING", "PAST DUE"],
             "inactive": ["COMPLETED", "CLOSED"],
         },
         "form": {
@@ -74,13 +68,9 @@ def get_statuses():
                 "CLOSED",
             ],
         },
-        "case_collection": {
+        "collections": {
             "active": ["OPEN", "PENDING"],
-            "inactive": ["COMPLETED", "CLOSED"],
-        },
-        "cash_collection": {
-            "active": ["PENDING"],
-            "inactive": ["RECEIVED", "WAIVED", "CLOSED"],
+            "inactive": ["RECEIVED", "WAIVED", "COMPLETED", "CLOSED"],
         },
     }
 
@@ -91,3 +81,11 @@ def get_statuses():
         )
 
     return category_statuses
+
+
+TASK_ID_DUE_AT_HEARING = 1
+DEFAULT_HEARING_TO_TASK_CALENDAR_DATE = 15
+HEARING_TO_TASK_CALENDAR_DATE: dict[str, int] = {
+    "MASTER": 30,
+    "MERIT": 15,
+}

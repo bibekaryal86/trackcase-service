@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from http import HTTPStatus
 from typing import List
 
@@ -9,24 +10,29 @@ from src.trackcase_service.db.models import HearingCalendar as HearingCalendarMo
 from src.trackcase_service.db.models import (
     HistoryHearingCalendar as HistoryHearingCalendarModel,
 )
-from src.trackcase_service.db.models import (
-    NoteHearingCalendar as NoteHearingCalendarModel,
-)
 from src.trackcase_service.service.history_service import get_history_service
-from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import (
     HearingCalendar as HearingCalendarSchema,
 )
 from src.trackcase_service.service.schemas import (
     HearingCalendarRequest,
     HearingCalendarResponse,
+    TaskCalendarRequest,
+)
+from src.trackcase_service.service.task_calendar_service import (
+    get_task_calendar_service,
 )
 from src.trackcase_service.utils.commons import (
     check_active_task_calendars,
     get_err_msg,
     raise_http_exception,
 )
-from src.trackcase_service.utils.constants import get_statuses
+from src.trackcase_service.utils.constants import (
+    DEFAULT_HEARING_TO_TASK_CALENDAR_DATE,
+    HEARING_TO_TASK_CALENDAR_DATE,
+    TASK_ID_DUE_AT_HEARING,
+    get_statuses,
+)
 from src.trackcase_service.utils.convert import (
     convert_hearing_calendar_model_to_schema,
     convert_request_schema_to_model,
@@ -47,6 +53,7 @@ class HearingCalendarService(CrudService):
             data_model = super().create(data_model)
             _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_hearing_calendar_model_to_schema(data_model)
+            _create_task_calendar(self.db_session, request, schema_model)
             return get_response_single(schema_model)
         except Exception as ex:
             raise_http_exception(
@@ -233,14 +240,6 @@ def _handle_history(
 ):
     history_service = get_history_service(db_session, HistoryHearingCalendarModel)
     if is_delete:
-        note_service = get_note_service(db_session, NoteHearingCalendarModel)
-        note_service.delete_note_before_delete_object(
-            NoteHearingCalendarModel.__tablename__,
-            "hearing_calendar_id",
-            hearing_calendar_id,
-            "HearingCalendar",
-            "NoteHearingCalendar",
-        )
         history_service.delete_history_before_delete_object(
             HistoryHearingCalendarModel.__tablename__,
             "hearing_calendar_id",
@@ -257,3 +256,28 @@ def _handle_history(
             "HearingCalendar",
             "HistoryHearingCalendar",
         )
+
+
+def _create_task_calendar(
+    db_session: Session, request: Request, hearing_calendar: HearingCalendarSchema
+):
+    task_date_diff: int = (
+        HEARING_TO_TASK_CALENDAR_DATE.get(hearing_calendar.hearing_type.name)
+        or DEFAULT_HEARING_TO_TASK_CALENDAR_DATE
+    )
+    task_date: datetime = hearing_calendar.hearing_date - timedelta(days=task_date_diff)
+    due_date: datetime = hearing_calendar.hearing_date - timedelta(days=3)
+    current_date = datetime.now()
+    if task_date < current_date:
+        task_date = current_date
+
+    task_calendar_request = TaskCalendarRequest(
+        task_date=task_date,
+        due_date=due_date,
+        task_type_id=TASK_ID_DUE_AT_HEARING,
+        hearing_calendar_id=hearing_calendar.id,
+        status=hearing_calendar.status,
+    )
+    get_task_calendar_service(db_session).create_one_task_calendar(
+        request=request, request_object=task_calendar_request
+    )

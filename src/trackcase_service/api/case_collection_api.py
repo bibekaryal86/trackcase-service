@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -11,13 +10,8 @@ from src.trackcase_service.service.case_collection_service import (
 from src.trackcase_service.service.schemas import (
     CaseCollectionRequest,
     CaseCollectionResponse,
-    CaseCollectionRetrieveRequest,
 )
-from src.trackcase_service.utils.commons import (
-    raise_http_exception,
-    validate_http_basic_credentials,
-)
-from src.trackcase_service.utils.constants import http_basic_security
+from src.trackcase_service.utils.commons import raise_http_exception
 
 router = APIRouter(
     prefix="/trackcase-service/case_collections", tags=["CaseCollections"]
@@ -27,26 +21,15 @@ router = APIRouter(
 @router.get("/", response_model=CaseCollectionResponse, status_code=HTTPStatus.OK)
 def find_all(
     request: Request,
-    case_collection_retrieve_request: CaseCollectionRetrieveRequest = None,
     is_include_extra: bool = False,
     is_include_history: bool = False,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
-    if case_collection_retrieve_request is None:
-        return get_case_collection_service(db_session).read_all_case_collections(
-            request,
-            is_include_extra,
-            is_include_history,
-        )
-    else:
-        return get_case_collection_service(db_session).read_many_case_collections(
-            request,
-            case_collection_retrieve_request,
-            is_include_extra,
-            is_include_history,
-        )
+    return get_case_collection_service(db_session).read_all_case_collections(
+        request,
+        is_include_extra,
+        is_include_history,
+    )
 
 
 @router.get(
@@ -59,10 +42,8 @@ def find_one(
     request: Request,
     is_include_extra: bool = False,
     is_include_history: bool = False,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     case_collection_response: CaseCollectionResponse = get_case_collection_service(
         db_session
     ).read_one_case_collection(
@@ -84,10 +65,8 @@ def find_one(
 def insert_one(
     request: Request,
     case_collection_request: CaseCollectionRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_case_collection_service(db_session).create_one_case_collection(
         request, case_collection_request
     )
@@ -101,10 +80,8 @@ def insert_one(
 def delete_one(
     case_collection_id: int,
     request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_case_collection_service(db_session).delete_one_case_collection(
         case_collection_id, request
     )
@@ -119,10 +96,8 @@ def update_one(
     case_collection_id: int,
     request: Request,
     case_collection_request: CaseCollectionRequest,
-    http_basic_credentials: HTTPBasicCredentials = Depends(http_basic_security),
     db_session: Session = Depends(get_db_session),
 ):
-    validate_http_basic_credentials(request, http_basic_credentials)
     return get_case_collection_service(db_session).update_one_case_collection(
         case_collection_id, request, case_collection_request
     )

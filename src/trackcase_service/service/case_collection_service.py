@@ -9,11 +9,7 @@ from src.trackcase_service.db.models import CaseCollection as CaseCollectionMode
 from src.trackcase_service.db.models import (
     HistoryCaseCollection as HistoryCaseCollectionModel,
 )
-from src.trackcase_service.db.models import (
-    NoteCaseCollection as NoteCaseCollectionModel,
-)
 from src.trackcase_service.service.history_service import get_history_service
-from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import CaseCollection as CaseCollectionSchema
 from src.trackcase_service.service.schemas import (
     CaseCollectionRequest,
@@ -227,14 +223,6 @@ def _handle_history(
 ):
     history_service = get_history_service(db_session, HistoryCaseCollectionModel)
     if is_delete:
-        note_service = get_note_service(db_session, NoteCaseCollectionModel)
-        note_service.delete_note_before_delete_object(
-            NoteCaseCollectionModel.__tablename__,
-            "case_collection_id",
-            case_collection_id,
-            "CaseCollection",
-            "NoteCaseCollection",
-        )
         history_service.delete_history_before_delete_object(
             HistoryCaseCollectionModel.__tablename__,
             "case_collection_id",

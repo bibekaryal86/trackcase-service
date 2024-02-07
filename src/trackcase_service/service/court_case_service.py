@@ -7,16 +7,13 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import CourtCase as CourtCaseModel
 from src.trackcase_service.db.models import HistoryCourtCase as HistoryCourtCaseModel
-from src.trackcase_service.db.models import NoteCourtCase as NoteCourtCaseModel
 from src.trackcase_service.service.history_service import get_history_service
-from src.trackcase_service.service.note_service import get_note_service
 from src.trackcase_service.service.schemas import CourtCase as CourtCaseSchema
 from src.trackcase_service.service.schemas import CourtCaseRequest, CourtCaseResponse
 from src.trackcase_service.utils.commons import (
     check_active_case_collections,
     check_active_forms,
     check_active_hearing_calendars,
-    check_active_task_calendars,
     get_err_msg,
     raise_http_exception,
 )
@@ -221,13 +218,6 @@ def _check_dependents_statuses(
                 f"Cannot Update Court Case {court_case_old.id} Status to {status_new}, There are Active Hearing Calendars!",  # noqa: E501
             )
 
-        if check_active_task_calendars(court_case_old.task_calendars):
-            raise_http_exception(
-                request,
-                HTTPStatus.UNPROCESSABLE_ENTITY,
-                f"Cannot Update Court Case {court_case_old.id} Status to {status_new}, There are Active Task Calendars!",  # noqa: E501
-            )
-
 
 def _check_dependents(request: Request, court_case: CourtCaseSchema):
     if court_case.forms:
@@ -251,13 +241,6 @@ def _check_dependents(request: Request, court_case: CourtCaseSchema):
             f"Cannot Delete Court Case {court_case.id}, There are Linked Hearing Calendars!",  # noqa: E501
         )
 
-    if court_case.task_calendars:
-        raise_http_exception(
-            request,
-            HTTPStatus.UNPROCESSABLE_ENTITY,
-            f"Cannot Delete Court Case {court_case.id}, There are Linked Task Calendars!",  # noqa: E501
-        )
-
 
 def _handle_history(
     db_session: Session,
@@ -268,14 +251,6 @@ def _handle_history(
 ):
     history_service = get_history_service(db_session, HistoryCourtCaseModel)
     if is_delete:
-        note_service = get_note_service(db_session, NoteCourtCaseModel)
-        note_service.delete_note_before_delete_object(
-            NoteCourtCaseModel.__tablename__,
-            "court_case_id",
-            court_case_id,
-            "CourtCase",
-            "NoteCourtCase",
-        )
         history_service.delete_history_before_delete_object(
             HistoryCourtCaseModel.__tablename__,
             "court_case_id",

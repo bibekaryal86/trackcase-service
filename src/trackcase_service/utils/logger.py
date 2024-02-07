@@ -10,7 +10,7 @@ from src.trackcase_service.utils.constants import REPO_HOME
 
 
 class Logger:
-    def __init__(self, logger: logging.Logger, module_name: str):
+    def __init__(self, logger: logging.Logger):
         self.logger = logger
         self.logger.setLevel(logging.INFO)
 
@@ -19,8 +19,8 @@ class Logger:
         self.stream_handler.setLevel(logging.INFO)
 
         self.formatter = logging.Formatter(
-            f"[%(asctime)s] [trackcase-service] [{module_name}] "
-            f"[%(threadName)s] [%(levelname)s] %(message)s"
+            "[%(asctime)s][trackcase-service][%(name)s]"
+            "[%(levelname)s] %(message)s | %(extra)s"
         )
 
         def converter(timestamp):
@@ -53,14 +53,14 @@ class Logger:
             self.file_handler.setFormatter(self.formatter)
             self.logger.addHandler(self.file_handler)
 
-    def debug(self, msg):
-        self.logger.debug(msg)
+    def debug(self, msg, extra=None):
+        self.logger.debug(msg, extra={"extra": extra})
 
-    def info(self, msg):
-        self.logger.info(msg)
+    def info(self, msg, extra=None):
+        self.logger.info(msg, extra={"extra": extra})
 
-    def error(self, msg):
-        self.logger.error(msg)
+    def error(self, msg, extra=None):
+        self.logger.error(msg, extra={"extra": extra})
 
     def set_level(self, level):
         self.logger.setLevel(level)

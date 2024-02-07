@@ -13,7 +13,7 @@ import src.trackcase_service.utils.constants as constants
 import src.trackcase_service.utils.logger as logger
 from src.trackcase_service.db.session import get_db_session
 
-log = logger.Logger(logging.getLogger(__name__), __name__)
+log = logger.Logger(logging.getLogger(__name__))
 
 
 def is_production():
@@ -96,7 +96,7 @@ def raise_http_exception(
 
 def test_database(db_session: Session):
     try:
-        test_database_sql = text("SELECT TEST FROM ZEST_TABLE")
+        test_database_sql = text("SELECT VERSION_NUM FROM ALEMBIC_VERSION")
         result = db_session.execute(test_database_sql)
         result_row = result.fetchone()
         if result_row:

@@ -13,7 +13,7 @@ from src.trackcase_service.utils.constants import USERNAME_HEADER
 from src.trackcase_service.utils.convert import convert_request_schema_to_history_model
 
 ModelBase = TypeVar("ModelBase", bound=Base)
-log = logger.Logger(logging.getLogger(__name__), __name__)
+log = logger.Logger(logging.getLogger(__name__))
 
 
 class HistoryService(CrudService):
@@ -41,8 +41,7 @@ class HistoryService(CrudService):
             super().create(history_data_model)
         except Exception as ex:
             err_msg = f"{parent_type} Action Successful! BUT!! Something went wrong inserting {history_type}!!!"  # noqa: E501
-            log.error(err_msg)
-            log.error(str(ex))
+            log.error(err_msg, extra=ex)
             raise Exception(err_msg)
 
     def delete_history_before_delete_object(
@@ -60,8 +59,7 @@ class HistoryService(CrudService):
             err_msg = (
                 f"Something went wrong deleting all {history_type} for {parent_type}!!!"
             )
-            log.error(err_msg)
-            log.error(str(ex))
+            log.error(err_msg, extra=ex)
             raise Exception(err_msg)
 
 
