@@ -11,8 +11,9 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.schemas import Form as FormSchema
 from src.trackcase_service.service.schemas import FormRequest, FormResponse
 from src.trackcase_service.utils.commons import (
+    check_active_task_calendars,
     get_err_msg,
-    raise_http_exception, check_active_task_calendars,
+    raise_http_exception,
 )
 from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (

@@ -15,10 +15,7 @@ from src.trackcase_service.service.schemas import (
     TaskCalendarRequest,
     TaskCalendarResponse,
 )
-from src.trackcase_service.utils.commons import (
-    get_err_msg,
-    raise_http_exception,
-)
+from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_request_schema_to_model,
     convert_task_calendar_model_to_schema,

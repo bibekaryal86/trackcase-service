@@ -56,7 +56,7 @@ def get_statuses():
             "inactive": ["CLOSED"],
         },
         "calendars": {
-            "active": ["OPEN", "PROCESSING"],
+            "active": ["OPEN", "PROCESSING", "PAST DUE"],
             "inactive": ["COMPLETED", "CLOSED"],
         },
         "form": {
