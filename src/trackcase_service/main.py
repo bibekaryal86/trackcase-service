@@ -25,6 +25,7 @@ from src.trackcase_service.api import (
     task_calendar_api,
     task_type_api,
 )
+from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.utils import commons, constants, logger
 from src.trackcase_service.utils.commons import validate_http_basic_credentials
 
@@ -34,9 +35,9 @@ log = logger.Logger(logging.getLogger(__name__))
 @asynccontextmanager
 async def lifespan(application: FastAPI):
     commons.validate_input()
-    commons.startup_db_client()
+    commons.startup_app()
     yield
-    commons.shutdown_db_client()
+    commons.shutdown_app()
 
 
 app = FastAPI(
@@ -153,7 +154,7 @@ def reset(request: Request):
 def test_database(
     request: Request,
     http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
-    db_session: Session = Depends(commons.get_db_session),
+    db_session: Session = Depends(get_db_session),
 ):
     commons.validate_http_basic_credentials(request, http_basic_credentials, True)
     return commons.test_database(db_session)
@@ -172,7 +173,7 @@ def get_statuses(
 def get_all_ref_types(
     request: Request,
     components: str = Query(default=""),
-    db_session: Session = Depends(commons.get_db_session),
+    db_session: Session = Depends(get_db_session),
     http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
 ):
     commons.validate_http_basic_credentials(request, http_basic_credentials, True)

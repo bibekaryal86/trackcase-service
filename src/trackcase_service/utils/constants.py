@@ -27,6 +27,7 @@ BASIC_AUTH_USR = get_settings().basic_auth_usr
 BASIC_AUTH_PWD = get_settings().basic_auth_pwd
 DB_USERNAME = get_settings().db_username
 DB_PASSWORD = get_settings().db_password
+DB_NAME = get_settings().db_name
 REPO_HOME = get_settings().repo_home
 
 

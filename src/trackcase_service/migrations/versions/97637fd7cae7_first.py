@@ -620,26 +620,15 @@ def upgrade() -> None:
     )
 
     # other migrations
+    # insert test data
     op.execute(
-        """INSERT INTO task_type (created, modified, name, description) VALUES (now(), now(), 'Due at Hearing', 'Due at Hearing')"""  # noqa: E501
+        """INSERT INTO case_type (created, modified, name, description) VALUES (now(), now(), 'Asylum', 'Filing for Asylum with USCIS, EOIR or Board of Immigration Appeals')"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO task_type (created, modified, name, description) VALUES (now(), now(), 'Evidence Collection', 'Collect and Prepare Evidence from Clients')"""  # noqa: E501
+        """INSERT INTO case_type (created, modified, name, description) VALUES (now(), now(), 'TPS', 'Filing for Temporary Protected Status with USCIS or Board of Immigration Appeals')"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO hearing_type (created, modified, name, description) VALUES (now(), now(), 'MASTER', 'Master Hearing')"""  # noqa: E501
-    )
-    op.execute(
-        """INSERT INTO hearing_type (created, modified, name, description) VALUES (now(), now(), 'MERIT', 'Merit Hearing')"""  # noqa: E501
-    )
-    op.execute(
-        """INSERT INTO form_type (created, modified, name, description) VALUES (now(), now(), 'I-589', 'Application for Asylum and for Withholding of Removal')"""  # noqa: E501
-    )
-    op.execute(
-        """INSERT INTO form_type (created, modified, name, description) VALUES (now(), now(), 'I-765', 'Application for Employment Authorization')"""  # noqa: E501
-    )
-    op.execute(
-        """INSERT INTO collection_method (created, modified, name, description) VALUES (now(), now(), 'Zelle', 'Paid via Zelle Transfer')"""  # noqa: E501
+        """INSERT INTO collection_method (created, modified, name, description) VALUES (now(), now(), 'Zelle', 'Paid with Zelle Transfer')"""  # noqa: E501
     )
     op.execute(
         """INSERT INTO collection_method (created, modified, name, description) VALUES (now(), now(), 'Money Order', 'Paid with Money Order')"""  # noqa: E501
@@ -651,8 +640,81 @@ def upgrade() -> None:
         """INSERT INTO collection_method (created, modified, name, description) VALUES (now(), now(), 'Cash', 'Paid with Cash')"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO case_type (created, modified, name, description) VALUES (now(), now(), 'Asylum', 'Filing for Asylum with USCIS or BIA')"""  # noqa: E501
+        """INSERT INTO form_type (created, modified, name, description) VALUES (now(), now(), 'I-589', 'Application for Asylum and for Withholding of Removal')"""  # noqa: E501
     )
+    op.execute(
+        """INSERT INTO form_type (created, modified, name, description) VALUES (now(), now(), 'I-821', 'Application for Temporary Protected Status')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO form_type (created, modified, name, description) VALUES (now(), now(), 'I-765', 'Application for Employment Authorization')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO hearing_type (created, modified, name, description) VALUES (now(), now(), 'MASTER', 'Master Hearing')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO hearing_type (created, modified, name, description) VALUES (now(), now(), 'MERIT', 'Merit Hearing')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO task_type (created, modified, name, description) VALUES (now(), now(), 'Due at Hearing', 'Due at Hearing')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO task_type (created, modified, name, description) VALUES (now(), now(), 'Evidence Collection', 'Collect and Prepare Evidence from Clients')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO court (created, modified, name, street_address, city, state, zip_code, phone_number, status) VALUES (now(), now(), 'Dallas Immigration Court', '1100 Commerce Street, Suite 1060', 'Dallas', 'TX', '75242', '2147671814', 'ACTIVE')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO court (created, modified, name, street_address, city, state, zip_code, phone_number, status) VALUES (now(), now(), 'Phoenix Immigration Court', '250 N. Seventh Ave., Suite 300', 'Phoenix', 'AZ', '85007', '6026402747', 'ACTIVE')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO judge (created, modified, name, webex, court_id, status) VALUES (now(), now(), 'E. Mark Barcus (EMB), ACIJ', 'https://eoir.webex.com/meet/ACIJ.Barcus ', 1, 'ACTIVE')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO judge (created, modified, name, webex, court_id, status) VALUES (now(), now(), 'Sarah Ellison (SME)', 'https://eoir.webex.com/join/IJ.Ellison ', 1, 'ACTIVE')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO judge (created, modified, name, webex, court_id, status) VALUES (now(), now(), 'Irene C. Feldman (ICF), ACIJ', 'https://eoir.webex.com/meet/ACIJ.Feldman', 2, 'ACTIVE')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO judge (created, modified, name, webex, court_id, status) VALUES (now(), now(), 'Munish Sharda (MS1)', 'https://eoir.webex.com/meet/IJ.Sharda', 2, 'ACTIVE')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO client (created, modified, name, a_number, email, phone_number, judge_id, status) VALUES (now(), now(), 'Mister Smith', '203040506', 'mistersmith@johndoe.com', '4445556669',  4, 'ACTIVE')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO client (created, modified, name, email, phone_number, status) VALUES (now(), now(), 'Jane Doe', 'janedoe@mrssmith.com', '9993336660', 'ACTIVE')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO court_case (created, modified, case_type_id, client_id, status) VALUES (now(), now(), 1, 1, 'OPEN')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO court_case (created, modified, case_type_id, client_id, status) VALUES (now(), now(), 2, 2, 'OPEN')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO form (created, modified, form_type_id, court_case_id, status) VALUES (now(), now(), 1, 1, 'OPEN')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO form (created, modified, form_type_id, court_case_id, status) VALUES (now(), now(), 2, 2, 'OPEN')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO hearing_calendar (created, modified, hearing_date, hearing_type_id, court_case_id, status) VALUES (now(), now(), '2024-04-30 06:00:00', 1, 1, 'OPEN')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO hearing_calendar (created, modified, hearing_date, hearing_type_id, court_case_id, status) VALUES (now(), now(), '2024-04-30 06:00:00', 2, 2, 'OPEN')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO task_calendar (created, modified, task_date, due_date, task_type_id, hearing_calendar_id, form_id, status) VALUES (now(), now(), '2024-03-31 06:00:00', '2024-03-31 06:00:00', 1, 1, NULL, 'OPEN')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO task_calendar (created, modified, task_date, due_date, task_type_id, hearing_calendar_id, form_id, status) VALUES (now(), now(), '2024-03-31 06:00:00', '2024-03-31 06:00:00', 1, 2, NULL, 'OPEN')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO task_calendar (created, modified, task_date, due_date, task_type_id, hearing_calendar_id, form_id, status) VALUES (now(), now(), '2024-02-27 06:00:00', '2024-02-29 06:00:00', 2, NULL, 1, 'OPEN')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO task_calendar (created, modified, task_date, due_date, task_type_id, hearing_calendar_id, form_id, status) VALUES (now(), now(), '2024-02-28 06:00:00', '2024-02-29 06:00:00', 2, NULL, 2, 'OPEN')"""  # noqa: E501
+    )
+    # add partial constraints
     op.execute(
         """CREATE UNIQUE INDEX task_calendar_hearing_calendar_id_1 ON task_calendar (hearing_calendar_id) WHERE hearing_calendar_id IS NOT NULL"""  # noqa: E501
     )
