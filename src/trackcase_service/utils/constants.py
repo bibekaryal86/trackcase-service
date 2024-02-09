@@ -37,6 +37,11 @@ class LogLevelOptions(str, Enum):
     ERROR = "ERROR"
 
 
+class CalendarObjectTypes(str, Enum):
+    HEARING = "HEARING_CALENDAR"
+    TASK = "TASK_CALENDAR"
+
+
 @lru_cache()
 def get_statuses():
     category_statuses = {

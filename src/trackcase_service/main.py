@@ -10,6 +10,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.api import (
+    calendars_api,
     case_collection_api,
     case_type_api,
     cash_collection_api,
@@ -121,6 +122,10 @@ app.include_router(
 )
 app.include_router(
     task_type_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
+app.include_router(
+    calendars_api.router,
     dependencies=[Depends(user_name_header), Depends(validate_credentials)],
 )
 

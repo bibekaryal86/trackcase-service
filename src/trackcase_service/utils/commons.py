@@ -89,7 +89,8 @@ def raise_http_exception(
     error: str = "",
 ):
     log.error(
-        "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code), extra=error
+        "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
+        extra=error,
     )
     raise HTTPException(status_code=sts_code, detail={"error": error})
 
