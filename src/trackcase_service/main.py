@@ -4,18 +4,18 @@ import time
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import Depends, FastAPI, Header, Query, Request
+from fastapi import Depends, FastAPI, Header, Request
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.api import (
-    calendars_api,
     case_collection_api,
     case_type_api,
     cash_collection_api,
     client_api,
     collection_method_api,
+    common_api,
     court_api,
     court_case_api,
     form_api,
@@ -125,7 +125,7 @@ app.include_router(
     dependencies=[Depends(user_name_header), Depends(validate_credentials)],
 )
 app.include_router(
-    calendars_api.router,
+    common_api.router,
     dependencies=[Depends(user_name_header), Depends(validate_credentials)],
 )
 
@@ -163,57 +163,6 @@ def test_database(
 ):
     commons.validate_http_basic_credentials(request, http_basic_credentials, True)
     return commons.test_database(db_session)
-
-
-@app.get("/trackcase-service/tests/status", tags=["Main"], summary="Get Statuses")
-def get_statuses(
-    request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
-):
-    commons.validate_http_basic_credentials(request, http_basic_credentials, True)
-    return constants.get_statuses()
-
-
-@app.get("/trackcase-service/ref_types/all", tags=["Main"], summary="Get All Ref Types")
-def get_all_ref_types(
-    request: Request,
-    components: str = Query(default=""),
-    db_session: Session = Depends(get_db_session),
-    http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
-):
-    commons.validate_http_basic_credentials(request, http_basic_credentials, True)
-    all_ref_types = {}
-    if not components:
-        components = (
-            "statuses,case_types,collection_methods,form_types,hearing_types,task_types"
-        )
-    component_list = components.split(",")
-    for component in component_list:
-        if component == "statuses":
-            all_ref_types["statuses"] = constants.get_statuses()
-        if component == "case_types":
-            all_ref_types["case_types"] = case_type_api.get_case_type_service(
-                db_session
-            ).read_all()
-        if component == "collection_methods":
-            all_ref_types[
-                "collection_methods"
-            ] = collection_method_api.get_collection_method_service(
-                db_session
-            ).read_all()
-        if component == "form_types":
-            all_ref_types["form_types"] = form_type_api.get_form_type_service(
-                db_session
-            ).read_all()
-        if component == "hearing_types":
-            all_ref_types["hearing_types"] = hearing_type_api.get_hearing_type_service(
-                db_session
-            ).read_all()
-        if component == "task_types":
-            all_ref_types["task_types"] = task_type_api.get_task_type_service(
-                db_session
-            ).read_all()
-    return all_ref_types
 
 
 @app.get("/trackcase-service/tests/log-level", tags=["Main"], summary="Set Log Level")

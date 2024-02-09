@@ -2,10 +2,17 @@ import datetime
 from http import HTTPStatus
 from typing import Any
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy import Row, text
 from sqlalchemy.orm import Session
 
+from src.trackcase_service.api import (
+    case_type_api,
+    collection_method_api,
+    form_type_api,
+    hearing_type_api,
+    task_type_api,
+)
 from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.hearing_calendar_service import (
     get_hearing_calendar_service,
@@ -19,13 +26,19 @@ from src.trackcase_service.service.schemas import (
 from src.trackcase_service.service.task_calendar_service import (
     get_task_calendar_service,
 )
+from src.trackcase_service.utils import constants
 from src.trackcase_service.utils.constants import CalendarObjectTypes
 
-router = APIRouter(prefix="/trackcase-service/calendars", tags=["Calendars Common"])
+router = APIRouter(prefix="/trackcase-service/common", tags=["Common"])
 
 
-@router.get("/", response_model=CalendarResponse, status_code=HTTPStatus.OK)
-def find_all(
+@router.get("/statuses/", summary="Get Statuses")
+def get_statuses():
+    return constants.get_statuses()
+
+
+@router.get("/calendars/", response_model=CalendarResponse, status_code=HTTPStatus.OK)
+def get_calendars(
     request: Request,
     db_session: Session = Depends(get_db_session),
 ):
@@ -47,6 +60,45 @@ def find_all(
         task_calendars=task_calendars,
         calendar_events=calendar_events,
     )
+
+
+@router.get("/ref_types/", tags=["Common"], summary="Get All Ref Types")
+def get_all_ref_types(
+    components: str = Query(default=""),
+    db_session: Session = Depends(get_db_session),
+):
+    all_ref_types = {}
+    if not components:
+        components = (
+            "statuses,case_types,collection_methods,form_types,hearing_types,task_types"
+        )
+    component_list = components.split(",")
+    for component in component_list:
+        if component == "statuses":
+            all_ref_types["statuses"] = constants.get_statuses()
+        if component == "case_types":
+            all_ref_types["case_types"] = case_type_api.get_case_type_service(
+                db_session
+            ).read_all()
+        if component == "collection_methods":
+            all_ref_types[
+                "collection_methods"
+            ] = collection_method_api.get_collection_method_service(
+                db_session
+            ).read_all()
+        if component == "form_types":
+            all_ref_types["form_types"] = form_type_api.get_form_type_service(
+                db_session
+            ).read_all()
+        if component == "hearing_types":
+            all_ref_types["hearing_types"] = hearing_type_api.get_hearing_type_service(
+                db_session
+            ).read_all()
+        if component == "task_types":
+            all_ref_types["task_types"] = task_type_api.get_task_type_service(
+                db_session
+            ).read_all()
+    return all_ref_types
 
 
 def _get_calendar_events(
