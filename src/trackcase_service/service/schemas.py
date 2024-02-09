@@ -419,7 +419,7 @@ class CalendarEvent(BaseSchema):
     type: str
     date: datetime
     title: str
-    isPastDue: bool
+    is_past_due: bool
 
 
 class CalendarResponse(ResponseBase):

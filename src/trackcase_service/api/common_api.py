@@ -198,7 +198,7 @@ def _get_hearing_calendar_events(
             id=hearing_calendar.id,
             type=CalendarObjectTypes.HEARING,
             date=hearing_calendar.hearing_date,
-            isPastDue=(
+            is_past_due=(
                 hearing_calendar.hearing_date.date() < datetime.date.today()
                 and hearing_calendar.status not in ["COMPLETED", "CLOSED"]
             ),
@@ -228,7 +228,7 @@ def _get_task_calendar_events(
             id=task_calendar.id,
             type=CalendarObjectTypes.TASK,
             date=task_calendar.task_date,
-            isPastDue=(
+            is_past_due=(
                 task_calendar.task_date.date() < datetime.date.today()
                 and task_calendar.status not in ["COMPLETED", "CLOSED"]
             ),
