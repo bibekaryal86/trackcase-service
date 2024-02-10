@@ -416,10 +416,11 @@ class TaskCalendarResponse(ResponseBase):
 # common calendars
 class CalendarEvent(BaseSchema):
     id: int
+    calendar: str
     type: str
     date: datetime
+    status: str
     title: str
-    is_past_due: bool
 
 
 class CalendarResponse(ResponseBase):
