@@ -131,10 +131,10 @@ def check_and_set_status(status: str, date: datetime) -> str:
     completed_statuses = get_statuses().get("calendars").get("inactive")
     if date.date() < datetime.date.today():
         if status in completed_statuses:
-            return "EXPIRED"
+            return "PAST_DONE"
         else:
             return "PAST_DUE"
     elif status in completed_statuses:
         return "DONE"
     else:
-        return "OPEN"
+        return "DUE"
