@@ -161,3 +161,7 @@ cython_debug/
 
 # Env File
 src/.env
+
+.DS_Store
+src/.DS_Store
+src/trackcase_service/.DS_Store
