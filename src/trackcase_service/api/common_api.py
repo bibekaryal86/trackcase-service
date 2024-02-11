@@ -107,7 +107,9 @@ def _get_calendar_events(
             calendar=CalendarObjectTypes.HEARING,
             type=hearing_calendar.hearing_type.name,
             date=hearing_calendar.hearing_date,
-            status=check_and_set_status(hearing_calendar.status, hearing_calendar.hearing_date),
+            status=check_and_set_status(
+                hearing_calendar.status, hearing_calendar.hearing_date
+            ),
             title=hearing_calendar.court_case.client.name,
         )
         calendar_events.append(calendar_event)
