@@ -4,7 +4,7 @@ import time
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import Depends, FastAPI, Header, Query, Request
+from fastapi import Depends, FastAPI, Header, Request
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
@@ -15,6 +15,7 @@ from src.trackcase_service.api import (
     cash_collection_api,
     client_api,
     collection_method_api,
+    common_api,
     court_api,
     court_case_api,
     form_api,
@@ -25,6 +26,7 @@ from src.trackcase_service.api import (
     task_calendar_api,
     task_type_api,
 )
+from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.utils import commons, constants, logger
 from src.trackcase_service.utils.commons import validate_http_basic_credentials
 
@@ -34,9 +36,9 @@ log = logger.Logger(logging.getLogger(__name__))
 @asynccontextmanager
 async def lifespan(application: FastAPI):
     commons.validate_input()
-    commons.startup_db_client()
+    commons.startup_app()
     yield
-    commons.shutdown_db_client()
+    commons.shutdown_app()
 
 
 app = FastAPI(
@@ -122,6 +124,10 @@ app.include_router(
     task_type_api.router,
     dependencies=[Depends(user_name_header), Depends(validate_credentials)],
 )
+app.include_router(
+    common_api.router,
+    dependencies=[Depends(user_name_header), Depends(validate_credentials)],
+)
 
 
 @app.middleware("http")
@@ -153,61 +159,10 @@ def reset(request: Request):
 def test_database(
     request: Request,
     http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
-    db_session: Session = Depends(commons.get_db_session),
+    db_session: Session = Depends(get_db_session),
 ):
     commons.validate_http_basic_credentials(request, http_basic_credentials, True)
     return commons.test_database(db_session)
-
-
-@app.get("/trackcase-service/tests/status", tags=["Main"], summary="Get Statuses")
-def get_statuses(
-    request: Request,
-    http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
-):
-    commons.validate_http_basic_credentials(request, http_basic_credentials, True)
-    return constants.get_statuses()
-
-
-@app.get("/trackcase-service/ref_types/all", tags=["Main"], summary="Get All Ref Types")
-def get_all_ref_types(
-    request: Request,
-    components: str = Query(default=""),
-    db_session: Session = Depends(commons.get_db_session),
-    http_basic_credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
-):
-    commons.validate_http_basic_credentials(request, http_basic_credentials, True)
-    all_ref_types = {}
-    if not components:
-        components = (
-            "statuses,case_types,collection_methods,form_types,hearing_types,task_types"
-        )
-    component_list = components.split(",")
-    for component in component_list:
-        if component == "statuses":
-            all_ref_types["statuses"] = constants.get_statuses()
-        if component == "case_types":
-            all_ref_types["case_types"] = case_type_api.get_case_type_service(
-                db_session
-            ).read_all()
-        if component == "collection_methods":
-            all_ref_types[
-                "collection_methods"
-            ] = collection_method_api.get_collection_method_service(
-                db_session
-            ).read_all()
-        if component == "form_types":
-            all_ref_types["form_types"] = form_type_api.get_form_type_service(
-                db_session
-            ).read_all()
-        if component == "hearing_types":
-            all_ref_types["hearing_types"] = hearing_type_api.get_hearing_type_service(
-                db_session
-            ).read_all()
-        if component == "task_types":
-            all_ref_types["task_types"] = task_type_api.get_task_type_service(
-                db_session
-            ).read_all()
-    return all_ref_types
 
 
 @app.get("/trackcase-service/tests/log-level", tags=["Main"], summary="Set Log Level")

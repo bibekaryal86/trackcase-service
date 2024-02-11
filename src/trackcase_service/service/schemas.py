@@ -413,6 +413,22 @@ class TaskCalendarResponse(ResponseBase):
     task_calendars: list[TaskCalendar] = []
 
 
+# common calendars
+class CalendarEvent(BaseSchema):
+    id: int
+    calendar: str
+    type: str
+    date: datetime
+    status: str
+    title: str
+
+
+class CalendarResponse(ResponseBase):
+    calendar_events: list[CalendarEvent] = []
+    hearing_calendars: list[HearingCalendar] = []
+    task_calendars: list[TaskCalendar] = []
+
+
 # form
 class FormBase(StatusBase):
     form_type_id: int

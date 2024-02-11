@@ -62,7 +62,7 @@ def _copy_objects(
         ):
             value = getattr(source_object, attr)
             if value and isinstance(value, str):
-                setattr(destination_object, attr, value.strip())
+                setattr(destination_object, attr, value.strip().upper())
             elif value:
                 setattr(destination_object, attr, value)
             else:

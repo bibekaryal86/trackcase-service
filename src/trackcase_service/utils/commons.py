@@ -11,7 +11,6 @@ from sqlalchemy.orm import Session
 import src.trackcase_service.service.schemas as schemas
 import src.trackcase_service.utils.constants as constants
 import src.trackcase_service.utils.logger as logger
-from src.trackcase_service.db.session import get_db_session
 
 log = logger.Logger(logging.getLogger(__name__))
 
@@ -25,13 +24,16 @@ def validate_input():
 
     if constants.APP_ENV is None:
         missing_variables.append("APP_ENV")
-
     if constants.BASIC_AUTH_USR is None:
         missing_variables.append("BASIC_AUTH_USR")
-
     if constants.BASIC_AUTH_PWD is None:
         missing_variables.append("BASIC_AUTH_PWD")
-
+    if constants.DB_USERNAME is None:
+        missing_variables.append("DB_USERNAME")
+    if constants.DB_PASSWORD is None:
+        missing_variables.append("DB_PASSWORD")
+    if constants.DB_NAME is None:
+        missing_variables.append("DB_NAME")
     if constants.REPO_HOME is None:
         missing_variables.append("REPO_HOME")
 
@@ -41,13 +43,11 @@ def validate_input():
         )
 
 
-def startup_db_client():
+def startup_app():
     log.info("App Starting...")
-    get_db_session()
-    log.info("Created DB Session...")
 
 
-def shutdown_db_client():
+def shutdown_app():
     log.info("App Shutting Down...")
 
 
@@ -90,6 +90,7 @@ def raise_http_exception(
 ):
     log.error(
         "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
+        extra=error,
     )
     raise HTTPException(status_code=sts_code, detail={"error": error})
 
