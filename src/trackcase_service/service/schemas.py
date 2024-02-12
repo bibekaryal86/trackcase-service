@@ -529,7 +529,7 @@ class CashCollectionBase(StatusBase):
     collection_date: datetime
     collected_amount: condecimal(max_digits=5, decimal_places=2)
     waived_amount: condecimal(max_digits=5, decimal_places=2)
-    memo: Optional[str] = None
+    memo: str
     case_collection_id: int
     collection_method_id: int
 
