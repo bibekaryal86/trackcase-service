@@ -494,7 +494,7 @@ class CaseCollectionBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("case_collection").get("all"):
+        elif v not in get_statuses().get("collections").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
@@ -542,7 +542,7 @@ class CashCollectionBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("cash_collection").get("all"):
+        elif v not in get_statuses().get("collections").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
