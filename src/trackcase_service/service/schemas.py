@@ -482,7 +482,7 @@ class FormResponse(ResponseBase):
 # case_collection
 class CaseCollectionBase(StatusBase):
     quote_date: datetime
-    quote_amount: condecimal(max_digits=5, decimal_places=2)
+    quote_amount: condecimal(max_digits=7, decimal_places=2)
     court_case_id: int
 
     allow_empty_status: ClassVar[bool] = False
@@ -512,7 +512,7 @@ class HistoryCaseCollection(CaseCollection):
     case_collection: Optional[CaseCollection] = None
     # make NOT optional inherited fields optional in history
     quote_date: Optional[datetime] = None
-    quote_amount: Optional[condecimal(max_digits=5, decimal_places=2)] = None
+    quote_amount: Optional[condecimal(max_digits=7, decimal_places=2)] = None
     court_case_id: Optional[int] = None
 
 
@@ -527,8 +527,8 @@ class CaseCollectionResponse(ResponseBase):
 # cash_collection
 class CashCollectionBase(StatusBase):
     collection_date: datetime
-    collected_amount: condecimal(max_digits=5, decimal_places=2)
-    waived_amount: condecimal(max_digits=5, decimal_places=2)
+    collected_amount: condecimal(max_digits=7, decimal_places=2)
+    waived_amount: condecimal(max_digits=7, decimal_places=2)
     memo: str
     case_collection_id: int
     collection_method_id: int
@@ -560,8 +560,8 @@ class HistoryCashCollection(CashCollection):
     cash_collection: Optional[CashCollection] = None
     # make NOT optional inherited fields optional in history
     collection_date: Optional[datetime] = None
-    collected_amount: Optional[condecimal(max_digits=5, decimal_places=2)] = None
-    waived_amount: Optional[condecimal(max_digits=5, decimal_places=2)] = None
+    collected_amount: Optional[condecimal(max_digits=7, decimal_places=2)] = None
+    waived_amount: Optional[condecimal(max_digits=7, decimal_places=2)] = None
     case_collection_id: Optional[int] = None
     collection_method_id: Optional[int] = None
 

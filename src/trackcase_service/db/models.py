@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped, relationship
 
@@ -531,7 +531,7 @@ class HistoryForm(TableBase, StatusBase, Base):
 class CaseCollection(TableBase, StatusBase, Base):
     __tablename__ = "case_collection"
     quote_date = Column(DateTime, nullable=False)
-    quote_amount = Column(BigInteger, nullable=False)
+    quote_amount = Column(Numeric(precision=7, scale=2), nullable=False)
     court_case_id = Column(
         ForeignKey(
             "court_case.id",
@@ -567,7 +567,7 @@ class HistoryCaseCollection(TableBase, StatusBase, Base):
         nullable=False,
     )
     quote_date = Column(DateTime, nullable=True)
-    quote_amount = Column(BigInteger, nullable=True)
+    quote_amount = Column(Numeric(precision=7, scale=2), nullable=True)
     court_case_id = Column(
         ForeignKey(
             "court_case.id",
@@ -588,8 +588,8 @@ class HistoryCaseCollection(TableBase, StatusBase, Base):
 class CashCollection(TableBase, StatusBase, Base):
     __tablename__ = "cash_collection"
     collection_date = Column(DateTime, nullable=False)
-    collected_amount = Column(BigInteger, nullable=False)
-    waived_amount = Column(BigInteger, nullable=False)
+    collected_amount = Column(Numeric(precision=7, scale=2), nullable=False)
+    waived_amount = Column(Numeric(precision=7, scale=2), nullable=False)
     memo = Column(String(3000), nullable=False)
     case_collection_id = Column(
         ForeignKey(
@@ -633,8 +633,8 @@ class HistoryCashCollection(TableBase, StatusBase, Base):
         nullable=False,
     )
     collection_date = Column(DateTime, nullable=True)
-    collected_amount = Column(BigInteger, nullable=True)
-    waived_amount = Column(BigInteger, nullable=True)
+    collected_amount = Column(Numeric(precision=7, scale=2), nullable=True)
+    waived_amount = Column(Numeric(precision=7, scale=2), nullable=True)
     memo = Column(String(3000), nullable=True)
     case_collection_id = Column(
         ForeignKey(
