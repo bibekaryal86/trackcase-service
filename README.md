@@ -13,7 +13,6 @@ backend service for trackcase
   * python -m src.trackcase_service.main
 * For History and Notes
   * To retrieve history, use the `find_one` endpoint with `is_include_history=True`
-  * To retrieve notes, use the `find_one` endpoint, notes are always included
 
 * advanced:
   * DELETING
