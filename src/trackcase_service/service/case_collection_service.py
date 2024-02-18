@@ -86,7 +86,7 @@ class CaseCollectionService(CrudService):
         is_include_history: bool = False,
     ) -> CaseCollectionResponse:
         try:
-            sort_config = {"quote_date": "desc"}
+            sort_config = {"court_case_id": "asc"}
             data_models: List[CaseCollectionModel] = super().read_all(sort_config)
             schema_models: List[CaseCollectionSchema] = [
                 convert_case_collection_model_to_schema(
