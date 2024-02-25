@@ -111,6 +111,7 @@ def _get_calendar_events(
                 hearing_calendar.status, hearing_calendar.hearing_date
             ),
             title=hearing_calendar.court_case.client.name,
+            court_case_id=hearing_calendar.court_case_id,
         )
         calendar_events.append(calendar_event)
 
@@ -124,6 +125,9 @@ def _get_calendar_events(
             title=task_calendar.form.court_case.client.name
             if task_calendar.form_id
             else task_calendar.hearing_calendar.court_case.client.name,
+            court_case_id=task_calendar.form.court_case_id
+            if task_calendar.form_id
+            else task_calendar.hearing_calendar.court_case_id,
         )
         calendar_events.append(calendar_event)
     return calendar_events

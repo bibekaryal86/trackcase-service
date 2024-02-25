@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Numeric
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped, relationship
 

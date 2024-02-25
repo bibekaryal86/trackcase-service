@@ -421,6 +421,7 @@ class CalendarEvent(BaseSchema):
     date: datetime
     status: str
     title: str
+    court_case_id: int
 
 
 class CalendarResponse(ResponseBase):
