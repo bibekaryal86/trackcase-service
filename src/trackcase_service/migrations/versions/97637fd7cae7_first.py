@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "97637fd7cae7"
+revision: str = "8a33d9c1512a"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -249,8 +249,7 @@ def upgrade() -> None:
     )
     op.create_table(
         "case_collection",
-        sa.Column("quote_date", sa.DateTime(), nullable=False),
-        sa.Column("quote_amount", sa.BigInteger(), nullable=False),
+        sa.Column("quote_amount", sa.Numeric(precision=7, scale=2), nullable=False),
         sa.Column("court_case_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
@@ -363,16 +362,14 @@ def upgrade() -> None:
     op.create_table(
         "cash_collection",
         sa.Column("collection_date", sa.DateTime(), nullable=False),
-        sa.Column("collected_amount", sa.BigInteger(), nullable=False),
-        sa.Column("waived_amount", sa.BigInteger(), nullable=False),
+        sa.Column("collected_amount", sa.Numeric(precision=7, scale=2), nullable=False),
+        sa.Column("waived_amount", sa.Numeric(precision=7, scale=2), nullable=False),
         sa.Column("memo", sa.String(length=3000), nullable=False),
         sa.Column("case_collection_id", sa.Integer(), nullable=False),
         sa.Column("collection_method_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=False),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_collection_id"],
             ["case_collection.id"],
@@ -393,8 +390,7 @@ def upgrade() -> None:
         "history_case_collection",
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("case_collection_id", sa.Integer(), nullable=False),
-        sa.Column("quote_date", sa.DateTime(), nullable=True),
-        sa.Column("quote_amount", sa.BigInteger(), nullable=True),
+        sa.Column("quote_amount", sa.Numeric(precision=7, scale=2), nullable=True),
         sa.Column("court_case_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
@@ -492,16 +488,14 @@ def upgrade() -> None:
         sa.Column("user_name", sa.String(length=100), nullable=False),
         sa.Column("cash_collection_id", sa.Integer(), nullable=False),
         sa.Column("collection_date", sa.DateTime(), nullable=True),
-        sa.Column("collected_amount", sa.BigInteger(), nullable=True),
-        sa.Column("waived_amount", sa.BigInteger(), nullable=True),
+        sa.Column("collected_amount", sa.Numeric(precision=7, scale=2), nullable=True),
+        sa.Column("waived_amount", sa.Numeric(precision=7, scale=2), nullable=True),
         sa.Column("memo", sa.String(length=3000), nullable=True),
         sa.Column("case_collection_id", sa.Integer(), nullable=True),
         sa.Column("collection_method_id", sa.Integer(), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("modified", sa.DateTime(), nullable=False),
-        sa.Column("status", sa.String(length=100), nullable=False),
-        sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.ForeignKeyConstraint(
             ["case_collection_id"],
             ["case_collection.id"],
@@ -620,6 +614,27 @@ def upgrade() -> None:
     )
 
     # other migrations
+    # add partial constraints
+    op.execute(
+        """CREATE UNIQUE INDEX task_calendar_hearing_calendar_id_1 ON task_calendar (hearing_calendar_id) WHERE hearing_calendar_id IS NOT NULL"""  # noqa: E501
+    )
+    op.execute(
+        """CREATE UNIQUE INDEX task_calendar_form_id_1 ON task_calendar (form_id) WHERE form_id IS NOT NULL"""  # noqa: E501
+    )
+    op.create_index(
+        "task_calendar_hearing_calendar_id_1",
+        "task_calendar",
+        ["hearing_calendar_id"],
+        unique=False,
+        postgresql_where="(hearing_calendar_id IS NOT NULL)",
+    )
+    op.create_index(
+        "task_calendar_form_id_1",
+        "task_calendar",
+        ["form_id"],
+        unique=False,
+        postgresql_where="(form_id IS NOT NULL)",
+    )
     # insert test data
     op.execute(
         """INSERT INTO case_type (created, modified, name, description) VALUES (now(), now(), 'ASYLUM', 'FILING FOR ASYLUM WITH USCIS, EOIR or BOARD OF IMMIGRATION APPEALS')"""  # noqa: E501
@@ -714,26 +729,24 @@ def upgrade() -> None:
     op.execute(
         """INSERT INTO task_calendar (created, modified, task_date, due_date, task_type_id, hearing_calendar_id, form_id, status) VALUES (now(), now(), '2024-02-28 06:00:00', '2024-02-29 06:00:00', 2, NULL, 2, 'OPEN')"""  # noqa: E501
     )
-    # add partial constraints
+
     op.execute(
-        """CREATE UNIQUE INDEX task_calendar_hearing_calendar_id_1 ON task_calendar (hearing_calendar_id) WHERE hearing_calendar_id IS NOT NULL"""  # noqa: E501
+        """INSERT INTO case_collection (created, modified, quote_amount, court_case_id, status) VALUES (now(), now(), 10000.00, 1, 'CREATED')"""  # noqa: E501
     )
     op.execute(
-        """CREATE UNIQUE INDEX task_calendar_form_id_1 ON task_calendar (form_id) WHERE form_id IS NOT NULL"""  # noqa: E501
+        """INSERT INTO case_collection (created, modified, quote_amount, court_case_id, status) VALUES (now(), now(), 10000.00, 2, 'CREATED')"""  # noqa: E501
     )
-    op.create_index(
-        "task_calendar_hearing_calendar_id_1",
-        "task_calendar",
-        ["hearing_calendar_id"],
-        unique=False,
-        postgresql_where="(hearing_calendar_id IS NOT NULL)",
+    op.execute(
+        """INSERT INTO cash_collection (created, modified, collection_date, collected_amount, waived_amount, memo, case_collection_id, collection_method_id, status) VALUES (now(), now(), '2024-02-13 06:00:00', 250.00, -1.00, 'ZELLE TRF TO ACCOUNT# 9372' 1, 1, 'RECEIVED')"""  # noqa: E501
     )
-    op.create_index(
-        "task_calendar_form_id_1",
-        "task_calendar",
-        ["form_id"],
-        unique=False,
-        postgresql_where="(form_id IS NOT NULL)",
+    op.execute(
+        """INSERT INTO cash_collection (created, modified, collection_date, collected_amount, waived_amount, memo, case_collection_id, collection_method_id, status) VALUES (now(), now(), '2024-02-21 06:00:00', 1000.00, -1.00, 'CHECK BOFA # 1001' 1, 3, 'RECEIVED')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO cash_collection (created, modified, collection_date, collected_amount, waived_amount, memo, case_collection_id, collection_method_id, status) VALUES (now(), now(), '2024-02-14 06:00:00', 700.00, -1.00, 'MONEY ORDER #44854' 2, 2, 'RECEIVED')"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO cash_collection (created, modified, collection_date, collected_amount, waived_amount, memo, case_collection_id, collection_method_id, status) VALUES (now(), now(), '2024-02-22 06:00:00', 500.00, -1.00, 'HANDED CASH TO JOHN' 2, 4, 'RECEIVED')"""  # noqa: E501
     )
     # ### end Alembic commands ###
 
