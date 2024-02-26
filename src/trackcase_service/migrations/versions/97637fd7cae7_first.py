@@ -721,6 +721,20 @@ def upgrade() -> None:
     op.execute(
         """CREATE UNIQUE INDEX task_calendar_form_id_1 ON task_calendar (form_id) WHERE form_id IS NOT NULL"""  # noqa: E501
     )
+    op.create_index(
+        "task_calendar_hearing_calendar_id_1",
+        "task_calendar",
+        ["hearing_calendar_id"],
+        unique=False,
+        postgresql_where="(hearing_calendar_id IS NOT NULL)",
+    )
+    op.create_index(
+        "task_calendar_form_id_1",
+        "task_calendar",
+        ["form_id"],
+        unique=False,
+        postgresql_where="(form_id IS NOT NULL)",
+    )
     # ### end Alembic commands ###
 
 

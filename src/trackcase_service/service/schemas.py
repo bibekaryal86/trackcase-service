@@ -421,6 +421,7 @@ class CalendarEvent(BaseSchema):
     date: datetime
     status: str
     title: str
+    court_case_id: int
 
 
 class CalendarResponse(ResponseBase):
@@ -481,8 +482,7 @@ class FormResponse(ResponseBase):
 
 # case_collection
 class CaseCollectionBase(StatusBase):
-    quote_date: datetime
-    quote_amount: condecimal(max_digits=5, decimal_places=2)
+    quote_amount: condecimal(max_digits=7, decimal_places=2)
     court_case_id: int
 
     allow_empty_status: ClassVar[bool] = False
@@ -494,7 +494,7 @@ class CaseCollectionBase(StatusBase):
             raise ValueError("Invalid status value of None")
         elif cls.allow_empty_status and v.strip() == "":
             pass
-        elif v not in get_statuses().get("case_collection").get("all"):
+        elif v not in get_statuses().get("collections").get("all"):
             raise ValueError(f"Invalid status value of: {v}")
         return v
 
@@ -511,8 +511,7 @@ class HistoryCaseCollection(CaseCollection):
     case_collection_id: int
     case_collection: Optional[CaseCollection] = None
     # make NOT optional inherited fields optional in history
-    quote_date: Optional[datetime] = None
-    quote_amount: Optional[condecimal(max_digits=5, decimal_places=2)] = None
+    quote_amount: Optional[condecimal(max_digits=7, decimal_places=2)] = None
     court_case_id: Optional[int] = None
 
 
@@ -525,26 +524,13 @@ class CaseCollectionResponse(ResponseBase):
 
 
 # cash_collection
-class CashCollectionBase(StatusBase):
+class CashCollectionBase:
     collection_date: datetime
-    collected_amount: condecimal(max_digits=5, decimal_places=2)
-    waived_amount: condecimal(max_digits=5, decimal_places=2)
-    memo: Optional[str] = None
+    collected_amount: condecimal(max_digits=7, decimal_places=2)
+    waived_amount: condecimal(max_digits=7, decimal_places=2)
+    memo: str
     case_collection_id: int
     collection_method_id: int
-
-    allow_empty_status: ClassVar[bool] = False
-
-    @field_validator("status")
-    @classmethod
-    def check_status(cls, v: str) -> str | None:
-        if v is None:
-            raise ValueError("Invalid status value of None")
-        elif cls.allow_empty_status and v.strip() == "":
-            pass
-        elif v not in get_statuses().get("cash_collection").get("all"):
-            raise ValueError(f"Invalid status value of: {v}")
-        return v
 
 
 class CashCollection(CashCollectionBase, BaseModelSchema):
@@ -560,8 +546,8 @@ class HistoryCashCollection(CashCollection):
     cash_collection: Optional[CashCollection] = None
     # make NOT optional inherited fields optional in history
     collection_date: Optional[datetime] = None
-    collected_amount: Optional[condecimal(max_digits=5, decimal_places=2)] = None
-    waived_amount: Optional[condecimal(max_digits=5, decimal_places=2)] = None
+    collected_amount: Optional[condecimal(max_digits=7, decimal_places=2)] = None
+    waived_amount: Optional[condecimal(max_digits=7, decimal_places=2)] = None
     case_collection_id: Optional[int] = None
     collection_method_id: Optional[int] = None
 
