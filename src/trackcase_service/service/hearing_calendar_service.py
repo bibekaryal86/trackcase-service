@@ -212,7 +212,7 @@ def _check_dependents_statuses(
     hearing_calendar_old: HearingCalendarSchema,
 ):
     status_old = hearing_calendar_old.status
-    inactive_statuses = get_statuses().get("hearing_calendar").get("inactive")
+    inactive_statuses = get_statuses().get("calendars").get("inactive")
     if status_new != status_old and status_new in inactive_statuses:
         if check_active_task_calendars(hearing_calendar_old.task_calendars):
             raise_http_exception(

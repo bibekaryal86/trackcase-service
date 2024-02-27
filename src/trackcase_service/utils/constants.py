@@ -51,7 +51,7 @@ def get_statuses():
         },
         "judge": {
             "active": ["ACTIVE"],
-            "inactive": ["INACTIVE", "CLOSED"],
+            "inactive": ["INACTIVE", "RETIRED"],
         },
         "client": {
             "active": ["ACTIVE"],
@@ -75,7 +75,7 @@ def get_statuses():
             ],
         },
         "collections": {
-            "active": ["OPEN", "PENDING"],
+            "active": ["CREATED", "PENDING"],
             "inactive": ["RECEIVED", "WAIVED", "COMPLETED", "CLOSED"],
         },
     }

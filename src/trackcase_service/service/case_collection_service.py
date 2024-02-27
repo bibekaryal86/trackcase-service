@@ -195,7 +195,7 @@ def _check_dependents_statuses(
     case_collection_old: CaseCollectionSchema,
 ):
     status_old = case_collection_old.status
-    inactive_statuses = get_statuses().get("cash_collection").get("inactive")
+    inactive_statuses = get_statuses().get("collections").get("inactive")
     if status_new != status_old and status_new in inactive_statuses:
         if check_active_cash_collections(case_collection_old.cash_collections):
             raise_http_exception(

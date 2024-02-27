@@ -147,7 +147,7 @@ def check_active_court_cases(court_cases: list[schemas.CourtCase]) -> bool:
 def check_active_hearing_calendars(
     hearing_calendars: list[schemas.HearingCalendar],
 ) -> bool:
-    active_statuses = constants.get_statuses().get("hearing_calendar").get("active")
+    active_statuses = constants.get_statuses().get("calendars").get("active")
     for hearing_calendar in hearing_calendars:
         if hearing_calendar.status in active_statuses:
             return True
@@ -155,7 +155,7 @@ def check_active_hearing_calendars(
 
 
 def check_active_task_calendars(task_calendars: list[schemas.TaskCalendar]) -> bool:
-    active_statuses = constants.get_statuses().get("task_calendar").get("active")
+    active_statuses = constants.get_statuses().get("calendars").get("active")
     for task_calendar in task_calendars:
         if task_calendar.status in active_statuses:
             return True
@@ -173,7 +173,7 @@ def check_active_forms(forms: list[schemas.Form]) -> bool:
 def check_active_case_collections(
     case_collections: list[schemas.CaseCollection],
 ) -> bool:
-    active_statuses = constants.get_statuses().get("case_collection").get("active")
+    active_statuses = constants.get_statuses().get("collections").get("active")
     for case_collection in case_collections:
         if case_collection.status in active_statuses:
             return True
@@ -183,7 +183,7 @@ def check_active_case_collections(
 def check_active_cash_collections(
     cash_collections: list[schemas.CashCollection],
 ) -> bool:
-    active_statuses = constants.get_statuses().get("cash_collection").get("active")
+    active_statuses = constants.get_statuses().get("collections").get("active")
     for cash_collection in cash_collections:
         if cash_collection.status in active_statuses:
             return True
