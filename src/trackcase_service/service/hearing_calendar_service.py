@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime, timedelta
 from http import HTTPStatus
 from typing import List
@@ -62,6 +63,7 @@ class HearingCalendarService(CrudService):
                 get_err_msg(
                     "Error Inserting HearingCalendar. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_hearing_calendar(
@@ -90,6 +92,7 @@ class HearingCalendarService(CrudService):
                     f"Error Retrieving HearingCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_hearing_calendars(
@@ -117,6 +120,7 @@ class HearingCalendarService(CrudService):
                 get_err_msg(
                     "Error Retrieving HearingCalendars. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_hearing_calendar(
@@ -157,6 +161,7 @@ class HearingCalendarService(CrudService):
                     f"Error Updating HearingCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_hearing_calendar(
@@ -189,6 +194,7 @@ class HearingCalendarService(CrudService):
                     f"Error Deleting HearingCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

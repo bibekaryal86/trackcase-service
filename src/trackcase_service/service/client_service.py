@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -42,6 +43,7 @@ class ClientService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Inserting Client. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_client(
@@ -68,6 +70,7 @@ class ClientService(CrudService):
                     f"Error Retrieving Client By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_clients(
@@ -93,6 +96,7 @@ class ClientService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Retrieving Clients. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_client(
@@ -127,6 +131,7 @@ class ClientService(CrudService):
                     f"Error Updating Client By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_client(self, model_id: int, request: Request) -> ClientResponse:
@@ -153,6 +158,7 @@ class ClientService(CrudService):
                     f"Error Deleting Client By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

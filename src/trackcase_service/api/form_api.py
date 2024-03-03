@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.form_service import get_form_service
-from src.trackcase_service.service.schemas import FormRequest, FormResponse
+from src.trackcase_service.service.schemas import FilingRequest as FormRequest
+from src.trackcase_service.service.schemas import FilingResponse as FormResponse
 from src.trackcase_service.utils.commons import raise_http_exception
 
 router = APIRouter(prefix="/trackcase-service/forms", tags=["Forms"])

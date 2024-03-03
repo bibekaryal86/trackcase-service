@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -42,6 +43,7 @@ class JudgeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Inserting Judge. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_judge(
@@ -68,6 +70,7 @@ class JudgeService(CrudService):
                     f"Error Retrieving Judge By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_judges(
@@ -93,6 +96,7 @@ class JudgeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Retrieving Judges. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_judge(
@@ -127,6 +131,7 @@ class JudgeService(CrudService):
                     f"Error Updating Judge By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_judge(self, model_id: int, request: Request) -> JudgeResponse:
@@ -153,6 +158,7 @@ class JudgeService(CrudService):
                     f"Error Deleting Judge By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

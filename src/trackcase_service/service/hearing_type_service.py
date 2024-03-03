@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -39,6 +40,7 @@ class HearingTypeService(CrudService):
                 get_err_msg(
                     "Error Inserting HearingType. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_hearing_type(
@@ -65,6 +67,7 @@ class HearingTypeService(CrudService):
                     f"Error Retrieving HearingType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_hearing_types(
@@ -92,6 +95,7 @@ class HearingTypeService(CrudService):
                 get_err_msg(
                     "Error Retrieving HearingTypes. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_hearing_type(
@@ -121,6 +125,7 @@ class HearingTypeService(CrudService):
                     f"Error Updating HearingType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_hearing_type(
@@ -146,6 +151,7 @@ class HearingTypeService(CrudService):
                     f"Error Deleting HearingType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

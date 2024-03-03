@@ -42,13 +42,13 @@ def find_one(
     is_include_history: bool = False,
     db_session: Session = Depends(get_db_session),
 ):
-    collection_method_response: CollectionMethodResponse = (
-        get_collection_method_service(db_session).read_one_collection_method(
-            collection_method_id,
-            request,
-            is_include_extra,
-            is_include_history,
-        )
+    collection_method_response: (
+        CollectionMethodResponse
+    ) = get_collection_method_service(db_session).read_one_collection_method(
+        collection_method_id,
+        request,
+        is_include_extra,
+        is_include_history,
     )
     if collection_method_response is None:
         raise_http_exception(

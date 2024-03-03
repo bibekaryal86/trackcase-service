@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -34,6 +35,7 @@ class TaskTypeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Inserting TaskType. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_task_type(
@@ -60,6 +62,7 @@ class TaskTypeService(CrudService):
                     f"Error Retrieving TaskType By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_task_types(
@@ -85,6 +88,7 @@ class TaskTypeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Retrieving TaskTypes. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_task_type(
@@ -114,6 +118,7 @@ class TaskTypeService(CrudService):
                     f"Error Updating TaskType By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_task_type(self, model_id: int, request: Request) -> TaskTypeResponse:
@@ -137,6 +142,7 @@ class TaskTypeService(CrudService):
                     f"Error Deleting TaskType By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

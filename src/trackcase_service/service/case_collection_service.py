@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -49,6 +50,7 @@ class CaseCollectionService(CrudService):
                 get_err_msg(
                     "Error Inserting CaseCollection. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_case_collection(
@@ -77,6 +79,7 @@ class CaseCollectionService(CrudService):
                     f"Error Retrieving CaseCollection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_case_collections(
@@ -104,6 +107,7 @@ class CaseCollectionService(CrudService):
                 get_err_msg(
                     "Error Retrieving CaseCollections. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_case_collection(
@@ -142,6 +146,7 @@ class CaseCollectionService(CrudService):
                     f"Error Updating CaseCollection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_case_collection(
@@ -172,6 +177,7 @@ class CaseCollectionService(CrudService):
                     f"Error Deleting CaseCollection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

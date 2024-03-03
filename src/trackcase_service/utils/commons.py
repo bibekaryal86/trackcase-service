@@ -1,12 +1,15 @@
+import datetime
 import http
+import json
 import logging
-import secrets
+import sys
+from typing import Optional
 
-from fastapi import HTTPException, Request
-from fastapi.security import HTTPBasicCredentials
-from sqlalchemy import text
-from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm import Session
+import jwt
+from fastapi import HTTPException, Query, Request
+from fastapi.security import HTTPAuthorizationCredentials
+from jwt import PyJWTError
+from pydantic import ValidationError
 
 import src.trackcase_service.service.schemas as schemas
 import src.trackcase_service.utils.constants as constants
@@ -36,6 +39,10 @@ def validate_input():
         missing_variables.append("DB_NAME")
     if constants.REPO_HOME is None:
         missing_variables.append("REPO_HOME")
+    if constants.SECRET_KEY is None:
+        missing_variables.append("SECRET_KEY")
+    if constants.CORS_ORIGINS is None:
+        missing_variables.append("CORS_ORIGINS")
 
     if len(missing_variables) != 0:
         raise ValueError(
@@ -51,65 +58,22 @@ def shutdown_app():
     log.info("App Shutting Down...")
 
 
-def validate_http_basic_credentials(
-    request: Request,
-    http_basic_credentials: HTTPBasicCredentials,
-    is_ignore_username: bool = False,
-):
-    valid_username = constants.BASIC_AUTH_USR
-    valid_password = constants.BASIC_AUTH_PWD
-    input_username = http_basic_credentials.username
-    input_password = http_basic_credentials.password
-    is_correct_username = secrets.compare_digest(
-        valid_username.encode("utf-8"), input_username.encode("utf-8")
-    )
-    is_correct_password = secrets.compare_digest(
-        valid_password.encode("utf-8"), input_password.encode("utf-8")
-    )
-    if not (is_correct_username and is_correct_password):
-        raise_http_exception(
-            request=request,
-            sts_code=http.HTTPStatus.UNAUTHORIZED,
-            error="Invalid Credentials",
-        )
-
-    # also check if user_name present in request headers or not
-    user_name = request.headers.get(constants.USERNAME_HEADER)
-    if not is_ignore_username and not user_name:
-        raise_http_exception(
-            request=request,
-            sts_code=http.HTTPStatus.BAD_REQUEST,
-            error="Missing Username",
-        )
+def get_err_msg(msg: str, err_msg: str = ""):
+    return msg + "\n" + err_msg
 
 
 def raise_http_exception(
     request: Request,
     sts_code: http.HTTPStatus | int,
     error: str = "",
+    exc_info=None,
 ):
     log.error(
-        "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
+        "HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
         extra=error,
+        exc_info=exc_info,
     )
     raise HTTPException(status_code=sts_code, detail={"error": error})
-
-
-def test_database(db_session: Session):
-    try:
-        test_database_sql = text("SELECT VERSION_NUM FROM ALEMBIC_VERSION")
-        result = db_session.execute(test_database_sql)
-        result_row = result.fetchone()
-        if result_row:
-            return {"test_db_success": result_row[0]}
-        else:
-            return {"test_db": "maybe_success_but_no_data"}
-    except OperationalError as ex:
-        return {"test_db_failure": str(ex)}
-
-
-def get_err_msg(msg: str, err_msg: str = ""):
-    return msg + "\n" + err_msg
 
 
 def check_active_courts(courts: list[schemas.Court]) -> bool:
@@ -162,7 +126,7 @@ def check_active_task_calendars(task_calendars: list[schemas.TaskCalendar]) -> b
     return False
 
 
-def check_active_forms(forms: list[schemas.Form]) -> bool:
+def check_active_forms(forms: list[schemas.Filing]) -> bool:
     active_statuses = constants.get_statuses().get("form").get("active")
     for form in forms:
         if form.status in active_statuses:
@@ -188,3 +152,91 @@ def check_active_cash_collections(
         if cash_collection.status in active_statuses:
             return True
     return False
+
+
+def request_metadata_example() -> str:
+    return """For example -:-:- {
+    "request_object_id": 1,
+    "sort_config": {
+        "column": "full_name",
+        "direction": "asc"
+    },
+    "filter_config": [
+        {
+            "column": "full_name",
+            "value": "some name",
+            "operation": "eq"
+        },
+        {
+            "column": "email",
+            "value": "column@value.com",
+            "operation": "eq"
+        }
+    ],
+    "page_number": 1,
+    "per_page": 100,
+    "is_include_deleted": false
+}"""
+
+
+def parse_request_metadata(
+    request: Request,
+    metadata: Optional[str] = Query(
+        default=None, description=request_metadata_example()
+    ),
+) -> schemas.RequestMetadata | None:
+    if metadata is None:
+        return None
+    try:
+        metadata_dict = json.loads(metadata)
+        return schemas.RequestMetadata(**metadata_dict)
+    except (json.JSONDecodeError, ValidationError) as ex:
+        raise_http_exception(
+            request,
+            http.HTTPStatus.BAD_REQUEST,
+            get_err_msg("Invalid Request Metadata JSON", str(ex)),
+            exc_info=sys.exc_info(),
+        )
+
+
+def encode_auth_credentials(username, user_id):
+    token_claim = {
+        "username": username,
+        "user_id": user_id,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+    }
+    return jwt.encode(payload=token_claim, key=constants.SECRET_KEY, algorithm="HS256")
+
+
+def decode_auth_credentials(
+    request: Request,
+    http_auth_credentials: HTTPAuthorizationCredentials,
+):
+    try:
+        token_claims = jwt.decode(
+            jwt=http_auth_credentials.credentials,
+            key=constants.SECRET_KEY,
+            algorithms=["HS256"],
+        )
+
+        username = token_claims.get("username")
+        user_id = token_claims.get("user_id")
+
+        if username and user_id:
+            request.state.user_details = {
+                'username': username,
+                'user_id': user_id,
+            }
+        else:
+            raise_http_exception(
+                request,
+                http.HTTPStatus.UNAUTHORIZED,
+                error="Incorrect Credentials",
+            )
+    except PyJWTError as ex:
+        raise_http_exception(
+            request,
+            http.HTTPStatus.BAD_REQUEST,
+            get_err_msg("Invalid Credentials", str(ex)),
+            exc_info=sys.exc_info(),
+        )

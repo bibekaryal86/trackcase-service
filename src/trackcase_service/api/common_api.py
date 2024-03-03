@@ -16,6 +16,7 @@ from src.trackcase_service.service.hearing_calendar_service import (
 from src.trackcase_service.service.hearing_type_service import get_hearing_type_service
 from src.trackcase_service.service.schemas import (
     CalendarEvent,
+    CalendarObjectTypes,
     CalendarResponse,
     HearingCalendar,
     TaskCalendar,
@@ -25,7 +26,6 @@ from src.trackcase_service.service.task_calendar_service import (
 )
 from src.trackcase_service.service.task_type_service import get_task_type_service
 from src.trackcase_service.utils import constants
-from src.trackcase_service.utils.constants import CalendarObjectTypes
 
 router = APIRouter(prefix="/trackcase-service/common", tags=["Common"])
 
@@ -122,12 +122,16 @@ def _get_calendar_events(
             type=task_calendar.task_type.name,
             date=task_calendar.task_date,
             status=check_and_set_status(task_calendar.status, task_calendar.task_date),
-            title=task_calendar.form.court_case.client.name
-            if task_calendar.form_id
-            else task_calendar.hearing_calendar.court_case.client.name,
-            court_case_id=task_calendar.form.court_case_id
-            if task_calendar.form_id
-            else task_calendar.hearing_calendar.court_case_id,
+            title=(
+                task_calendar.form.court_case.client.name
+                if task_calendar.form_id
+                else task_calendar.hearing_calendar.court_case.client.name
+            ),
+            court_case_id=(
+                task_calendar.form.court_case_id
+                if task_calendar.form_id
+                else task_calendar.hearing_calendar.court_case_id
+            ),
         )
         calendar_events.append(calendar_event)
     return calendar_events

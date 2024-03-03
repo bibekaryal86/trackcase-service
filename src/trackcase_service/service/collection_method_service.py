@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -41,6 +42,7 @@ class CollectionMethodService(CrudService):
                 get_err_msg(
                     "Error Inserting CollectionMethod. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_collection_method(
@@ -69,6 +71,7 @@ class CollectionMethodService(CrudService):
                     f"Error Retrieving CollectionMethod By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_collection_methods(
@@ -96,6 +99,7 @@ class CollectionMethodService(CrudService):
                 get_err_msg(
                     "Error Retrieving CollectionMethods. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_collection_method(
@@ -127,6 +131,7 @@ class CollectionMethodService(CrudService):
                     f"Error Updating CollectionMethod By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_collection_method(
@@ -154,6 +159,7 @@ class CollectionMethodService(CrudService):
                     f"Error Deleting CollectionMethod By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

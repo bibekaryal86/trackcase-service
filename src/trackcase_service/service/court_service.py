@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -42,6 +43,7 @@ class CourtService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Inserting Court. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_court(
@@ -68,6 +70,7 @@ class CourtService(CrudService):
                     f"Error Retrieving Court By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_courts(
@@ -93,6 +96,7 @@ class CourtService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Retrieving Courts. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_court(
@@ -127,6 +131,7 @@ class CourtService(CrudService):
                     f"Error Updating Court By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_court(self, model_id: int, request: Request) -> CourtResponse:
@@ -153,6 +158,7 @@ class CourtService(CrudService):
                     f"Error Deleting Court By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

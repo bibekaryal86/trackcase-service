@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -34,6 +35,7 @@ class CaseTypeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Inserting CaseType. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_case_type(
@@ -60,6 +62,7 @@ class CaseTypeService(CrudService):
                     f"Error Retrieving CaseType By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_case_types(
@@ -85,6 +88,7 @@ class CaseTypeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Retrieving CaseTypes. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_case_type(
@@ -114,6 +118,7 @@ class CaseTypeService(CrudService):
                     f"Error Updating CaseType By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_case_type(self, model_id: int, request: Request) -> CaseTypeResponse:
@@ -137,6 +142,7 @@ class CaseTypeService(CrudService):
                     f"Error Deleting CaseType By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

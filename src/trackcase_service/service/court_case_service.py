@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -44,6 +45,7 @@ class CourtCaseService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Inserting CourtCase. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_court_case(
@@ -70,6 +72,7 @@ class CourtCaseService(CrudService):
                     f"Error Retrieving CourtCase By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_court_cases(
@@ -88,9 +91,9 @@ class CourtCaseService(CrudService):
                 )
                 for data_model in data_models
             ]
-            sorted_schema_models: List[
-                CourtCaseSchema
-            ] = _sort_court_case_by_client_name(schema_models)
+            sorted_schema_models: List[CourtCaseSchema] = (
+                _sort_court_case_by_client_name(schema_models)
+            )
             return get_response_multiple(sorted_schema_models)
         except Exception as ex:
             raise_http_exception(
@@ -99,6 +102,7 @@ class CourtCaseService(CrudService):
                 get_err_msg(
                     "Error Retrieving CourtCases. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_court_case(
@@ -135,6 +139,7 @@ class CourtCaseService(CrudService):
                     f"Error Updating CourtCase By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_court_case(
@@ -165,6 +170,7 @@ class CourtCaseService(CrudService):
                     f"Error Deleting CourtCase By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

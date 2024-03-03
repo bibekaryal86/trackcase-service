@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -44,6 +45,7 @@ class CashCollectionService(CrudService):
                 get_err_msg(
                     "Error Inserting CashCollection. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_cash_collection(
@@ -72,6 +74,7 @@ class CashCollectionService(CrudService):
                     f"Error Retrieving CashCollection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_cash_collections(
@@ -99,6 +102,7 @@ class CashCollectionService(CrudService):
                 get_err_msg(
                     "Error Retrieving CashCollections. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_cash_collection(
@@ -129,6 +133,7 @@ class CashCollectionService(CrudService):
                     f"Error Updating CashCollection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_cash_collection(
@@ -156,6 +161,7 @@ class CashCollectionService(CrudService):
                     f"Error Deleting CashCollection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

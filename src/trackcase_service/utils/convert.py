@@ -20,22 +20,19 @@ def _get_default_value(field: FieldInfo):
             return Decimal("0.00")
         elif field_type_name == "list":
             return []
+        elif field_type_name == "bool":
+            return False
     return field.default
 
 
 # this is required because Pydantic doesn't allow creating empty instance
 # so create an instance with default empty values according to type
 def _create_default_schema_instance(destination_class):
-    is_allow_empty_status = hasattr(destination_class, "allow_empty_status")
-    if is_allow_empty_status:
-        destination_class.allow_empty_status = True
     fields = destination_class.__fields__
     required_fields = {
         name: _get_default_value(field) for name, field in fields.items()
     }
     destination_object = destination_class(**required_fields)
-    if is_allow_empty_status:
-        destination_class.allow_empty_status = False
     return destination_object
 
 
@@ -63,7 +60,7 @@ def _copy_objects(
             value = getattr(source_object, attr)
             if value and isinstance(value, str):
                 setattr(destination_object, attr, value.strip().upper())
-            elif value:
+            elif isinstance(value, bool) or value:
                 setattr(destination_object, attr, value)
             else:
                 setattr(destination_object, attr, None)
@@ -229,17 +226,17 @@ def convert_court_model_to_schema(
 
 
 def convert_form_model_to_schema(
-    data_model: models.Form,
+    data_model: models.Filing,
     is_include_extra=False,
     is_include_history=False,
-) -> schemas.Form:
+) -> schemas.Filing:
     exclusions = [
         "task_calendars",
         "history_forms",
         "history_task_calendars",
     ]
-    data_schema: schemas.Form = convert_data_model_to_schema(
-        data_model, schemas.Form, exclusions
+    data_schema: schemas.Filing = convert_data_model_to_schema(
+        data_model, schemas.Filing, exclusions
     )
     if is_include_extra:
         setattr(data_schema, "task_calendars", data_model.task_calendars)
@@ -249,13 +246,13 @@ def convert_form_model_to_schema(
 
 
 def convert_form_type_model_to_schema(
-    data_model: models.FormType,
+    data_model: models.FilingType,
     is_include_extra=False,
     is_include_history=False,
-) -> schemas.FormType:
+) -> schemas.FilingType:
     exclusions = ["forms", "history_forms"]
-    data_schema: schemas.FormType = convert_data_model_to_schema(
-        data_model, schemas.FormType, exclusions
+    data_schema: schemas.FilingType = convert_data_model_to_schema(
+        data_model, schemas.FilingType, exclusions
     )
     if is_include_extra:
         setattr(data_schema, "forms", data_model.forms)
@@ -351,4 +348,27 @@ def convert_task_type_model_to_schema(
         setattr(data_schema, "task_calendars", data_model.task_calendars)
     if is_include_history:
         pass
+    return data_schema
+
+
+def convert_model_to_schema(
+    data_model,
+    schema_class,
+    is_include_extra: bool = False,
+    is_include_history: bool = False,
+    exclusions=None,
+    extra_to_include=None,
+    history_to_include=None,
+):
+    if extra_to_include is None:
+        extra_to_include = []
+    if history_to_include is None:
+        history_to_include = []
+    data_schema = convert_data_model_to_schema(data_model, schema_class, exclusions)
+    if is_include_extra and extra_to_include:
+        for extra in extra_to_include:
+            setattr(data_schema, extra, getattr(data_model, extra))
+    if is_include_history and history_to_include:
+        for history in history_to_include:
+            setattr(data_schema, history, getattr(data_model, history))
     return data_schema

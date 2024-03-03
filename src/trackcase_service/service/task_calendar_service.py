@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -44,6 +45,7 @@ class TaskCalendarService(CrudService):
                 get_err_msg(
                     "Error Inserting TaskCalendar. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_task_calendar(
@@ -72,6 +74,7 @@ class TaskCalendarService(CrudService):
                     f"Error Retrieving TaskCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_task_calendars(
@@ -99,6 +102,7 @@ class TaskCalendarService(CrudService):
                 get_err_msg(
                     "Error Retrieving TaskCalendars. Please Try Again!!!", str(ex)
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_task_calendar(
@@ -131,6 +135,7 @@ class TaskCalendarService(CrudService):
                     f"Error Updating TaskCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_task_calendar(
@@ -160,6 +165,7 @@ class TaskCalendarService(CrudService):
                     f"Error Deleting TaskCalendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 

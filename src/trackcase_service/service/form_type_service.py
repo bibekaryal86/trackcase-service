@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 
@@ -5,9 +6,10 @@ from fastapi import Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
-from src.trackcase_service.db.models import FormType as FormTypeModel
-from src.trackcase_service.service.schemas import FormType as FormTypeSchema
-from src.trackcase_service.service.schemas import FormTypeRequest, FormTypeResponse
+from src.trackcase_service.db.models import FilingType as FormTypeModel
+from src.trackcase_service.service.schemas import FilingType as FormTypeSchema
+from src.trackcase_service.service.schemas import FilingTypeRequest as FormTypeRequest
+from src.trackcase_service.service.schemas import FilingTypeResponse as FormTypeResponse
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_form_type_model_to_schema,
@@ -34,6 +36,7 @@ class FormTypeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Inserting FormType. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def read_one_form_type(
@@ -60,6 +63,7 @@ class FormTypeService(CrudService):
                     f"Error Retrieving FormType By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def read_all_form_types(
@@ -85,6 +89,7 @@ class FormTypeService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg("Error Retrieving FormTypes. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
             )
 
     def update_one_form_type(
@@ -114,6 +119,7 @@ class FormTypeService(CrudService):
                     f"Error Updating FormType By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
     def delete_one_form_type(self, model_id: int, request: Request) -> FormTypeResponse:
@@ -137,6 +143,7 @@ class FormTypeService(CrudService):
                     f"Error Deleting FormType By Id: {model_id}. Please Try Again!!!",
                     str(ex),
                 ),
+                exc_info=sys.exc_info(),
             )
 
 
