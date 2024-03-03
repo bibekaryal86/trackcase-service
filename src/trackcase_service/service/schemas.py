@@ -144,6 +144,23 @@ class AppUser(AppUserBase, BaseModelSchema):
     component_status: Optional[ComponentStatus] = None
     app_roles: list["AppRole"] = []
 
+    def to_token(self):
+        return {
+            "id": self.id,
+            "is_deleted": self.is_deleted,
+            "email": self.email,
+            "name": self.full_name,
+            "status": {
+                "id": self.component_status_id,
+                "name": (
+                    self.component_status.status_name if self.component_status else None
+                ),
+            },
+            "roles": [
+                {"name": role.id, "description": role.name} for role in self.app_roles
+            ],
+        }
+
 
 class AppUserRequest(AppUserBase, RequestBase):
     # Required for insert, Optional for update, enforced in user_management

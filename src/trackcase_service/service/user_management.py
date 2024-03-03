@@ -48,12 +48,10 @@ class AppUserPasswordService:
             is_login_success = self.verify_password(app_user_data_model.password)
 
             if is_login_success:
-                token_claim = encode_auth_credentials(
-                    self.user_name, app_user_data_model.id
-                )
                 app_user_schema_model = convert_user_management_model_to_schema(
                     app_user_data_model, schemas.AppUser
                 )
+                token_claim = encode_auth_credentials(app_user_schema_model)
                 return schemas.AppUserLoginResponse(
                     token=token_claim, app_user_details=app_user_schema_model
                 )

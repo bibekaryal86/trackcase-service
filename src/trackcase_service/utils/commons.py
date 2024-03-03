@@ -199,10 +199,10 @@ def parse_request_metadata(
         )
 
 
-def encode_auth_credentials(username, user_id):
+def encode_auth_credentials(app_user: schemas.AppUser):
     token_claim = {
-        "username": username,
-        "user_id": user_id,
+        "username": app_user.email,
+        "app_user_token": app_user.to_token(),
         "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
     }
     return jwt.encode(payload=token_claim, key=constants.SECRET_KEY, algorithm="HS256")
@@ -220,12 +220,12 @@ def decode_auth_credentials(
         )
 
         username = token_claims.get("username")
-        user_id = token_claims.get("user_id")
+        app_user_token = token_claims.get("app_user_token")
 
-        if username and user_id:
+        if username and app_user_token:
             request.state.user_details = {
-                'username': username,
-                'user_id': user_id,
+                "username": username,
+                "app_user_token": app_user_token,
             }
         else:
             raise_http_exception(
