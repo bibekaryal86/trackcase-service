@@ -13,5 +13,3 @@ backend service for trackcase
   * python -m src.trackcase_service.main
 * For History
   * To retrieve history, use the `find_one` endpoint with `is_include_history=True`
-
-# add user email validation (use python magic link???)
