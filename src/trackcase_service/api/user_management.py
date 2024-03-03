@@ -15,19 +15,7 @@ router = APIRouter(
 
 
 # app users
-@router.post(
-    "/app_users/", response_model=schemas.AppUserResponse, status_code=HTTPStatus.OK
-)
-def insert_app_user(
-    request: Request,
-    app_user_request: schemas.AppUserRequest,
-    db_session: Session = Depends(get_db_session),
-):
-    return get_user_management_service(
-        schemas.UserManagementServiceRegistry.APP_USER, db_session
-    ).create_app_user(request, app_user_request)
-
-
+# create_app_user is in main.py
 @router.get(
     "/app_users/", response_model=schemas.AppUserResponse, status_code=HTTPStatus.OK
 )

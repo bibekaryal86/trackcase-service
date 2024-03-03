@@ -33,7 +33,10 @@ from src.trackcase_service.api import (
 )
 from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service import schemas
-from src.trackcase_service.service.user_management import get_user_password_service
+from src.trackcase_service.service.user_management import (
+    get_user_management_service,
+    get_user_password_service,
+)
 from src.trackcase_service.utils import commons, constants, logger
 from src.trackcase_service.utils.commons import decode_auth_credentials
 
@@ -167,7 +170,6 @@ async def custom_docs_url(
     "/trackcase-service/tests/ping/",
     tags=["Main"],
     summary="Ping Application",
-    include_in_schema=True,
 )
 def ping(db_session: Session = Depends(get_db_session)):
     try:
@@ -183,7 +185,7 @@ def ping(db_session: Session = Depends(get_db_session)):
 
 
 @app.post(
-    "/trackcase-service/login/",
+    "/trackcase-service/main/login/",
     response_model=schemas.AppUserLoginResponse,
     status_code=HTTPStatus.OK,
     include_in_schema=False,
@@ -196,6 +198,22 @@ def login_app_user(
     return get_user_password_service(
         login_request.password, login_request.username
     ).login_user(request, db_session)
+
+
+@app.post(
+    "/trackcase-service/main/create_user/",
+    response_model=schemas.AppUserResponse,
+    status_code=HTTPStatus.OK,
+    include_in_schema=False,
+)
+def insert_app_user(
+    request: Request,
+    app_user_request: schemas.AppUserRequest,
+    db_session: Session = Depends(get_db_session),
+):
+    return get_user_management_service(
+        schemas.UserManagementServiceRegistry.APP_USER, db_session
+    ).create_app_user(request, app_user_request)
 
 
 if __name__ == "__main__":
