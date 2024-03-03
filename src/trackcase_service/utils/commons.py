@@ -62,6 +62,14 @@ def get_err_msg(msg: str, err_msg: str = ""):
     return msg + "\n" + err_msg
 
 
+def get_auth_user_token(request: Request) -> dict:
+    return request.state.user_details
+
+
+def set_auth_user_token(request: Request, app_user_token: dict):
+    request.state.user_details = app_user_token
+
+
 def raise_http_exception(
     request: Request,
     sts_code: http.HTTPStatus | int,
@@ -201,7 +209,6 @@ def parse_request_metadata(
 
 def encode_auth_credentials(app_user: schemas.AppUser):
     token_claim = {
-        "username": app_user.email,
         "app_user_token": app_user.to_token(),
         "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
     }
@@ -219,14 +226,10 @@ def decode_auth_credentials(
             algorithms=["HS256"],
         )
 
-        username = token_claims.get("username")
         app_user_token = token_claims.get("app_user_token")
 
-        if username and app_user_token:
-            request.state.user_details = {
-                "username": username,
-                "app_user_token": app_user_token,
-            }
+        if app_user_token:
+            set_auth_user_token(request, app_user_token)
         else:
             raise_http_exception(
                 request,
