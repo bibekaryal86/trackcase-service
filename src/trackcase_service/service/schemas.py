@@ -137,6 +137,8 @@ class AppUserBase(AddressBase):
     email: str
     full_name: str
     component_status_id: int
+    is_validated: bool
+    last_login: Optional[datetime] = None
     comments: Optional[str] = None
 
 

@@ -2,7 +2,6 @@ import logging
 import os
 import time
 from contextlib import asynccontextmanager
-from http import HTTPStatus
 
 import uvicorn
 from fastapi import Depends, FastAPI, Request
@@ -30,13 +29,9 @@ from src.trackcase_service.api import (
     task_calendar_api,
     task_type_api,
     user_management,
+    user_management_noauth,
 )
 from src.trackcase_service.db.session import get_db_session
-from src.trackcase_service.service import schemas
-from src.trackcase_service.service.user_management import (
-    get_user_management_service,
-    get_user_password_service,
-)
 from src.trackcase_service.utils import commons, constants, logger
 from src.trackcase_service.utils.commons import decode_auth_credentials
 
@@ -80,6 +75,9 @@ def validate_credentials(
 app.include_router(
     user_management.router,
     dependencies=[Depends(validate_credentials)],
+)
+app.include_router(
+    user_management_noauth.router,
 )
 app.include_router(
     case_collection_api.router,
@@ -182,38 +180,6 @@ def ping(db_session: Session = Depends(get_db_session)):
             return {"ping": "successful", "ping_db": "successful: no_result"}
     except OperationalError as ex:
         return {"ping": "successful", "ping_db": f"exception: {str(ex)}"}
-
-
-@app.post(
-    "/trackcase-service/main/login/",
-    response_model=schemas.AppUserLoginResponse,
-    status_code=HTTPStatus.OK,
-    include_in_schema=False,
-)
-def login_app_user(
-    request: Request,
-    login_request: schemas.AppUserLoginRequest,
-    db_session: Session = Depends(get_db_session),
-):
-    return get_user_password_service(
-        login_request.password, login_request.username
-    ).login_user(request, db_session)
-
-
-@app.post(
-    "/trackcase-service/main/create_user/",
-    response_model=schemas.AppUserResponse,
-    status_code=HTTPStatus.OK,
-    include_in_schema=False,
-)
-def insert_app_user(
-    request: Request,
-    app_user_request: schemas.AppUserRequest,
-    db_session: Session = Depends(get_db_session),
-):
-    return get_user_management_service(
-        schemas.UserManagementServiceRegistry.APP_USER, db_session
-    ).create_app_user(request, app_user_request)
 
 
 if __name__ == "__main__":

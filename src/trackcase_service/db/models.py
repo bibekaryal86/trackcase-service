@@ -127,6 +127,8 @@ class AppUser(TableBase, AddressBase, Base):
     email = Column(String(250), nullable=False, unique=True)
     password = Column(String(250), nullable=False)
     full_name = Column(String(250), nullable=False)
+    is_validated = Column(Boolean, nullable=False)
+    last_login = Column(DateTime, nullable=True)
     component_status_id = Column(
         ForeignKey(
             "component_status.id",

@@ -1,3 +1,4 @@
+import datetime
 import logging
 import sys
 from http import HTTPStatus
@@ -33,7 +34,9 @@ class AppUserPasswordService:
     def login_user(
         self, request: Request, db_session: Session
     ) -> schemas.AppUserLoginResponse:
-        read_response = CrudService(db_session, models.AppUser).read(
+        crud_service = CrudService(db_session, models.AppUser)
+
+        read_response = crud_service.read(
             filter_config=[
                 schemas.FilterConfig(
                     column="email",
@@ -45,21 +48,39 @@ class AppUserPasswordService:
         app_user_data_models = read_response.get(DataKeys.data)
         if app_user_data_models and len(app_user_data_models) == 1:
             app_user_data_model: models.AppUser = app_user_data_models[0]
-            is_login_success = self.verify_password(app_user_data_model.password)
 
-            if is_login_success:
-                app_user_schema_model = convert_user_management_model_to_schema(
-                    app_user_data_model, schemas.AppUser
-                )
-                token_claim = encode_auth_credentials(app_user_schema_model)
-                return schemas.AppUserLoginResponse(
-                    token=token_claim, app_user_details=app_user_schema_model
-                )
+            if app_user_data_model.is_validated:
+                is_login_success = self.verify_password(app_user_data_model.password)
+
+                if is_login_success:
+                    app_user_data_model.last_login = datetime.datetime.now()
+                    crud_service.update(app_user_data_model.id, app_user_data_model)
+
+                    app_user_schema_model = convert_user_management_model_to_schema(
+                        app_user_data_model, schemas.AppUser
+                    )
+                    token_claim = encode_auth_credentials(app_user_schema_model)
+                    return schemas.AppUserLoginResponse(
+                        token=token_claim, app_user_details=app_user_schema_model
+                    )
+                else:
+                    log.info(
+                        "Logging Unsuccessful, password not match for email: [ {} ]".format(
+                            self.user_name
+                        )
+                    )
             else:
                 log.info(
-                    "Logging Unsuccessful, password not match for email: [ {} ]".format(
+                    "Logging Unsuccessful, user not validated, please check email: [ {} ]".format(
                         self.user_name
                     )
+                )
+                raise_http_exception(
+                    request,
+                    HTTPStatus.FORBIDDEN,
+                    "Logging Unsuccessful, user not validated, please check email: [ {} ]".format(
+                        self.user_name
+                    ),
                 )
         else:
             log.info(
@@ -105,6 +126,7 @@ class AppUserService(CrudService):
                 request_object, models.AppUser
             )
             data_model.password = get_user_password_service(request_object.password)
+            data_model.is_validated = False
             data_model = self.create(data_model)
             schema_model = convert_user_management_model_to_schema(
                 data_model, schemas.AppUser
