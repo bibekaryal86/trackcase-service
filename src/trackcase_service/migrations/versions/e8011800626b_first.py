@@ -151,7 +151,7 @@ def upgrade() -> None:
         sa.Column("full_name", sa.String(length=250), nullable=False),
         sa.Column("component_status_id", sa.Integer(), nullable=False),
         sa.Column("is_validated", sa.Boolean, nullable=False),
-        sa.Column('last_login', sa.DateTime(), nullable=True),
+        sa.Column("last_login", sa.DateTime(), nullable=True),
         sa.Column("comments", sa.String(length=10000), nullable=True),
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),

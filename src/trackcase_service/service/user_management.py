@@ -22,6 +22,7 @@ from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
     convert_request_schema_to_model,
 )
+from src.trackcase_service.utils.email import get_email_service
 
 log = logger.Logger(logging.getLogger(__name__))
 
@@ -163,6 +164,9 @@ class AppUserService(CrudService):
             schema_model = convert_user_management_model_to_schema(
                 data_model, schemas.AppUser
             )
+
+            get_email_service().app_user_validation_email(request, data_model.email)
+
             return schemas.AppUserResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(

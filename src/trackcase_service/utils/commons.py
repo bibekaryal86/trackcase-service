@@ -2,6 +2,7 @@ import datetime
 import http
 import json
 import logging
+import os
 import sys
 from typing import Optional
 
@@ -41,8 +42,14 @@ def validate_input():
         missing_variables.append("REPO_HOME")
     if constants.SECRET_KEY is None:
         missing_variables.append("SECRET_KEY")
-    if constants.CORS_ORIGINS is None:
+    if constants.CORS_ORIGINS is None or len(constants.CORS_ORIGINS) == 0:
         missing_variables.append("CORS_ORIGINS")
+    if constants.MJ_PUBLIC is None:
+        missing_variables.append("MJ_PUBLIC")
+    if constants.MJ_PRIVATE is None:
+        missing_variables.append("MJ_PRIVATE")
+    if constants.MJ_EMAIL is None:
+        missing_variables.append("MJ_EMAIL")
 
     if len(missing_variables) != 0:
         raise ValueError(
@@ -243,3 +250,11 @@ def decode_auth_credentials(
             get_err_msg("Invalid Credentials", str(ex)),
             exc_info=sys.exc_info(),
         )
+
+
+def read_file(file_name):
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.join(script_dir, file_name)
+    with open(file_path, "r") as file:
+        content = file.read()
+    return content

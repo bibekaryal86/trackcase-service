@@ -5,7 +5,10 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service import schemas
-from src.trackcase_service.service.user_management import get_user_management_service, get_user_password_service
+from src.trackcase_service.service.user_management import (
+    get_user_management_service,
+    get_user_password_service,
+)
 
 router = APIRouter(
     prefix="/trackcase-service/users/na",
@@ -56,4 +59,6 @@ def validate_app_user(
     email: str,
     db_session: Session = Depends(get_db_session),
 ):
-    return get_user_password_service(plain_password=None, user_name=email).validate_user(request, db_session)
+    return get_user_password_service(
+        plain_password=None, user_name=email
+    ).validate_user(request, db_session)

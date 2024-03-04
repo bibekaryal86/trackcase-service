@@ -37,6 +37,9 @@ DB_NAME = get_settings().db_name
 REPO_HOME = get_settings().repo_home
 SECRET_KEY = get_settings().secret_key
 CORS_ORIGINS = get_settings().cors_origins
+MJ_PUBLIC = get_settings().mj_public
+MJ_PRIVATE = get_settings().mj_private
+MJ_EMAIL = get_settings().mj_email
 
 
 @lru_cache()
