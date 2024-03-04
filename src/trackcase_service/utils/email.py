@@ -28,12 +28,12 @@ class Email:
                 {
                     "From": {
                         "Email": self.api_email,
-                        "Name": "TrackCase Service (Activate Account)",
+                        "Name": f"TrackCase Service {self.api_email}",
                     },
                     "To": [
                         {
                             "Email": user_name,
-                            "Name": f"{user_name} TrackCase Service",
+                            "Name": f"TrackCase Service {user_name}",
                         }
                     ],
                     "Subject": "TrackCase Service (Activate)",
@@ -42,17 +42,10 @@ class Email:
             ]
         }
         result = self.mailjet.send.create(data=data)
-
-        result_messages = result.get("Messages", {})
-        if (
-            result_messages
-            and len(result_messages) > 0
-            and result_messages[0].get("Success") == "success"
-        ):
-            pass
-        else:
+        if result.status_code != HTTPStatus.OK:
             raise_http_exception(
-                request=request, sts_code=HTTPStatus.UNPROCESSABLE_ENTITY
+                request=request, sts_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+                error="Failure to send validation email"
             )
 
 
