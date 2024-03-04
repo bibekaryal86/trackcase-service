@@ -27,7 +27,7 @@ log = logger.Logger(logging.getLogger(__name__))
 
 
 class AppUserPasswordService:
-    def __init__(self, plain_password: str, user_name: str = None):
+    def __init__(self, plain_password: str = None, user_name: str = None):
         self.plain_password = plain_password
         self.user_name = user_name
 
@@ -92,7 +92,39 @@ class AppUserPasswordService:
         raise_http_exception(
             request,
             HTTPStatus.UNAUTHORIZED,
-            "Logging Unsuccessful! Email and/or password not found in system!! Please try again!!!",
+            "Login Unsuccessful! Email and/or password not found in system!! Please try again!!!",
+        )
+
+    def validate_user(
+        self, request: Request, db_session: Session
+    ) -> schemas.AppUserLoginResponse:
+        crud_service = CrudService(db_session, models.AppUser)
+
+        read_response = crud_service.read(
+            filter_config=[
+                schemas.FilterConfig(
+                    column="email",
+                    value=self.user_name.upper(),
+                    operation=schemas.FilterOperation.EQUAL_TO,
+                )
+            ]
+        )
+        app_user_data_models = read_response.get(DataKeys.data)
+        if app_user_data_models and len(app_user_data_models) == 1:
+            app_user_data_model: models.AppUser = app_user_data_models[0]
+            app_user_data_model.is_validated = True
+            crud_service.update(app_user_data_model.id, app_user_data_model)
+            app_user_schema_model = convert_user_management_model_to_schema(
+                app_user_data_model, schemas.AppUser
+            )
+            token_claim = encode_auth_credentials(app_user_schema_model)
+            return schemas.AppUserLoginResponse(
+                token=token_claim, app_user_details=app_user_schema_model
+            )
+        raise_http_exception(
+            request,
+            HTTPStatus.UNAUTHORIZED,
+            "Validate Unsuccessful! Email not found in system!! Please try again!!!",
         )
 
     def hash_password(self) -> str:
@@ -784,7 +816,7 @@ def get_user_management_service(
 
 
 def get_user_password_service(
-    plain_password: str, user_name: str = None
+    plain_password: str = None, user_name: str = None
 ) -> AppUserPasswordService:
     return AppUserPasswordService(plain_password, user_name)
 
