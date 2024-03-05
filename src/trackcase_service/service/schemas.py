@@ -314,6 +314,20 @@ class CaseTypeResponse(ResponseBase):
     data: list[CaseType] = []
 
 
+# common ref types
+class RefTypesResponseData(BaseSchema):
+    component_statuses: list[ComponentStatus] = []
+    collection_methods: list[CollectionMethod] = []
+    case_types: list[CaseType] = []
+    filing_types: list[FilingType] = []
+    hearing_types: list[HearingType] = []
+    task_types: list[TaskType] = []
+
+
+class RefTypesResponse(ResponseBase):
+    data: RefTypesResponseData
+
+
 # court
 class CourtBase(AddressBase):
     name: str
@@ -716,3 +730,12 @@ class UserManagementServiceRegistry(str, Enum):
     APP_PERMISSION = "app_permission"
     APP_USER_ROLE = "app_user_role"
     APP_ROLE_PERMISSION = "app_role_permission"
+
+
+class RefTypesServiceRegistry(str, Enum):
+    COMPONENT_STATUS = "component_status"
+    COLLECTION_METHOD = "collection_method"
+    CASE_TYPE = "case_type"
+    FILING_TYPE = "filing_type"
+    HEARING_TYPE = "hearing_type"
+    TASK_TYPE = "task_type"

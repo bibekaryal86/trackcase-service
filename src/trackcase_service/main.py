@@ -26,6 +26,7 @@ from src.trackcase_service.api import (
     hearing_calendar_api,
     hearing_type_api,
     judge_api,
+    ref_types,
     task_calendar_api,
     task_type_api,
     user_management,
@@ -72,6 +73,10 @@ def validate_credentials(
     decode_auth_credentials(request, http_auth_credentials)
 
 
+app.include_router(
+    ref_types.router,
+    dependencies=[Depends(validate_credentials)],
+)
 app.include_router(
     user_management.router,
     dependencies=[Depends(validate_credentials)],

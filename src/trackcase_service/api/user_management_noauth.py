@@ -20,7 +20,7 @@ router = APIRouter(
 
 
 @router.post(
-    "/create/",
+    "/app_users/create/",
     response_model=schemas.AppUserResponse,
     status_code=HTTPStatus.OK,
     include_in_schema=False,
@@ -36,7 +36,7 @@ def insert_app_user(
 
 
 @router.post(
-    "/login/",
+    "/app_users/login/",
     response_model=schemas.AppUserLoginResponse,
     status_code=HTTPStatus.OK,
     include_in_schema=False,
@@ -52,7 +52,7 @@ def login_app_user(
 
 
 @router.get(
-    "/validate/",
+    "/app_users/validate/",
     include_in_schema=False,
 )
 def validate_app_user(
@@ -72,7 +72,7 @@ def validate_app_user(
 
 
 @router.get(
-    "/reset_init/",
+    "/app_users/reset_init/",
     include_in_schema=False,
 )
 def reset_app_user(
@@ -86,7 +86,7 @@ def reset_app_user(
 
 
 @router.get(
-    "/reset_exit/",
+    "/app_users/reset_exit/",
     include_in_schema=False,
 )
 def reset_app_user(

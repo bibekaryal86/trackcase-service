@@ -175,7 +175,7 @@ class AppUserService(CrudService):
             )
 
     def read_app_user(
-        self, request: Request, metadata: schemas.RequestMetadata
+        self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppUserResponse:
         try:
             if metadata is not None and metadata.request_object_id is not None:
@@ -302,7 +302,7 @@ class AppRoleService(CrudService):
             )
 
     def read_app_role(
-        self, request: Request, metadata: schemas.RequestMetadata
+        self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppRoleResponse:
         try:
             if metadata is not None and metadata.request_object_id is not None:
@@ -427,7 +427,7 @@ class AppPermissionService(CrudService):
             )
 
     def read_app_permission(
-        self, request: Request, metadata: schemas.RequestMetadata
+        self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppPermissionResponse:
         try:
             if metadata is not None and metadata.request_object_id is not None:
@@ -557,7 +557,7 @@ class AppUserRoleService(CrudService):
             )
 
     def read_app_user_role(
-        self, request: Request, metadata: schemas.RequestMetadata
+        self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppUserRoleResponse:
         try:
             if metadata is not None and metadata.request_object_id is not None:
@@ -691,7 +691,7 @@ class AppRolePermissionService(CrudService):
             )
 
     def read_app_role_permission(
-        self, request: Request, metadata: schemas.RequestMetadata
+        self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppRolePermissionResponse:
         try:
             if metadata is not None and metadata.request_object_id is not None:
