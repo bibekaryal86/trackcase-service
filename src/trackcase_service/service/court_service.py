@@ -31,9 +31,7 @@ class CourtService(CrudService):
         self, request: Request, request_object: CourtRequest
     ) -> CourtResponse:
         try:
-            data_model: CourtModel = convert_schema_to_model(
-                request_object, CourtModel
-            )
+            data_model: CourtModel = convert_schema_to_model(request_object, CourtModel)
             data_model = super().create(data_model)
             _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_court_model_to_schema(data_model)
@@ -116,9 +114,7 @@ class CourtService(CrudService):
         )
 
         try:
-            data_model: CourtModel = convert_schema_to_model(
-                request_object, CourtModel
-            )
+            data_model: CourtModel = convert_schema_to_model(request_object, CourtModel)
             data_model = super().update(model_id, data_model)
             _handle_history(self.db_session, request, model_id, request_object)
             schema_model = convert_court_model_to_schema(data_model)

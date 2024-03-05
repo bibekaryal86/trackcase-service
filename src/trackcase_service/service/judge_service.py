@@ -31,9 +31,7 @@ class JudgeService(CrudService):
         self, request: Request, request_object: JudgeRequest
     ) -> JudgeResponse:
         try:
-            data_model: JudgeModel = convert_schema_to_model(
-                request_object, JudgeModel
-            )
+            data_model: JudgeModel = convert_schema_to_model(request_object, JudgeModel)
             data_model = super().create(data_model)
             _handle_history(self.db_session, request, data_model.id, request_object)
             schema_model = convert_judge_model_to_schema(data_model)
@@ -116,9 +114,7 @@ class JudgeService(CrudService):
         )
 
         try:
-            data_model: JudgeModel = convert_schema_to_model(
-                request_object, JudgeModel
-            )
+            data_model: JudgeModel = convert_schema_to_model(request_object, JudgeModel)
             data_model = super().update(model_id, data_model)
             _handle_history(self.db_session, request, model_id, request_object)
             schema_model = convert_judge_model_to_schema(data_model)

@@ -67,7 +67,13 @@ def _copy_objects(
     return destination_object
 
 
-def convert_schema_to_model(request_schema, model_class, app_user_id=None, history_object_id_key=None, history_object_id_value=None):
+def convert_schema_to_model(
+    request_schema,
+    model_class,
+    app_user_id=None,
+    history_object_id_key=None,
+    history_object_id_value=None,
+):
     data_model = _copy_objects(request_schema, model_class, model_class())
     if history_object_id_key and history_object_id_value:
         setattr(data_model, "app_user_id", app_user_id)

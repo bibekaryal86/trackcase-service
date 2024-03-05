@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Base
-from src.trackcase_service.utils import logger, commons
+from src.trackcase_service.utils import commons, logger
 from src.trackcase_service.utils.convert import convert_schema_to_model
 
 ModelBase = TypeVar("ModelBase", bound=Base)
