@@ -14,7 +14,7 @@ from src.trackcase_service.utils import logger
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
-    convert_request_schema_to_model,
+    convert_schema_to_model,
 )
 
 log = logger.Logger(logging.getLogger(__name__))
@@ -28,7 +28,7 @@ class ComponentStatusService(CrudService):
         self, request: Request, request_object: schemas.ComponentStatusRequest
     ) -> schemas.ComponentStatusResponse:
         try:
-            data_model: models.ComponentStatus = convert_request_schema_to_model(
+            data_model: models.ComponentStatus = convert_schema_to_model(
                 request_object, models.ComponentStatus
             )
             data_model = self.create(data_model)
@@ -114,7 +114,7 @@ class ComponentStatusService(CrudService):
         self.check_component_status_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_request_schema_to_model(
+            data_model: models.AppUser = convert_schema_to_model(
                 request_object, models.ComponentStatus
             )
             data_model = self.update(model_id, data_model)
@@ -163,7 +163,7 @@ class CollectionMethodService(CrudService):
         self, request: Request, request_object: schemas.CollectionMethodRequest
     ) -> schemas.CollectionMethodResponse:
         try:
-            data_model: models.CollectionMethod = convert_request_schema_to_model(
+            data_model: models.CollectionMethod = convert_schema_to_model(
                 request_object, models.CollectionMethod
             )
             data_model = self.create(data_model)
@@ -254,7 +254,7 @@ class CollectionMethodService(CrudService):
         self.check_collection_method_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_request_schema_to_model(
+            data_model: models.AppUser = convert_schema_to_model(
                 request_object, models.CollectionMethod
             )
             data_model = self.update(model_id, data_model)
@@ -303,7 +303,7 @@ class CaseTypeService(CrudService):
         self, request: Request, request_object: schemas.CaseTypeRequest
     ) -> schemas.CaseTypeResponse:
         try:
-            data_model: models.CaseType = convert_request_schema_to_model(
+            data_model: models.CaseType = convert_schema_to_model(
                 request_object, models.CaseType
             )
             data_model = self.create(data_model)
@@ -385,7 +385,7 @@ class CaseTypeService(CrudService):
         self.check_case_type_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_request_schema_to_model(
+            data_model: models.AppUser = convert_schema_to_model(
                 request_object, models.CaseType
             )
             data_model = self.update(model_id, data_model)
@@ -434,7 +434,7 @@ class FilingTypeService(CrudService):
         self, request: Request, request_object: schemas.FilingTypeRequest
     ) -> schemas.FilingTypeResponse:
         try:
-            data_model: models.FilingType = convert_request_schema_to_model(
+            data_model: models.FilingType = convert_schema_to_model(
                 request_object, models.FilingType
             )
             data_model = self.create(data_model)
@@ -518,7 +518,7 @@ class FilingTypeService(CrudService):
         self.check_filing_type_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_request_schema_to_model(
+            data_model: models.AppUser = convert_schema_to_model(
                 request_object, models.FilingType
             )
             data_model = self.update(model_id, data_model)
@@ -567,7 +567,7 @@ class HearingTypeService(CrudService):
         self, request: Request, request_object: schemas.HearingTypeRequest
     ) -> schemas.HearingTypeResponse:
         try:
-            data_model: models.HearingType = convert_request_schema_to_model(
+            data_model: models.HearingType = convert_schema_to_model(
                 request_object, models.HearingType
             )
             data_model = self.create(data_model)
@@ -656,7 +656,7 @@ class HearingTypeService(CrudService):
         self.check_hearing_type_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_request_schema_to_model(
+            data_model: models.AppUser = convert_schema_to_model(
                 request_object, models.HearingType
             )
             data_model = self.update(model_id, data_model)
@@ -705,7 +705,7 @@ class TaskTypeService(CrudService):
         self, request: Request, request_object: schemas.TaskTypeRequest
     ) -> schemas.TaskTypeResponse:
         try:
-            data_model: models.TaskType = convert_request_schema_to_model(
+            data_model: models.TaskType = convert_schema_to_model(
                 request_object, models.TaskType
             )
             data_model = self.create(data_model)
@@ -787,7 +787,7 @@ class TaskTypeService(CrudService):
         self.check_task_type_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_request_schema_to_model(
+            data_model: models.AppUser = convert_schema_to_model(
                 request_object, models.TaskType
             )
             data_model = self.update(model_id, data_model)

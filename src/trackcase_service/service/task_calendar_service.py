@@ -18,7 +18,7 @@ from src.trackcase_service.service.schemas import (
 )
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
-    convert_request_schema_to_model,
+    convert_schema_to_model,
     convert_task_calendar_model_to_schema,
 )
 
@@ -31,7 +31,7 @@ class TaskCalendarService(CrudService):
         self, request: Request, request_object: TaskCalendarRequest
     ) -> TaskCalendarResponse:
         try:
-            data_model: TaskCalendarModel = convert_request_schema_to_model(
+            data_model: TaskCalendarModel = convert_schema_to_model(
                 request_object, TaskCalendarModel
             )
             data_model = super().create(data_model)
@@ -120,7 +120,7 @@ class TaskCalendarService(CrudService):
             )
 
         try:
-            data_model: TaskCalendarModel = convert_request_schema_to_model(
+            data_model: TaskCalendarModel = convert_schema_to_model(
                 request_object, TaskCalendarModel
             )
             data_model = super().update(model_id, data_model)

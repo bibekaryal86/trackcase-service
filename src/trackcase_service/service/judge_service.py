@@ -19,7 +19,7 @@ from src.trackcase_service.utils.commons import (
 from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (
     convert_judge_model_to_schema,
-    convert_request_schema_to_model,
+    convert_schema_to_model,
 )
 
 
@@ -31,7 +31,7 @@ class JudgeService(CrudService):
         self, request: Request, request_object: JudgeRequest
     ) -> JudgeResponse:
         try:
-            data_model: JudgeModel = convert_request_schema_to_model(
+            data_model: JudgeModel = convert_schema_to_model(
                 request_object, JudgeModel
             )
             data_model = super().create(data_model)
@@ -116,7 +116,7 @@ class JudgeService(CrudService):
         )
 
         try:
-            data_model: JudgeModel = convert_request_schema_to_model(
+            data_model: JudgeModel = convert_schema_to_model(
                 request_object, JudgeModel
             )
             data_model = super().update(model_id, data_model)

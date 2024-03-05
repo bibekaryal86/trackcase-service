@@ -20,7 +20,7 @@ from src.trackcase_service.utils.commons import (
 from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (
     convert_form_model_to_schema,
-    convert_request_schema_to_model,
+    convert_schema_to_model,
 )
 
 
@@ -32,7 +32,7 @@ class FormService(CrudService):
         self, request: Request, request_object: FormRequest
     ) -> FormResponse:
         try:
-            data_model: FormModel = convert_request_schema_to_model(
+            data_model: FormModel = convert_schema_to_model(
                 request_object, FormModel
             )
             data_model = super().create(data_model)
@@ -117,7 +117,7 @@ class FormService(CrudService):
         )
 
         try:
-            data_model: FormModel = convert_request_schema_to_model(
+            data_model: FormModel = convert_schema_to_model(
                 request_object, FormModel
             )
             data_model = super().update(model_id, data_model)

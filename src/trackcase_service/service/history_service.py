@@ -8,9 +8,8 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.db.models import Base
-from src.trackcase_service.utils import logger
-from src.trackcase_service.utils.constants import USERNAME_HEADER
-from src.trackcase_service.utils.convert import convert_request_schema_to_history_model
+from src.trackcase_service.utils import logger, commons
+from src.trackcase_service.utils.convert import convert_schema_to_model
 
 ModelBase = TypeVar("ModelBase", bound=Base)
 log = logger.Logger(logging.getLogger(__name__))
@@ -29,11 +28,11 @@ class HistoryService(CrudService):
         parent_type: str,
         history_type: str,
     ):
-        user_name = request.headers.get(USERNAME_HEADER)
-        history_data_model = convert_request_schema_to_history_model(
+        app_user_id = commons.get_auth_user_token(request).get("app_user_id")
+        history_data_model = convert_schema_to_model(
             request_object,
             self.db_model,
-            user_name,
+            app_user_id,
             history_object_id_key,
             history_object_id_value,
         )

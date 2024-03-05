@@ -21,7 +21,7 @@ from src.trackcase_service.utils.commons import (
 )
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
-    convert_request_schema_to_model,
+    convert_schema_to_model,
 )
 from src.trackcase_service.utils.email import get_email_service
 
@@ -153,7 +153,7 @@ class AppUserService(CrudService):
                         "Error Inserting AppUser. Password Missing in Request!!!"
                     ),
                 )
-            data_model: models.AppUser = convert_request_schema_to_model(
+            data_model: models.AppUser = convert_schema_to_model(
                 request_object, models.AppUser
             )
             data_model.password = get_user_password_service(request_object.password)
@@ -234,7 +234,7 @@ class AppUserService(CrudService):
         self.check_app_user_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_request_schema_to_model(
+            data_model: models.AppUser = convert_schema_to_model(
                 request_object, models.AppUser
             )
             if request_object.password:
@@ -285,7 +285,7 @@ class AppRoleService(CrudService):
         self, request: Request, request_object: schemas.AppRoleRequest
     ) -> schemas.AppRoleResponse:
         try:
-            data_model: models.AppRole = convert_request_schema_to_model(
+            data_model: models.AppRole = convert_schema_to_model(
                 request_object, models.AppRole
             )
             data_model = self.create(data_model)
@@ -361,7 +361,7 @@ class AppRoleService(CrudService):
         self.check_app_role_exists(model_id, request)
 
         try:
-            data_model: models.AppRole = convert_request_schema_to_model(
+            data_model: models.AppRole = convert_schema_to_model(
                 request_object, models.AppRole
             )
             data_model = self.update(model_id, data_model)
@@ -408,7 +408,7 @@ class AppPermissionService(CrudService):
         self, request: Request, request_object: schemas.AppPermissionRequest
     ) -> schemas.AppPermissionResponse:
         try:
-            data_model: models.AppPermission = convert_request_schema_to_model(
+            data_model: models.AppPermission = convert_schema_to_model(
                 request_object, models.AppPermission
             )
             data_model = self.create(data_model)
@@ -491,7 +491,7 @@ class AppPermissionService(CrudService):
         self.check_app_permission_exists(model_id, request)
 
         try:
-            data_model: models.AppPermission = convert_request_schema_to_model(
+            data_model: models.AppPermission = convert_schema_to_model(
                 request_object, models.AppPermission
             )
             data_model = self.update(model_id, data_model)
@@ -538,7 +538,7 @@ class AppUserRoleService(CrudService):
         self, request: Request, request_object: schemas.AppUserRoleRequest
     ) -> schemas.AppUserRoleResponse:
         try:
-            data_model: models.AppUserRole = convert_request_schema_to_model(
+            data_model: models.AppUserRole = convert_schema_to_model(
                 request_object, models.AppUserRole
             )
             data_model = self.create(data_model)
@@ -621,7 +621,7 @@ class AppUserRoleService(CrudService):
         self.check_app_user_role_exists(model_id, request)
 
         try:
-            data_model: models.AppUserRole = convert_request_schema_to_model(
+            data_model: models.AppUserRole = convert_schema_to_model(
                 request_object, models.AppUserRole
             )
             data_model = self.update(model_id, data_model)
@@ -670,7 +670,7 @@ class AppRolePermissionService(CrudService):
         self, request: Request, request_object: schemas.AppRolePermissionRequest
     ) -> schemas.AppRolePermissionResponse:
         try:
-            data_model: models.AppRolePermission = convert_request_schema_to_model(
+            data_model: models.AppRolePermission = convert_schema_to_model(
                 request_object, models.AppRolePermission
             )
             data_model = self.create(data_model)
@@ -757,7 +757,7 @@ class AppRolePermissionService(CrudService):
         self.check_app_role_permission_exists(model_id, request)
 
         try:
-            data_model: models.AppRolePermission = convert_request_schema_to_model(
+            data_model: models.AppRolePermission = convert_schema_to_model(
                 request_object, models.AppRolePermission
             )
             data_model = self.update(model_id, data_model)

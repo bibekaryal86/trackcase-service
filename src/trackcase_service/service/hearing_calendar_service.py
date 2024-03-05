@@ -36,7 +36,7 @@ from src.trackcase_service.utils.constants import (
 )
 from src.trackcase_service.utils.convert import (
     convert_hearing_calendar_model_to_schema,
-    convert_request_schema_to_model,
+    convert_schema_to_model,
 )
 
 
@@ -48,7 +48,7 @@ class HearingCalendarService(CrudService):
         self, request: Request, request_object: HearingCalendarRequest
     ) -> HearingCalendarResponse:
         try:
-            data_model: HearingCalendarModel = convert_request_schema_to_model(
+            data_model: HearingCalendarModel = convert_schema_to_model(
                 request_object, HearingCalendarModel
             )
             data_model = super().create(data_model)
@@ -146,7 +146,7 @@ class HearingCalendarService(CrudService):
         )
 
         try:
-            data_model: HearingCalendarModel = convert_request_schema_to_model(
+            data_model: HearingCalendarModel = convert_schema_to_model(
                 request_object, HearingCalendarModel
             )
             data_model = super().update(model_id, data_model)

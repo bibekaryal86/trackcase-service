@@ -19,7 +19,7 @@ from src.trackcase_service.service.schemas import (
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_cash_collection_model_to_schema,
-    convert_request_schema_to_model,
+    convert_schema_to_model,
 )
 
 
@@ -31,7 +31,7 @@ class CashCollectionService(CrudService):
         self, request: Request, request_object: CashCollectionRequest
     ) -> CashCollectionResponse:
         try:
-            data_model: CashCollectionModel = convert_request_schema_to_model(
+            data_model: CashCollectionModel = convert_schema_to_model(
                 request_object, CashCollectionModel
             )
             data_model = super().create(data_model)
@@ -118,7 +118,7 @@ class CashCollectionService(CrudService):
             )
 
         try:
-            data_model: CashCollectionModel = convert_request_schema_to_model(
+            data_model: CashCollectionModel = convert_schema_to_model(
                 request_object, CashCollectionModel
             )
             data_model = super().update(model_id, data_model)

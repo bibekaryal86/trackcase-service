@@ -24,7 +24,7 @@ from src.trackcase_service.utils.commons import (
 from src.trackcase_service.utils.constants import get_statuses
 from src.trackcase_service.utils.convert import (
     convert_case_collection_model_to_schema,
-    convert_request_schema_to_model,
+    convert_schema_to_model,
 )
 
 
@@ -36,7 +36,7 @@ class CaseCollectionService(CrudService):
         self, request: Request, request_object: CaseCollectionRequest
     ) -> CaseCollectionResponse:
         try:
-            data_model: CaseCollectionModel = convert_request_schema_to_model(
+            data_model: CaseCollectionModel = convert_schema_to_model(
                 request_object, CaseCollectionModel
             )
             data_model = super().create(data_model)
@@ -131,7 +131,7 @@ class CaseCollectionService(CrudService):
         )
 
         try:
-            data_model: CaseCollectionModel = convert_request_schema_to_model(
+            data_model: CaseCollectionModel = convert_schema_to_model(
                 request_object, CaseCollectionModel
             )
             data_model = super().update(model_id, data_model)

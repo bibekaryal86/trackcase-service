@@ -67,29 +67,43 @@ def _copy_objects(
     return destination_object
 
 
-def convert_request_schema_to_model(request_schema, model_class):
-    return _copy_objects(request_schema, model_class, model_class())
+def convert_schema_to_model(request_schema, model_class, app_user_id=None, history_object_id_key=None, history_object_id_value=None):
+    data_model = _copy_objects(request_schema, model_class, model_class())
+    if history_object_id_key and history_object_id_value:
+        setattr(data_model, "app_user_id", app_user_id)
+        setattr(data_model, history_object_id_key, history_object_id_value)
+    return data_model
+
+
+def convert_model_to_schema(
+    data_model,
+    schema_class,
+    is_include_extra: bool = False,
+    is_include_history: bool = False,
+    exclusions=None,
+    extra_to_include=None,
+    history_to_include=None,
+):
+    if extra_to_include is None:
+        extra_to_include = []
+    if history_to_include is None:
+        history_to_include = []
+    data_schema = _copy_objects(
+        data_model, schema_class, is_copy_all=True, exclusions=exclusions
+    )
+    if is_include_extra and extra_to_include:
+        for extra in extra_to_include:
+            setattr(data_schema, extra, getattr(data_model, extra))
+    if is_include_history and history_to_include:
+        for history in history_to_include:
+            setattr(data_schema, history, getattr(data_model, history))
+    return data_schema
 
 
 def convert_data_model_to_schema(data_model, schema_class, exclusions=None):
     return _copy_objects(
         data_model, schema_class, is_copy_all=True, exclusions=exclusions
     )
-
-
-def convert_request_schema_to_history_model(
-    request_schema,
-    history_model_class,
-    user_name,
-    history_object_id_key,
-    history_object_id_value,
-):
-    history_model = _copy_objects(
-        request_schema, history_model_class, history_model_class()
-    )
-    setattr(history_model, "user_name", user_name)
-    setattr(history_model, history_object_id_key, history_object_id_value)
-    return history_model
 
 
 def convert_case_collection_model_to_schema(
@@ -111,22 +125,6 @@ def convert_case_collection_model_to_schema(
         setattr(
             data_schema, "history_case_collections", data_model.history_case_collections
         )
-    return data_schema
-
-
-def convert_case_type_model_to_schema(
-    data_model: models.CaseType,
-    is_include_extra=False,
-    is_include_history=False,
-) -> schemas.CaseType:
-    exclusions = ["court_cases", "history_court_cases"]
-    data_schema: schemas.CaseType = convert_data_model_to_schema(
-        data_model, schemas.CaseType, exclusions
-    )
-    if is_include_extra:
-        setattr(data_schema, "court_cases", data_model.court_cases)
-    if is_include_history:
-        pass
     return data_schema
 
 
@@ -161,25 +159,6 @@ def convert_client_model_to_schema(
         setattr(data_schema, "court_cases", data_model.court_cases)
     if is_include_history:
         setattr(data_schema, "history_clients", data_model.history_clients)
-    return data_schema
-
-
-def convert_collection_method_model_to_schema(
-    data_model: models.CollectionMethod,
-    is_include_extra=False,
-    is_include_history=False,
-) -> schemas.CollectionMethod:
-    exclusions = [
-        "cash_collections",
-        "history_cash_collections",
-    ]
-    data_schema: schemas.CollectionMethod = convert_data_model_to_schema(
-        data_model, schemas.CollectionMethod, exclusions
-    )
-    if is_include_extra:
-        setattr(data_schema, "cash_collections", data_model.cash_collections)
-    if is_include_history:
-        pass
     return data_schema
 
 
@@ -245,22 +224,6 @@ def convert_form_model_to_schema(
     return data_schema
 
 
-def convert_form_type_model_to_schema(
-    data_model: models.FilingType,
-    is_include_extra=False,
-    is_include_history=False,
-) -> schemas.FilingType:
-    exclusions = ["forms", "history_forms"]
-    data_schema: schemas.FilingType = convert_data_model_to_schema(
-        data_model, schemas.FilingType, exclusions
-    )
-    if is_include_extra:
-        setattr(data_schema, "forms", data_model.forms)
-    if is_include_history:
-        pass
-    return data_schema
-
-
 def convert_hearing_calendar_model_to_schema(
     data_model: models.HearingCalendar,
     is_include_extra=False,
@@ -282,22 +245,6 @@ def convert_hearing_calendar_model_to_schema(
             "history_hearing_calendars",
             data_model.history_hearing_calendars,
         )
-    return data_schema
-
-
-def convert_hearing_type_model_to_schema(
-    data_model: models.HearingType,
-    is_include_extra=False,
-    is_include_history=False,
-) -> schemas.HearingType:
-    exclusions = ["hearing_calendars", "history_hearing_calendars"]
-    data_schema: schemas.HearingType = convert_data_model_to_schema(
-        data_model, schemas.HearingType, exclusions
-    )
-    if is_include_extra:
-        setattr(data_schema, "hearing_calendars", data_model.hearing_calendars)
-    if is_include_history:
-        pass
     return data_schema
 
 
@@ -332,43 +279,4 @@ def convert_task_calendar_model_to_schema(
         setattr(
             data_schema, "history_task_calendars", data_model.history_task_calendars
         )
-    return data_schema
-
-
-def convert_task_type_model_to_schema(
-    data_model: models.TaskType,
-    is_include_extra=False,
-    is_include_history=False,
-) -> schemas.TaskType:
-    exclusions = ["task_calendars", "history_task_calendars"]
-    data_schema: schemas.TaskType = convert_data_model_to_schema(
-        data_model, schemas.TaskType, exclusions
-    )
-    if is_include_extra:
-        setattr(data_schema, "task_calendars", data_model.task_calendars)
-    if is_include_history:
-        pass
-    return data_schema
-
-
-def convert_model_to_schema(
-    data_model,
-    schema_class,
-    is_include_extra: bool = False,
-    is_include_history: bool = False,
-    exclusions=None,
-    extra_to_include=None,
-    history_to_include=None,
-):
-    if extra_to_include is None:
-        extra_to_include = []
-    if history_to_include is None:
-        history_to_include = []
-    data_schema = convert_data_model_to_schema(data_model, schema_class, exclusions)
-    if is_include_extra and extra_to_include:
-        for extra in extra_to_include:
-            setattr(data_schema, extra, getattr(data_model, extra))
-    if is_include_history and history_to_include:
-        for history in history_to_include:
-            setattr(data_schema, history, getattr(data_model, history))
     return data_schema
