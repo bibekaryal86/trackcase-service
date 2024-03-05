@@ -32,6 +32,8 @@ class RequestMetadata(BaseSchema):
     page_number: Optional[int] = None
     per_page: Optional[int] = None
     is_include_deleted: Optional[bool] = None
+    is_include_extra: Optional[bool] = None
+    is_include_history: Optional[bool] = None
 
 
 class ResponseMetadata(BaseSchema):
@@ -739,3 +741,8 @@ class RefTypesServiceRegistry(str, Enum):
     FILING_TYPE = "filing_type"
     HEARING_TYPE = "hearing_type"
     TASK_TYPE = "task_type"
+
+
+class CalendarServiceRegistry(str, Enum):
+    HEARING_CALENDAR = "hearing_calendar"
+    TASK_CALENDAR = "task_calendar"

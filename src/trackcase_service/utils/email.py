@@ -8,7 +8,7 @@ from src.trackcase_service.utils.commons import (
     raise_http_exception,
     read_file,
 )
-from src.trackcase_service.utils.constants import MJ_PUBLIC, MJ_PRIVATE, MJ_EMAIL
+from src.trackcase_service.utils.constants import MJ_EMAIL, MJ_PRIVATE, MJ_PUBLIC
 
 
 class Email:

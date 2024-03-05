@@ -114,7 +114,7 @@ class ComponentStatusService(CrudService):
         self.check_component_status_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_schema_to_model(
+            data_model: models.ComponentStatus = convert_schema_to_model(
                 request_object, models.ComponentStatus
             )
             data_model = self.update(model_id, data_model)
@@ -254,7 +254,7 @@ class CollectionMethodService(CrudService):
         self.check_collection_method_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_schema_to_model(
+            data_model: models.CollectionMethod = convert_schema_to_model(
                 request_object, models.CollectionMethod
             )
             data_model = self.update(model_id, data_model)
@@ -385,7 +385,7 @@ class CaseTypeService(CrudService):
         self.check_case_type_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_schema_to_model(
+            data_model: models.CaseType = convert_schema_to_model(
                 request_object, models.CaseType
             )
             data_model = self.update(model_id, data_model)
@@ -518,7 +518,7 @@ class FilingTypeService(CrudService):
         self.check_filing_type_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_schema_to_model(
+            data_model: models.FilingType = convert_schema_to_model(
                 request_object, models.FilingType
             )
             data_model = self.update(model_id, data_model)
@@ -656,7 +656,7 @@ class HearingTypeService(CrudService):
         self.check_hearing_type_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_schema_to_model(
+            data_model: models.HearingType = convert_schema_to_model(
                 request_object, models.HearingType
             )
             data_model = self.update(model_id, data_model)
@@ -787,7 +787,7 @@ class TaskTypeService(CrudService):
         self.check_task_type_exists(model_id, request)
 
         try:
-            data_model: models.AppUser = convert_schema_to_model(
+            data_model: models.TaskType = convert_schema_to_model(
                 request_object, models.TaskType
             )
             data_model = self.update(model_id, data_model)
