@@ -14,7 +14,7 @@ from src.trackcase_service.utils import commons, constants
 from src.trackcase_service.utils.email import get_email_service
 
 router = APIRouter(
-    prefix="/trackcase-service/users/na",
+    prefix="/users/na",
     tags=["User Management"],
 )
 

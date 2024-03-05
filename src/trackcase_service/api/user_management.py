@@ -9,7 +9,7 @@ from src.trackcase_service.service.user_management import get_user_management_se
 from src.trackcase_service.utils.commons import parse_request_metadata
 
 router = APIRouter(
-    prefix="/trackcase-service/users",
+    prefix="/users",
     tags=["User Management"],
 )
 
