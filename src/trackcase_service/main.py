@@ -14,21 +14,15 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.api import (
     case_collection_api,
-    case_type_api,
     cash_collection_api,
     client_api,
-    collection_method_api,
-    common_api,
     court_api,
     court_case_api,
     form_api,
-    form_type_api,
     hearing_calendar_api,
-    hearing_type_api,
     judge_api,
     ref_types,
     task_calendar_api,
-    task_type_api,
     user_management,
     user_management_noauth,
 )
@@ -89,19 +83,11 @@ app.include_router(
     dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
-    case_type_api.router,
-    dependencies=[Depends(validate_credentials)],
-)
-app.include_router(
     cash_collection_api.router,
     dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
     client_api.router,
-    dependencies=[Depends(validate_credentials)],
-)
-app.include_router(
-    collection_method_api.router,
     dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
@@ -117,15 +103,7 @@ app.include_router(
     dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
-    form_type_api.router,
-    dependencies=[Depends(validate_credentials)],
-)
-app.include_router(
     hearing_calendar_api.router,
-    dependencies=[Depends(validate_credentials)],
-)
-app.include_router(
-    hearing_type_api.router,
     dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
@@ -134,14 +112,6 @@ app.include_router(
 )
 app.include_router(
     task_calendar_api.router,
-    dependencies=[Depends(validate_credentials)],
-)
-app.include_router(
-    task_type_api.router,
-    dependencies=[Depends(validate_credentials)],
-)
-app.include_router(
-    common_api.router,
     dependencies=[Depends(validate_credentials)],
 )
 
