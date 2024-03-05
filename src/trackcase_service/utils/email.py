@@ -4,7 +4,7 @@ from fastapi import Request
 from mailjet_rest import Client
 
 from src.trackcase_service.utils import constants
-from src.trackcase_service.utils.commons import raise_http_exception, read_file
+from src.trackcase_service.utils.commons import raise_http_exception, read_file, encode_email_address
 
 
 class Email:
@@ -18,7 +18,7 @@ class Email:
     def app_user_validation_email(self, request: Request, user_name: str):
         email_html_content = read_file("email_validate_user.html")
         activation_link = "{}}/trackcase-service/users/na/validate/email={}".format(
-            request.base_url, user_name
+            request.base_url, encode_email_address(user_name, 15)
         )
         email_html_content = email_html_content.format(activation_link=activation_link)
         data = {

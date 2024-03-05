@@ -17,6 +17,7 @@ from src.trackcase_service.utils.commons import (
     encode_auth_credentials,
     get_err_msg,
     raise_http_exception,
+    decode_email_address,
 )
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
@@ -97,13 +98,14 @@ class AppUserPasswordService:
         )
 
     def validate_user(self, request: Request, db_session: Session):
+        decoded_email_address = decode_email_address(request, self.user_name)
         crud_service = CrudService(db_session, models.AppUser)
 
         read_response = crud_service.read(
             filter_config=[
                 schemas.FilterConfig(
                     column="email",
-                    value=self.user_name.upper(),
+                    value=decoded_email_address.upper(),
                     operation=schemas.FilterOperation.EQUAL_TO,
                 )
             ]

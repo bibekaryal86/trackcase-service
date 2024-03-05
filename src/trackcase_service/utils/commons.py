@@ -222,6 +222,41 @@ def encode_auth_credentials(app_user: schemas.AppUser):
     return jwt.encode(payload=token_claim, key=constants.SECRET_KEY, algorithm="HS256")
 
 
+def encode_email_address(email: str, minutes: int):
+    token_claim = {"email_token": email, "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=minutes)}
+    return jwt.encode(payload=token_claim, key=constants.SECRET_KEY, algorithm="HS256")
+
+
+def decode_email_address(
+    request: Request,
+    encoded_email: str,
+):
+    try:
+        token_claims = jwt.decode(
+            jwt=encoded_email,
+            key=constants.SECRET_KEY,
+            algorithms=["HS256"],
+        )
+
+        email_token_claim = token_claims.get("email_token")
+
+        if email_token_claim:
+            return email_token_claim
+
+        raise_http_exception(
+            request,
+            http.HTTPStatus.FORBIDDEN,
+            error="Incorrect Email Credentials",
+        )
+    except PyJWTError as ex:
+        raise_http_exception(
+            request,
+            http.HTTPStatus.BAD_REQUEST,
+            get_err_msg("Invalid Email Credentials", str(ex)),
+            exc_info=sys.exc_info(),
+        )
+
+
 def decode_auth_credentials(
     request: Request,
     http_auth_credentials: HTTPAuthorizationCredentials,
