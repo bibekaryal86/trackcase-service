@@ -182,12 +182,6 @@ def ping(db_session: Session = Depends(get_db_session)):
         return {"ping": "successful", "ping_db": f"exception: {str(ex)}"}
 
 
-def redirect_test():
-    from starlette.responses import RedirectResponse
-
-    return RedirectResponse(url="https://www.github.com/")
-
-
 if __name__ == "__main__":
     port = os.getenv(constants.ENV_APP_PORT, "9090")
     uvicorn.run(app, port=int(port), host="0.0.0.0", log_level=logging.WARNING)
