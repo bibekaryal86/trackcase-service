@@ -96,9 +96,7 @@ class AppUserPasswordService:
             "Login Unsuccessful! Email and/or password not found in system!! Please try again!!!",
         )
 
-    def validate_user(
-        self, request: Request, db_session: Session
-    ) -> schemas.AppUserLoginResponse:
+    def validate_user(self, request: Request, db_session: Session):
         crud_service = CrudService(db_session, models.AppUser)
 
         read_response = crud_service.read(
@@ -115,13 +113,6 @@ class AppUserPasswordService:
             app_user_data_model: models.AppUser = app_user_data_models[0]
             app_user_data_model.is_validated = True
             crud_service.update(app_user_data_model.id, app_user_data_model)
-            app_user_schema_model = convert_user_management_model_to_schema(
-                app_user_data_model, schemas.AppUser
-            )
-            token_claim = encode_auth_credentials(app_user_schema_model)
-            return schemas.AppUserLoginResponse(
-                token=token_claim, app_user_details=app_user_schema_model
-            )
         raise_http_exception(
             request,
             HTTPStatus.FORBIDDEN,

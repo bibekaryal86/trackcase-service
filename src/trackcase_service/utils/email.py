@@ -17,10 +17,8 @@ class Email:
 
     def app_user_validation_email(self, request: Request, user_name: str):
         email_html_content = read_file("email_validate_user.html")
-        activation_link = (
-            "{}}/trackcase-service/users/na/validate/email={}".format(request.base_url,
-                user_name
-            )
+        activation_link = "{}}/trackcase-service/users/na/validate/email={}".format(
+            request.base_url, user_name
         )
         email_html_content = email_html_content.format(activation_link=activation_link)
         data = {
@@ -44,8 +42,9 @@ class Email:
         result = self.mailjet.send.create(data=data)
         if result.status_code != HTTPStatus.OK:
             raise_http_exception(
-                request=request, sts_code=HTTPStatus.UNPROCESSABLE_ENTITY,
-                error="Failure to send validation email"
+                request=request,
+                sts_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+                error="Failure to send validation email",
             )
 
 
