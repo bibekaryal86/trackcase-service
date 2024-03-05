@@ -41,7 +41,7 @@ class CrudService:
         page_number: int = 1,
         per_page: int = 100,
         is_include_soft_deleted: bool = False,
-    ) -> Dict[str, Union[ModelBase, List[ModelBase], ResponseMetadata]]:
+    ) -> Dict[str, Union[List[ModelBase], ResponseMetadata]]:
         if model_id and model_id > 0:
             data = (
                 self.db_session.query(self.db_model)
@@ -49,16 +49,15 @@ class CrudService:
                 .first()
             )
             return {
-                DataKeys.data: data,
+                DataKeys.data: data if data is not None else [],
                 DataKeys.metadata: None,
             }
         elif model_ids and len(model_ids) > 0:
             data = (
-                self.db_session.query(self.db_model)
+                self.db_session.query(self.db_model).filter()
                 .filter(
                     self.db_model.id.in_(model_ids), self.db_model.is_deleted == False
-                )
-                .first()
+                ).all()
             )
             return {
                 DataKeys.data: data,
