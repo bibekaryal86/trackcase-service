@@ -13,6 +13,8 @@ HEARING_TO_TASK_CALENDAR_DATE: dict[str, int] = {
     "MASTER": 30,
     "MERIT": 15,
 }
+TRACKCASE_UI_HOME_PROD = "https://trackcase.appspot.com"
+TRACKCASE_UI_HOME_DEV = "http://10.0.0.73:9191"
 
 
 # ENVIRONMENT VARIABLES

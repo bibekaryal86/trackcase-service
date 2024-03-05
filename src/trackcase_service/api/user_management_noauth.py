@@ -10,7 +10,8 @@ from src.trackcase_service.service.user_management import (
     get_user_management_service,
     get_user_password_service,
 )
-from src.trackcase_service.utils import commons
+from src.trackcase_service.utils import commons, constants
+from src.trackcase_service.utils.email import get_email_service
 
 router = APIRouter(
     prefix="/trackcase-service/users/na",
@@ -50,25 +51,63 @@ def login_app_user(
     ).login_user(request, db_session)
 
 
-@router.post(
+@router.get(
     "/validate/",
     include_in_schema=False,
 )
 def validate_app_user(
     request: Request,
-    email: str,
+    to_validate: str,
     db_session: Session = Depends(get_db_session),
 ):
-    redirect_url = (
-        "https://trackcase.appspot.com/?is_validated"
-        if commons.is_production()
-        else "http://10.0.0.73:9191/?is_validated"
-    )
+    url = _get_redirect_base_url()
     try:
-        get_user_password_service(plain_password=None, user_name=email).validate_user(
-            request, db_session
-        )
-        redirect_url = f"{redirect_url}=true"
+        get_user_password_service(
+            plain_password=None, user_name=to_validate
+        ).validate_reset_user(request, db_session)
+        url = f"{url}?is_validated=true"
     except Exception as ex:
-        redirect_url = f"{redirect_url}=true"
-    return RedirectResponse(url=redirect_url)
+        url = f"{url}?is_validated=false"
+    return RedirectResponse(url=url)
+
+
+@router.get(
+    "/reset_exit/",
+    include_in_schema=False,
+)
+def reset_app_user(
+    request: Request,
+    to_reset: str,
+    db_session: Session = Depends(get_db_session),
+):
+    url = _get_redirect_base_url()
+    try:
+        user_model_id = get_user_password_service(
+            plain_password=None, user_name=to_reset
+        ).validate_reset_user(request, db_session, False)
+        url = f"{url}/reset_password/{user_model_id}"
+    except Exception as ex:
+        url = f"{url}/reset_password/0/?error={str(ex)}"
+    return RedirectResponse(url=url)
+
+
+@router.get(
+    "/reset_init/",
+    include_in_schema=False,
+)
+def reset_app_user(
+    request: Request,
+    to_reset: str,
+):
+    get_email_service().app_user_reset_email(request, to_reset)
+    url = _get_redirect_base_url()
+    url = f"{url}?is_reset_email_sent=true"
+    return RedirectResponse(url=url)
+
+
+def _get_redirect_base_url():
+    return (
+        constants.TRACKCASE_UI_HOME_PROD
+        if commons.is_production()
+        else constants.TRACKCASE_UI_HOME_DEV
+    )

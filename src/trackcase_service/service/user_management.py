@@ -14,10 +14,10 @@ from src.trackcase_service.service import schemas
 from src.trackcase_service.service.schemas import UserManagementServiceRegistry
 from src.trackcase_service.utils import logger
 from src.trackcase_service.utils.commons import (
+    decode_email_address,
     encode_auth_credentials,
     get_err_msg,
     raise_http_exception,
-    decode_email_address,
 )
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
@@ -37,7 +37,6 @@ class AppUserPasswordService:
         self, request: Request, db_session: Session
     ) -> schemas.AppUserLoginResponse:
         crud_service = CrudService(db_session, models.AppUser)
-
         read_response = crud_service.read(
             filter_config=[
                 schemas.FilterConfig(
@@ -97,7 +96,9 @@ class AppUserPasswordService:
             "Login Unsuccessful! Email and/or password not found in system!! Please try again!!!",
         )
 
-    def validate_user(self, request: Request, db_session: Session):
+    def validate_reset_user(
+        self, request: Request, db_session: Session, is_validate: bool = True
+    ):
         decoded_email_address = decode_email_address(request, self.user_name)
         crud_service = CrudService(db_session, models.AppUser)
 
@@ -113,8 +114,12 @@ class AppUserPasswordService:
         app_user_data_models = read_response.get(DataKeys.data)
         if app_user_data_models and len(app_user_data_models) == 1:
             app_user_data_model: models.AppUser = app_user_data_models[0]
-            app_user_data_model.is_validated = True
-            crud_service.update(app_user_data_model.id, app_user_data_model)
+
+            if is_validate:
+                app_user_data_model.is_validated = True
+                crud_service.update(app_user_data_model.id, app_user_data_model)
+            else:
+                return app_user_data_model.id
         raise_http_exception(
             request,
             HTTPStatus.FORBIDDEN,

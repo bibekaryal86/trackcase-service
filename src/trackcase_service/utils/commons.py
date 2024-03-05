@@ -223,7 +223,10 @@ def encode_auth_credentials(app_user: schemas.AppUser):
 
 
 def encode_email_address(email: str, minutes: int):
-    token_claim = {"email_token": email, "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=minutes)}
+    token_claim = {
+        "email_token": email,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=minutes),
+    }
     return jwt.encode(payload=token_claim, key=constants.SECRET_KEY, algorithm="HS256")
 
 
