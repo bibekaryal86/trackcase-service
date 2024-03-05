@@ -3,19 +3,19 @@ from http import HTTPStatus
 from fastapi import Request
 from mailjet_rest import Client
 
-from src.trackcase_service.utils import constants
 from src.trackcase_service.utils.commons import (
     encode_email_address,
     raise_http_exception,
     read_file,
 )
+from src.trackcase_service.utils.constants import MJ_PUBLIC, MJ_PRIVATE, MJ_EMAIL
 
 
 class Email:
     def __init__(self):
-        self.api_key = constants.MJ_PUBLIC
-        self.api_secret = constants.MJ_PRIVATE
-        self.api_email = constants.MJ_EMAIL
+        self.api_key = MJ_PUBLIC
+        self.api_secret = MJ_PRIVATE
+        self.api_email = MJ_EMAIL
 
         self.mailjet = Client(auth=(self.api_key, self.api_secret), version="v3.1")
 

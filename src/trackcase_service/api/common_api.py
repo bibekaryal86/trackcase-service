@@ -3,17 +3,17 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
-
-from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.case_type_service import get_case_type_service
 from src.trackcase_service.service.collection_method_service import (
     get_collection_method_service,
 )
 from src.trackcase_service.service.form_type_service import get_form_type_service
+from src.trackcase_service.service.hearing_type_service import get_hearing_type_service
+
+from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.hearing_calendar_service import (
     get_hearing_calendar_service,
 )
-from src.trackcase_service.service.hearing_type_service import get_hearing_type_service
 from src.trackcase_service.service.schemas import (
     CalendarEvent,
     CalendarObjectTypes,
@@ -24,15 +24,13 @@ from src.trackcase_service.service.schemas import (
 from src.trackcase_service.service.task_calendar_service import (
     get_task_calendar_service,
 )
-from src.trackcase_service.service.task_type_service import get_task_type_service
-from src.trackcase_service.utils import constants
 
 router = APIRouter(prefix="/trackcase-service/common", tags=["Common"])
 
 
 @router.get("/statuses/", summary="Get Statuses")
 def get_statuses():
-    return constants.get_statuses()
+    return get_statuses()
 
 
 @router.get("/calendars/", response_model=CalendarResponse, status_code=HTTPStatus.OK)
@@ -72,7 +70,7 @@ def get_all_ref_types(
     component_list = components.split(",")
     for component in component_list:
         if component == "statuses":
-            all_ref_types["statuses"] = constants.get_statuses()
+            all_ref_types["statuses"] = get_statuses()
         if component == "case_types":
             all_ref_types["case_types"] = get_case_type_service(
                 db_session

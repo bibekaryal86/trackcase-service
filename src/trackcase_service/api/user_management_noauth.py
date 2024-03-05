@@ -10,7 +10,8 @@ from src.trackcase_service.service.user_management import (
     get_user_management_service,
     get_user_password_service,
 )
-from src.trackcase_service.utils import commons, constants
+from src.trackcase_service.utils.commons import is_production
+from src.trackcase_service.utils.constants import TRACKCASE_UI_HOME_PROD, TRACKCASE_UI_HOME_DEV
 from src.trackcase_service.utils.email import get_email_service
 
 router = APIRouter(
@@ -107,7 +108,7 @@ def reset_app_user(
 
 def _get_redirect_base_url():
     return (
-        constants.TRACKCASE_UI_HOME_PROD
-        if commons.is_production()
-        else constants.TRACKCASE_UI_HOME_DEV
+        TRACKCASE_UI_HOME_PROD
+        if is_production()
+        else TRACKCASE_UI_HOME_DEV
     )

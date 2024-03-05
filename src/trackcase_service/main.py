@@ -28,7 +28,6 @@ from src.trackcase_service.api import (
 )
 from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.utils import commons, constants, logger
-from src.trackcase_service.utils.commons import decode_auth_credentials
 
 log = logger.Logger(logging.getLogger(__name__))
 
@@ -64,7 +63,7 @@ def validate_credentials(
     request: Request,
     http_auth_credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
 ):
-    decode_auth_credentials(request, http_auth_credentials)
+    commons.decode_auth_credentials(request, http_auth_credentials)
 
 
 app.include_router(

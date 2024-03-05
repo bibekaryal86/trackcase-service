@@ -12,7 +12,6 @@ from src.trackcase_service.db import models
 from src.trackcase_service.db.crud import CrudService, DataKeys
 from src.trackcase_service.service import schemas
 from src.trackcase_service.service.schemas import UserManagementServiceRegistry
-from src.trackcase_service.utils import logger
 from src.trackcase_service.utils.commons import (
     decode_email_address,
     encode_auth_credentials,
@@ -24,8 +23,9 @@ from src.trackcase_service.utils.convert import (
     convert_schema_to_model,
 )
 from src.trackcase_service.utils.email import get_email_service
+from src.trackcase_service.utils.logger import Logger
 
-log = logger.Logger(logging.getLogger(__name__))
+log = Logger(logging.getLogger(__name__))
 
 
 class AppUserPasswordService:

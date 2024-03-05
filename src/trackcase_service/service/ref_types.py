@@ -10,14 +10,14 @@ from src.trackcase_service.db import models
 from src.trackcase_service.db.crud import CrudService, DataKeys
 from src.trackcase_service.service import schemas
 from src.trackcase_service.service.schemas import RefTypesServiceRegistry
-from src.trackcase_service.utils import logger
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
     convert_schema_to_model,
 )
+from src.trackcase_service.utils.logger import Logger
 
-log = logger.Logger(logging.getLogger(__name__))
+log = Logger(logging.getLogger(__name__))
 
 
 class ComponentStatusService(CrudService):
