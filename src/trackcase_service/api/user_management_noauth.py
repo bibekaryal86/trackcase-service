@@ -72,6 +72,20 @@ def validate_app_user(
 
 
 @router.get(
+    "/reset_init/",
+    include_in_schema=False,
+)
+def reset_app_user(
+    request: Request,
+    to_reset: str,
+):
+    get_email_service().app_user_reset_email(request, to_reset)
+    url = _get_redirect_base_url()
+    url = f"{url}?is_reset_email_sent=true"
+    return RedirectResponse(url=url)
+
+
+@router.get(
     "/reset_exit/",
     include_in_schema=False,
 )
@@ -88,20 +102,6 @@ def reset_app_user(
         url = f"{url}/reset_password/{user_model_id}"
     except Exception as ex:
         url = f"{url}/reset_password/0/?error={str(ex)}"
-    return RedirectResponse(url=url)
-
-
-@router.get(
-    "/reset_init/",
-    include_in_schema=False,
-)
-def reset_app_user(
-    request: Request,
-    to_reset: str,
-):
-    get_email_service().app_user_reset_email(request, to_reset)
-    url = _get_redirect_base_url()
-    url = f"{url}?is_reset_email_sent=true"
     return RedirectResponse(url=url)
 
 

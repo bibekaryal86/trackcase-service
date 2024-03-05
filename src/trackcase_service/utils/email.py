@@ -55,7 +55,7 @@ class Email:
 
     def app_user_reset_email(self, request: Request, user_name: str):
         email_html_content = read_file("email_reset_user.html")
-        reset_link = "{}trackcase-service/users/na/reset/?to_reset={}".format(
+        reset_link = "{}trackcase-service/users/na/reset_exit/?to_reset={}".format(
             request.base_url, encode_email_address(user_name, 15)
         )
         email_html_content = email_html_content.format(reset_link=reset_link)
