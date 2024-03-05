@@ -18,10 +18,20 @@ def get_all_ref_types(
     db_session: Session = Depends(get_db_session),
 ):
     ref_types_response_data = schemas.RefTypesResponseData()
-    if not components:
-        components = f"{schemas.RefTypesServiceRegistry.COMPONENT_STATUS},{schemas.RefTypesServiceRegistry.COLLECTION_METHOD},{schemas.RefTypesServiceRegistry.CASE_TYPE},{schemas.RefTypesServiceRegistry.FILING_TYPE},{schemas.RefTypesServiceRegistry.HEARING_TYPE},{schemas.RefTypesServiceRegistry.TASK_TYPE}"
-    component_list = components.split(",")
+    if components:
+        component_list = components.split(",")
+    else:
+        component_list = [
+            schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
+            schemas.RefTypesServiceRegistry.COLLECTION_METHOD,
+            schemas.RefTypesServiceRegistry.CASE_TYPE,
+            schemas.RefTypesServiceRegistry.FILING_TYPE,
+            schemas.RefTypesServiceRegistry.HEARING_TYPE,
+            schemas.RefTypesServiceRegistry.TASK_TYPE,
+        ]
+
     for component in component_list:
+        component = component.lower().strip()
         if component == schemas.RefTypesServiceRegistry.COMPONENT_STATUS:
             ref_types_response_data.component_statuses = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
