@@ -72,7 +72,7 @@ class Email:
                             "Name": f"TrackCase Service {user_name}",
                         }
                     ],
-                    "Subject": "TrackCase Service (Activate)",
+                    "Subject": "TrackCase Service (Reset)",
                     "HTMLPart": email_html_content,
                 }
             ]
