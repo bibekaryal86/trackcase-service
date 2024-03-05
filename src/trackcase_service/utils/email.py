@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
+from fastapi import Request
 from mailjet_rest import Client
-from requests import Request
 
 from src.trackcase_service.utils import constants
 from src.trackcase_service.utils.commons import raise_http_exception, read_file
@@ -18,7 +18,7 @@ class Email:
     def app_user_validation_email(self, request: Request, user_name: str):
         email_html_content = read_file("email_validate_user.html")
         activation_link = (
-            "http://localhost:9090/trackcase-service/users/na/validate/email={}".format(
+            "{}}/trackcase-service/users/na/validate/email={}".format(request.base_url,
                 user_name
             )
         )

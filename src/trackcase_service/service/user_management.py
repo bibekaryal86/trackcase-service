@@ -57,8 +57,6 @@ class AppUserPasswordService:
                     app_user_data_model.last_login = datetime.datetime.now()
                     crud_service.update(app_user_data_model.id, app_user_data_model)
 
-                    get_email_service().app_user_validation_email(request, self.user_name)
-
                     app_user_schema_model = convert_user_management_model_to_schema(
                         app_user_data_model, schemas.AppUser
                     )
@@ -126,7 +124,7 @@ class AppUserPasswordService:
             )
         raise_http_exception(
             request,
-            HTTPStatus.UNAUTHORIZED,
+            HTTPStatus.FORBIDDEN,
             "Validate Unsuccessful! Email not found in system!! Please try again!!!",
         )
 
