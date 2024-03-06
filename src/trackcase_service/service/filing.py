@@ -238,24 +238,33 @@ class FilingService(CrudService):
         filing_old: schemas.Filing,
     ):
         if filing_old.task_calendars:
-            calendar_active_statuses = get_ref_types_service(
+            ref_types_service = get_ref_types_service(
                 service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
                 db_session=self.db_session,
-            ).get_component_status(
+            )
+            filing_active_statuses = ref_types_service.get_component_status(
+                request,
+                schemas.ComponentStatusNames.FILING,
+                schemas.ComponentStatusTypes.ACTIVE,
+            )
+            calendar_active_statuses = ref_types_service.get_component_status(
                 request,
                 schemas.ComponentStatusNames.CALENDAR,
                 schemas.ComponentStatusTypes.ACTIVE,
             )
             status_old = filing_old.component_status_id
-            active_statuses = [
+            active_status_ids_filing = [
+                component_status.id
+                for component_status in filing_active_statuses
+            ]
+            active_status_ids_calendar = [
                 component_status.id
                 for component_status in calendar_active_statuses
-                if component_status.is_active is True
             ]
 
-            if status_new != status_old and status_new not in active_statuses:
+            if status_new != status_old and status_new not in active_status_ids_filing:
                 if check_active_component_status(
-                    filing_old.task_calendars, active_statuses
+                    filing_old.task_calendars, active_status_ids_calendar
                 ):
                     raise_http_exception(
                         request,

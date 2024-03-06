@@ -253,15 +253,14 @@ class CaseCollectionService(CrudService):
             schemas.ComponentStatusTypes.ACTIVE,
         )
         status_old = case_collection_old.component_status_id
-        active_statuses = [
+        active_status_ids = [
             component_status.id
             for component_status in collection_active_statuses
-            if component_status.is_active is True
         ]
 
-        if status_new != status_old and status_new not in active_statuses:
+        if status_new != status_old and status_new not in active_status_ids:
             if check_active_component_status(
-                case_collection_old.cash_collections, active_statuses
+                case_collection_old.cash_collections, active_status_ids
             ):
                 raise_http_exception(
                     request,

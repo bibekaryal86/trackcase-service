@@ -288,15 +288,14 @@ class HearingCalendarService(CrudService):
             schemas.ComponentStatusTypes.ACTIVE,
         )
         status_old = hearing_calendar_old.component_status_id
-        active_statuses = [
+        active_status_ids = [
             component_status.id
             for component_status in calendar_active_statuses
-            if component_status.is_active is True
         ]
 
-        if status_new != status_old and status_new not in active_statuses:
+        if status_new != status_old and status_new not in active_status_ids:
             if check_active_component_status(
-                hearing_calendar_old.task_calendars, active_statuses
+                hearing_calendar_old.task_calendars, active_status_ids
             ):
                 raise_http_exception(
                     request,
