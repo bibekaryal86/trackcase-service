@@ -15,6 +15,7 @@ from pydantic import ValidationError
 import src.trackcase_service.service.schemas as schemas
 import src.trackcase_service.utils.constants as constants
 import src.trackcase_service.utils.logger as logger
+from src.trackcase_service.db.crud import DataKeys
 
 log = logger.Logger(logging.getLogger(__name__))
 
@@ -296,3 +297,9 @@ def read_file(file_name):
     with open(file_path, "r") as file:
         content = file.read()
     return content
+
+
+def get_read_response_data(read_response):
+    if read_response:
+        return read_response.get(DataKeys.data)
+    return None

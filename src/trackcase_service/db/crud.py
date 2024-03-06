@@ -49,7 +49,7 @@ class CrudService:
                 .first()
             )
             return {
-                DataKeys.data: data if data is not None else [],
+                DataKeys.data: [data] if data else [],
                 DataKeys.metadata: None,
             }
         elif model_ids and len(model_ids) > 0:

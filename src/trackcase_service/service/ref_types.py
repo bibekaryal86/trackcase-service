@@ -884,9 +884,6 @@ def get_ref_types_response(
             f"{schema_type.__name__} Not Found By Id: {model_id}!!!",
         )
     data_models = read_response.get(DataKeys.data)
-    if is_single:
-        data_models = [data_models]
-
     metadata = read_response.get(DataKeys.metadata)
     schema_models = [
         convert_model_to_schema(
