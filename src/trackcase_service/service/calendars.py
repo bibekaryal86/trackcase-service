@@ -281,14 +281,13 @@ class HearingCalendarService(CrudService):
         status_new: int,
         hearing_calendar_old: schemas.HearingCalendar,
     ):
-        calendar_statuses = get_ref_types_service(
-            service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
-            db_session=self.db_session,
-        ).get_component_status(request, schemas.ComponentStatusNames.CALENDAR)
+        calendar_active_statuses = get_calendar_statuses(
+            db_session=self.db_session, request=request, status_type="active"
+        )
         status_old = hearing_calendar_old.component_status_id
         active_statuses = [
             component_status.id
-            for component_status in calendar_statuses
+            for component_status in calendar_active_statuses
             if component_status.is_active is True
         ]
 
@@ -513,3 +512,27 @@ def get_calendar_service(
         CalendarServiceRegistry.TASK_CALENDAR: TaskCalendarService,
     }
     return service_registry.get(service_type)(db_session)
+
+
+def get_calendar_statuses(
+    db_session: Session, request: Request, status_type: str = None
+):
+    calendar_statuses = get_ref_types_service(
+        service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
+        db_session=db_session,
+    ).get_component_status(request, schemas.ComponentStatusNames.CALENDAR)
+
+    if status_type == "active":
+        return [
+            component_status
+            for component_status in calendar_statuses
+            if component_status.is_active is True
+        ]
+    elif status_type == "inactive":
+        return [
+            component_status
+            for component_status in calendar_statuses
+            if component_status.is_active is False
+        ]
+    else:
+        return calendar_statuses

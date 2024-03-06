@@ -13,16 +13,15 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.api import (
+    calendars,
     case_collection_api,
     cash_collection_api,
     client_api,
     court_api,
     court_case_api,
     form_api,
-    hearing_calendar_api,
     judge_api,
     ref_types,
-    task_calendar_api,
     user_management,
     user_management_noauth,
 )
@@ -67,6 +66,10 @@ def validate_credentials(
 
 
 app.include_router(
+    calendars.router,
+    dependencies=[Depends(validate_credentials)],
+)
+app.include_router(
     ref_types.router,
     dependencies=[Depends(validate_credentials)],
 )
@@ -102,15 +105,7 @@ app.include_router(
     dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
-    hearing_calendar_api.router,
-    dependencies=[Depends(validate_credentials)],
-)
-app.include_router(
     judge_api.router,
-    dependencies=[Depends(validate_credentials)],
-)
-app.include_router(
-    task_calendar_api.router,
     dependencies=[Depends(validate_credentials)],
 )
 
