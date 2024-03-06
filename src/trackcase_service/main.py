@@ -14,9 +14,8 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.api import (
     calendars,
-    case_collection_api,
-    cash_collection_api,
     client_api,
+    collections,
     court_api,
     court_case_api,
     form_api,
@@ -66,6 +65,10 @@ def validate_credentials(
 
 
 app.include_router(
+    collections.router,
+    dependencies=[Depends(validate_credentials)],
+)
+app.include_router(
     calendars.router,
     dependencies=[Depends(validate_credentials)],
 )
@@ -79,14 +82,6 @@ app.include_router(
 )
 app.include_router(
     user_management_noauth.router,
-)
-app.include_router(
-    case_collection_api.router,
-    dependencies=[Depends(validate_credentials)],
-)
-app.include_router(
-    cash_collection_api.router,
-    dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
     client_api.router,

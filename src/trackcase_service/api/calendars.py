@@ -105,7 +105,7 @@ def remove_hearing_calendar(
     ).delete_hearing_calendar(hearing_calendar_id, is_hard_delete, request)
 
 
-# task_calendar
+# task calendar
 @router.post(
     "/task/",
     response_model=schemas.TaskCalendarResponse,

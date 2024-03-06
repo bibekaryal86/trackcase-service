@@ -1,5 +1,4 @@
 import sys
-from datetime import datetime, timedelta
 from http import HTTPStatus
 from http.client import HTTPException
 
@@ -17,63 +16,57 @@ from src.trackcase_service.utils.commons import (
     get_read_response_data_metadata,
     raise_http_exception,
 )
-from src.trackcase_service.utils.constants import (
-    DEFAULT_HEARING_TO_TASK_CALENDAR_DATE,
-    HEARING_TO_TASK_CALENDAR_DATE,
-    TASK_ID_DUE_AT_HEARING,
-)
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
     convert_schema_to_model,
 )
 
 
-class HearingCalendarService(CrudService):
+class CaseCollectionService(CrudService):
     def __init__(self, db_session: Session):
-        super(HearingCalendarService, self).__init__(db_session, models.HearingCalendar)
+        super(CaseCollectionService, self).__init__(db_session, models.CaseCollection)
 
-    def create_hearing_calendar(
-        self, request: Request, request_object: schemas.HearingCalendarRequest
-    ) -> schemas.HearingCalendarResponse:
+    def create_case_collection(
+        self, request: Request, request_object: schemas.CaseCollectionRequest
+    ) -> schemas.CaseCollectionResponse:
         try:
-            data_model: models.HearingCalendar = convert_schema_to_model(
-                request_object, models.HearingCalendar
+            data_model: models.CaseCollection = convert_schema_to_model(
+                request_object, models.CaseCollection
             )
             data_model = self.create(data_model)
             get_history_service(
-                db_session=self.db_session, db_model=models.HistoryHearingCalendar
+                db_session=self.db_session, db_model=models.HistoryCaseCollection
             ).add_to_history(
                 request,
                 request_object,
-                "hearing_calendar_id",
+                "case_collection_id",
                 data_model.id,
-                "HearingCalendar",
-                "HistoryHearingCalendar",
+                "CaseCollection",
+                "HistoryCaseCollection",
             )
             schema_model = convert_model_to_schema(
                 data_model,
-                schemas.HearingCalendar,
+                schemas.CaseCollection,
                 exclusions=[
-                    "task_calendars",
-                    "history_hearing_calendars",
-                    "history_task_calendars",
+                    "cash_collections",
+                    "history_case_collections",
+                    "history_cash_collections",
                 ],
             )
-            self.create_related_task_calendar(request, schema_model)
-            return schemas.HearingCalendarResponse(data=[schema_model])
+            return schemas.CaseCollectionResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    "Error Inserting Hearing Calendar. Please Try Again!!!", str(ex)
+                    "Error Inserting Case Collection. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
-    def read_hearing_calendar(
+    def read_case_collection(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
-    ) -> schemas.HearingCalendarResponse:
+    ) -> schemas.CaseCollectionResponse:
         try:
             if request_metadata:
                 if request_metadata.model_id:
@@ -85,7 +78,7 @@ class HearingCalendarService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Hearing Calendar Not Found By Id: {request_metadata.model_id}!!!",
+                            f"Case Collection Not Found By Id: {request_metadata.model_id}!!!",
                         )
                 else:
                     read_response = self.read(
@@ -108,20 +101,20 @@ class HearingCalendarService(CrudService):
             schema_models = [
                 convert_model_to_schema(
                     data_model=data_model,
-                    schema_class=schemas.HearingCalendar,
+                    schema_class=schemas.CaseCollection,
                     is_include_extra=request_metadata.is_include_extra,
                     is_include_history=request_metadata.is_include_history,
                     exclusions=[
-                        "task_calendars",
-                        "history_hearing_calendars",
-                        "history_task_calendars",
+                        "cash_collections",
+                        "history_case_collections",
+                        "history_cash_collections",
                     ],
-                    extra_to_include=["task_calendars"],
-                    history_to_include=["history_hearing_calendars"],
+                    extra_to_include=["cash_collections"],
+                    history_to_include=["history_case_collections"],
                 )
                 for data_model in response_data
             ]
-            return schemas.HearingCalendarResponse(
+            return schemas.CaseCollectionResponse(
                 data=schema_models, metadata=response_metadata
             )
         except Exception as ex:
@@ -131,223 +124,195 @@ class HearingCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    "Error Retrieving Hearing Calendar. Please Try Again!!!", str(ex)
+                    "Error Retrieving Case Collection. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
-    def update_hearing_calendar(
+    def update_case_collection(
         self,
         model_id: int,
         request: Request,
-        request_object: schemas.HearingCalendarRequest,
-    ) -> schemas.HearingCalendarResponse:
-        hearing_calendar_old = self.check_hearing_calendar_exists(model_id, request)
-        self.check_hearing_calendar_dependents_statuses(
-            request, request_object.component_status_id, hearing_calendar_old
+        request_object: schemas.CaseCollectionRequest,
+    ) -> schemas.CaseCollectionResponse:
+        case_collection_old = self.check_case_collection_exists(model_id, request)
+        self.check_case_collection_dependents_statuses(
+            request, request_object.component_status_id, case_collection_old
         )
 
         try:
-            data_model: models.HearingCalendar = convert_schema_to_model(
-                request_object, models.HearingCalendar
+            data_model: models.CaseCollection = convert_schema_to_model(
+                request_object, models.CaseCollection
             )
             data_model = self.update(model_id, data_model)
             get_history_service(
-                db_session=self.db_session, db_model=models.HistoryHearingCalendar
+                db_session=self.db_session, db_model=models.HistoryCaseCollection
             ).add_to_history(
                 request,
                 request_object,
-                "hearing_calendar_id",
+                "case_collection_id",
                 data_model.id,
-                "HearingCalendar",
-                "HistoryHearingCalendar",
+                "CaseCollection",
+                "HistoryCaseCollection",
             )
             schema_model = convert_model_to_schema(
                 data_model,
-                schemas.HearingCalendar,
+                schemas.CaseCollection,
                 exclusions=[
-                    "task_calendars",
-                    "history_hearing_calendars",
-                    "history_task_calendars",
+                    "cash_collections",
+                    "history_case_collections",
+                    "history_cash_collections",
                 ],
             )
-            return schemas.HearingCalendarResponse(data=[schema_model])
+            return schemas.CaseCollectionResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating Hearing Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
+                    f"Error Updating Case Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
                 exc_info=sys.exc_info(),
             )
 
-    def delete_hearing_calendar(
+    def delete_case_collection(
         self, model_id: int, is_hard_delete: bool, request: Request
-    ) -> schemas.HearingCalendarResponse:
-        hearing_calendar_old = self.check_hearing_calendar_exists(model_id, request)
-        if hearing_calendar_old.task_calendars:
+    ) -> schemas.CaseCollectionResponse:
+        case_collection_old = self.check_case_collection_exists(model_id, request)
+        if case_collection_old.cash_collections:
             raise_http_exception(
                 request,
                 HTTPStatus.UNPROCESSABLE_ENTITY,
-                f"Cannot Delete Hearing Calendar {model_id}, There are Linked Task Calendars!",  # noqa: E501
+                f"Cannot Delete Case Collection {model_id}, There are Linked Cash Collections!",  # noqa: E501
             )
 
         if is_hard_delete:
             get_history_service(
-                db_session=self.db_session, db_model=models.HistoryHearingCalendar
+                db_session=self.db_session, db_model=models.HistoryCaseCollection
             ).delete_history_before_delete_object(
-                models.HistoryHearingCalendar.__tablename__,
-                "hearing_calendar_id",
+                models.HistoryCaseCollection.__tablename__,
+                "case_collection_id",
                 model_id,
-                "HearingCalendar",
-                "HistoryHearingCalendar",
+                "CaseCollection",
+                "HistoryCaseCollection",
             )
         else:
             get_history_service(
-                db_session=self.db_session, db_model=models.HistoryHearingCalendar
+                db_session=self.db_session, db_model=models.HistoryCaseCollection
             ).add_to_history(
                 request,
-                hearing_calendar_old,
-                "hearing_calendar_id",
+                case_collection_old,
+                "case_collection_id",
                 model_id,
-                "HearingCalendar",
-                "HistoryHearingCalendar",
+                "CaseCollection",
+                "HistoryCaseCollection",
             )
 
         try:
             self.delete(model_id, is_hard_delete)
-            return schemas.HearingCalendarResponse(delete_count=1)
+            return schemas.CaseCollectionResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting Hearing Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
+                    f"Error Deleting Case Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
                 exc_info=sys.exc_info(),
             )
 
-    def create_related_task_calendar(
-        self, request: Request, hearing_calendar: schemas.HearingCalendar
-    ):
-        task_date_diff: int = (
-            HEARING_TO_TASK_CALENDAR_DATE.get(hearing_calendar.hearing_type.name)
-            or DEFAULT_HEARING_TO_TASK_CALENDAR_DATE
-        )
-        task_date: datetime = hearing_calendar.hearing_date - timedelta(
-            days=task_date_diff
-        )
-        due_date: datetime = hearing_calendar.hearing_date - timedelta(days=3)
-        current_date = datetime.now()
-        if task_date < current_date:
-            task_date = current_date
-
-        task_calendar_request = schemas.TaskCalendarRequest(
-            task_date=task_date,
-            due_date=due_date,
-            task_type_id=TASK_ID_DUE_AT_HEARING,
-            hearing_calendar_id=hearing_calendar.id,
-            status=hearing_calendar.status,
-        )
-        get_calendar_service(
-            schemas.CalendarServiceRegistry.TASK_CALENDAR, db_session=self.db_session
-        ).create_task_calendar(request, task_calendar_request)
-
-    def check_hearing_calendar_exists(
+    def check_case_collection_exists(
         self, model_id: int, request: Request
-    ) -> schemas.HearingCalendar:
+    ) -> schemas.CaseCollection:
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_extra=True
         )
-        hearing_calendar_response = self.read_hearing_calendar(
-            request, request_metadata
-        )
-        if not hearing_calendar_response or not hearing_calendar_response.data:
+        case_collection_response = self.read_case_collection(request, request_metadata)
+        if not case_collection_response or not case_collection_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Hearing Calendar Not Found By Id: {model_id}!!!",
+                f"Case Collection Not Found By Id: {model_id}!!!",
             )
-        return hearing_calendar_response.data[0]
+        return case_collection_response.data[0]
 
-    def check_hearing_calendar_dependents_statuses(
+    def check_case_collection_dependents_statuses(
         self,
         request: Request,
         status_new: int,
-        hearing_calendar_old: schemas.HearingCalendar,
+        case_collection_old: schemas.CaseCollection,
     ):
-        calendar_active_statuses = get_ref_types_service(
+        collection_active_statuses = get_ref_types_service(
             service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
             db_session=self.db_session,
         ).get_component_status(
             request,
-            schemas.ComponentStatusNames.CALENDAR,
+            schemas.ComponentStatusNames.COLLECTION,
             schemas.ComponentStatusTypes.ACTIVE,
         )
-        status_old = hearing_calendar_old.component_status_id
+        status_old = case_collection_old.component_status_id
         active_statuses = [
             component_status.id
-            for component_status in calendar_active_statuses
+            for component_status in collection_active_statuses
             if component_status.is_active is True
         ]
 
         if status_new != status_old and status_new not in active_statuses:
             if check_active_component_status(
-                hearing_calendar_old.task_calendars, active_statuses
+                case_collection_old.cash_collections, active_statuses
             ):
                 raise_http_exception(
                     request,
                     HTTPStatus.UNPROCESSABLE_ENTITY,
-                    f"Cannot Update Hearing Calendar {hearing_calendar_old.id} Status to {status_new}, There are Active Task Calendars!",  # noqa: E501
+                    f"Cannot Update Case Collection {case_collection_old.id} Status to {status_new}, There are Active Cash Collections!",  # noqa: E501
                 )
 
 
-class TaskCalendarService(CrudService):
+class CashCollectionService(CrudService):
     def __init__(self, db_session: Session):
-        super(TaskCalendarService, self).__init__(db_session, models.TaskCalendar)
+        super(CashCollectionService, self).__init__(db_session, models.CashCollection)
 
-    def create_task_calendar(
-        self, request: Request, request_object: schemas.TaskCalendarRequest
-    ) -> schemas.TaskCalendarResponse:
+    def create_cash_collection(
+        self, request: Request, request_object: schemas.CashCollectionRequest
+    ) -> schemas.CashCollectionResponse:
         try:
-            data_model: models.TaskCalendar = convert_schema_to_model(
-                request_object, models.TaskCalendar
+            data_model: models.CashCollection = convert_schema_to_model(
+                request_object, models.CashCollection
             )
             data_model = self.create(data_model)
             get_history_service(
-                db_session=self.db_session, db_model=models.HistoryTaskCalendar
+                db_session=self.db_session, db_model=models.HistoryCashCollection
             ).add_to_history(
                 request,
                 request_object,
-                "task_calendar_id",
+                "cash_collection_id",
                 data_model.id,
-                "TaskCalendar",
-                "HistoryTaskCalendar",
+                "CashCollection",
+                "HistoryCashCollection",
             )
             schema_model = convert_model_to_schema(
                 data_model,
-                schemas.TaskCalendar,
+                schemas.CashCollection,
                 exclusions=[
-                    "history_task_calendars",
+                    "history_cash_collections",
                 ],
             )
-            return schemas.TaskCalendarResponse(data=[schema_model])
+            return schemas.CashCollectionResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    "Error Inserting Task Calendar. Please Try Again!!!", str(ex)
+                    "Error Inserting Cash Collection. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
-    def read_task_calendar(
+    def read_cash_collection(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
-    ) -> schemas.TaskCalendarResponse:
+    ) -> schemas.CashCollectionResponse:
         try:
             if request_metadata:
                 if request_metadata.model_id:
@@ -359,7 +324,7 @@ class TaskCalendarService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Task Calendar Not Found By Id: {request_metadata.model_id}!!!",
+                            f"Cash Collection Not Found By Id: {request_metadata.model_id}!!!",
                         )
                 else:
                     read_response = self.read(
@@ -382,17 +347,17 @@ class TaskCalendarService(CrudService):
             schema_models = [
                 convert_model_to_schema(
                     data_model=data_model,
-                    schema_class=schemas.TaskCalendar,
+                    schema_class=schemas.CashCollection,
                     is_include_extra=request_metadata.is_include_extra,
                     is_include_history=request_metadata.is_include_history,
                     exclusions=[
-                        "history_task_calendars",
+                        "history_cash_collections",
                     ],
-                    history_to_include=["history_task_calendars"],
+                    history_to_include=["history_cash_collections"],
                 )
                 for data_model in response_data
             ]
-            return schemas.TaskCalendarResponse(
+            return schemas.CashCollectionResponse(
                 data=schema_models, metadata=response_metadata
             )
         except Exception as ex:
@@ -402,115 +367,115 @@ class TaskCalendarService(CrudService):
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    "Error Retrieving Task Calendar. Please Try Again!!!", str(ex)
+                    "Error Retrieving Cash Collection. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
-    def update_task_calendar(
+    def update_cash_collection(
         self,
         model_id: int,
         request: Request,
-        request_object: schemas.TaskCalendarRequest,
-    ) -> schemas.TaskCalendarResponse:
-        self.check_task_calendar_exists(model_id, request)
+        request_object: schemas.CashCollectionRequest,
+    ) -> schemas.CashCollectionResponse:
+        self.check_cash_collection_exists(model_id, request)
 
         try:
-            data_model: models.TaskCalendar = convert_schema_to_model(
-                request_object, models.TaskCalendar
+            data_model: models.CashCollection = convert_schema_to_model(
+                request_object, models.CashCollection
             )
             data_model = self.update(model_id, data_model)
             get_history_service(
-                db_session=self.db_session, db_model=models.HistoryTaskCalendar
+                db_session=self.db_session, db_model=models.HistoryCashCollection
             ).add_to_history(
                 request,
                 request_object,
-                "task_calendar_id",
+                "cash_collection_id",
                 data_model.id,
-                "TaskCalendar",
-                "HistoryTaskCalendar",
+                "CashCollection",
+                "HistoryCashCollection",
             )
             schema_model = convert_model_to_schema(
                 data_model,
-                schemas.TaskCalendar,
+                schemas.CashCollection,
                 exclusions=[
-                    "history_task_calendars",
+                    "history_cash_collections",
                 ],
             )
-            return schemas.TaskCalendarResponse(data=[schema_model])
+            return schemas.CashCollectionResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Updating Task Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
+                    f"Error Updating Cash Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
                 exc_info=sys.exc_info(),
             )
 
-    def delete_task_calendar(
+    def delete_cash_collection(
         self, model_id: int, is_hard_delete: bool, request: Request
-    ) -> schemas.TaskCalendarResponse:
-        task_calendar_old = self.check_task_calendar_exists(model_id, request)
+    ) -> schemas.CashCollectionResponse:
+        cash_collection_old = self.check_cash_collection_exists(model_id, request)
 
         if is_hard_delete:
             get_history_service(
-                db_session=self.db_session, db_model=models.HistoryTaskCalendar
+                db_session=self.db_session, db_model=models.HistoryCashCollection
             ).delete_history_before_delete_object(
-                models.HistoryTaskCalendar.__tablename__,
-                "task_calendar_id",
+                models.HistoryCashCollection.__tablename__,
+                "cash_collection_id",
                 model_id,
-                "TaskCalendar",
-                "HistoryTaskCalendar",
+                "CashCollection",
+                "HistoryCashCollection",
             )
         else:
             get_history_service(
-                db_session=self.db_session, db_model=models.HistoryTaskCalendar
+                db_session=self.db_session, db_model=models.HistoryCashCollection
             ).add_to_history(
                 request,
-                task_calendar_old,
-                "task_calendar_id",
+                cash_collection_old,
+                "cash_collection_id",
                 model_id,
-                "TaskCalendar",
-                "HistoryTaskCalendar",
+                "CashCollection",
+                "HistoryCashCollection",
             )
 
         try:
             self.delete(model_id, is_hard_delete)
-            return schemas.TaskCalendarResponse(delete_count=1)
+            return schemas.CashCollectionResponse(delete_count=1)
         except Exception as ex:
             raise_http_exception(
                 request,
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 get_err_msg(
-                    f"Error Deleting Task Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
+                    f"Error Deleting Cash Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
                 ),
                 exc_info=sys.exc_info(),
             )
 
-    def check_task_calendar_exists(
+    def check_cash_collection_exists(
         self, model_id: int, request: Request
-    ) -> schemas.TaskCalendar:
+    ) -> schemas.CashCollection:
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_extra=True
         )
-        task_calendar_response = self.read_task_calendar(request, request_metadata)
-        if not task_calendar_response or not task_calendar_response.data:
+        cash_collection_response = self.read_cash_collection(request, request_metadata)
+        if not cash_collection_response or not cash_collection_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
-                f"Task Calendar Not Found By Id: {model_id}!!!",
+                f"Cash Collection Not Found By Id: {model_id}!!!",
             )
-        return task_calendar_response.data[0]
+        return cash_collection_response.data[0]
 
 
-def get_calendar_service(
-    service_type: schemas.CalendarServiceRegistry, db_session: Session
-) -> HearingCalendarService | TaskCalendarService:
+def get_collection_service(
+    service_type: schemas.CollectionServiceRegistry, db_session: Session
+) -> CaseCollectionService | CashCollectionService:
     service_registry = {
-        schemas.CalendarServiceRegistry.HEARING_CALENDAR: HearingCalendarService,
-        schemas.CalendarServiceRegistry.TASK_CALENDAR: TaskCalendarService,
+        schemas.CollectionServiceRegistry.CASE_COLLECTION: CaseCollectionService,
+        schemas.CollectionServiceRegistry.CASH_COLLECTION: CashCollectionService,
     }
     return service_registry.get(service_type)(db_session)

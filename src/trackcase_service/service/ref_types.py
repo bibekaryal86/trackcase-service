@@ -71,7 +71,7 @@ class ComponentStatusService(CrudService):
                     filter_config=metadata.filter_config,
                     page_number=metadata.page_number,
                     per_page=metadata.per_page,
-                    is_include_soft_deleted=metadata.is_include_deleted is True,
+                    is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,
@@ -248,7 +248,7 @@ class CollectionMethodService(CrudService):
                     filter_config=metadata.filter_config,
                     page_number=metadata.page_number,
                     per_page=metadata.per_page,
-                    is_include_soft_deleted=metadata.is_include_deleted is True,
+                    is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,
@@ -385,7 +385,7 @@ class CaseTypeService(CrudService):
                     filter_config=metadata.filter_config,
                     page_number=metadata.page_number,
                     per_page=metadata.per_page,
-                    is_include_soft_deleted=metadata.is_include_deleted is True,
+                    is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,
@@ -515,7 +515,7 @@ class FilingTypeService(CrudService):
                     filter_config=metadata.filter_config,
                     page_number=metadata.page_number,
                     per_page=metadata.per_page,
-                    is_include_soft_deleted=metadata.is_include_deleted is True,
+                    is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,
@@ -649,7 +649,7 @@ class HearingTypeService(CrudService):
                     filter_config=metadata.filter_config,
                     page_number=metadata.page_number,
                     per_page=metadata.per_page,
-                    is_include_soft_deleted=metadata.is_include_deleted is True,
+                    is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,
@@ -784,7 +784,7 @@ class TaskTypeService(CrudService):
                     filter_config=metadata.filter_config,
                     page_number=metadata.page_number,
                     per_page=metadata.per_page,
-                    is_include_soft_deleted=metadata.is_include_deleted is True,
+                    is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,

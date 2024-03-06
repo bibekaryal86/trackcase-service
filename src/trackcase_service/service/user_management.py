@@ -193,7 +193,7 @@ class AppUserService(CrudService):
                     filter_config=metadata.filter_config,
                     page_number=metadata.page_number,
                     per_page=metadata.per_page,
-                    is_include_soft_deleted=metadata.is_include_deleted is True,
+                    is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_user_management_response(
                     read_response,
@@ -322,7 +322,7 @@ class AppRoleService(CrudService):
                     filter_config=metadata.filter_config,
                     page_number=metadata.page_number,
                     per_page=metadata.per_page,
-                    is_include_soft_deleted=metadata.is_include_deleted is True,
+                    is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_user_management_response(
                     read_response,
@@ -449,7 +449,7 @@ class AppPermissionService(CrudService):
                     filter_config=metadata.filter_config,
                     page_number=metadata.page_number,
                     per_page=metadata.per_page,
-                    is_include_soft_deleted=metadata.is_include_deleted is True,
+                    is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_user_management_response(
                     read_response,
@@ -581,7 +581,7 @@ class AppUserRoleService(CrudService):
                     filter_config=metadata.filter_config,
                     page_number=metadata.page_number,
                     per_page=metadata.per_page,
-                    is_include_soft_deleted=metadata.is_include_deleted is True,
+                    is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_user_management_response(
                     read_response,
@@ -717,7 +717,7 @@ class AppRolePermissionService(CrudService):
                     filter_config=metadata.filter_config,
                     page_number=metadata.page_number,
                     per_page=metadata.per_page,
-                    is_include_soft_deleted=metadata.is_include_deleted is True,
+                    is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_user_management_response(
                     read_response,
