@@ -51,13 +51,13 @@ class ComponentStatusService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.ComponentStatusResponse:
         try:
-            if metadata is not None and metadata.request_object_id is not None:
-                read_response = self.read(model_id=metadata.request_object_id)
+            if metadata is not None and metadata.model_id is not None:
+                read_response = self.read(model_id=metadata.model_id)
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.request_object_id,
+                    metadata.model_id,
                     schemas.ComponentStatus,
                     schemas.ComponentStatusResponse,
                 )
@@ -92,6 +92,23 @@ class ComponentStatusService(CrudService):
                 ),
                 exc_info=sys.exc_info(),
             )
+
+    def get_component_status(
+        self, request: Request, component_name: schemas.ComponentStatusNames
+    ) -> list[schemas.ComponentStatus]:
+        component_statuses = self.read_component_status(request).data or []
+        return [
+            component_status
+            for component_status in component_statuses
+            if component_status.component_name == component_name
+        ]
+        # return list(
+        #     filter(
+        #         lambda component_status: component_status.component_name
+        #         == component_name,
+        #         component_statuses,
+        #     )
+        # )
 
     def check_component_status_exists(self, model_id: int, request: Request):
         request_metadata = schemas.RequestMetadata(model_id=model_id)
@@ -188,13 +205,13 @@ class CollectionMethodService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.CollectionMethodResponse:
         try:
-            if metadata is not None and metadata.request_object_id is not None:
-                read_response = self.read(model_id=metadata.request_object_id)
+            if metadata is not None and metadata.model_id is not None:
+                read_response = self.read(model_id=metadata.model_id)
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.request_object_id,
+                    metadata.model_id,
                     schemas.CollectionMethod,
                     schemas.CollectionMethodResponse,
                     exclusions=["cash_collections", "history_cash_collections"],
@@ -325,13 +342,13 @@ class CaseTypeService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.CaseTypeResponse:
         try:
-            if metadata is not None and metadata.request_object_id is not None:
-                read_response = self.read(model_id=metadata.request_object_id)
+            if metadata is not None and metadata.model_id is not None:
+                read_response = self.read(model_id=metadata.model_id)
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.request_object_id,
+                    metadata.model_id,
                     schemas.CaseType,
                     schemas.CaseTypeResponse,
                     exclusions=["court_cases", "history_court_cases"],
@@ -455,13 +472,13 @@ class FilingTypeService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.FilingTypeResponse:
         try:
-            if metadata is not None and metadata.request_object_id is not None:
-                read_response = self.read(model_id=metadata.request_object_id)
+            if metadata is not None and metadata.model_id is not None:
+                read_response = self.read(model_id=metadata.model_id)
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.request_object_id,
+                    metadata.model_id,
                     schemas.FilingType,
                     schemas.FilingTypeResponse,
                     exclusions=["filings", "history_filings"],
@@ -589,13 +606,13 @@ class HearingTypeService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.HearingTypeResponse:
         try:
-            if metadata is not None and metadata.request_object_id is not None:
-                read_response = self.read(model_id=metadata.request_object_id)
+            if metadata is not None and metadata.model_id is not None:
+                read_response = self.read(model_id=metadata.model_id)
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.request_object_id,
+                    metadata.model_id,
                     schemas.HearingType,
                     schemas.HearingTypeResponse,
                     exclusions=["hearing_calendars", "history_hearing_calendars"],
@@ -724,13 +741,13 @@ class TaskTypeService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.TaskTypeResponse:
         try:
-            if metadata is not None and metadata.request_object_id is not None:
-                read_response = self.read(model_id=metadata.request_object_id)
+            if metadata is not None and metadata.model_id is not None:
+                read_response = self.read(model_id=metadata.model_id)
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.request_object_id,
+                    metadata.model_id,
                     schemas.TaskType,
                     schemas.TaskTypeResponse,
                     exclusions=["task_calendars", "history_task_calendars"],

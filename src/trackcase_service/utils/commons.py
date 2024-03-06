@@ -134,12 +134,7 @@ def check_active_hearing_calendars(
     return False
 
 
-def check_active_task_calendars(task_calendars: list[schemas.TaskCalendar]) -> bool:
-    active_statuses = constants.get_statuses().get("calendars").get("active")
-    for task_calendar in task_calendars:
-        if task_calendar.status in active_statuses:
-            return True
-    return False
+
 
 
 def check_active_forms(forms: list[schemas.Filing]) -> bool:
@@ -299,7 +294,9 @@ def read_file(file_name):
     return content
 
 
-def get_read_response_data(read_response):
+def get_read_response_data_metadata(read_response):
     if read_response:
-        return read_response.get(DataKeys.data)
-    return None
+        return read_response.get(DataKeys.data) or [], read_response.get(
+            DataKeys.metadata
+        )
+    return [], None

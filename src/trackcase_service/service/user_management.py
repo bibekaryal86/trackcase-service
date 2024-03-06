@@ -178,13 +178,13 @@ class AppUserService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppUserResponse:
         try:
-            if metadata is not None and metadata.request_object_id is not None:
-                read_response = self.read(model_id=metadata.request_object_id)
+            if metadata is not None and metadata.model_id is not None:
+                read_response = self.read(model_id=metadata.model_id)
                 return get_user_management_response(
                     read_response,
                     True,
                     request,
-                    metadata.request_object_id,
+                    metadata.model_id,
                     schemas.AppUser,
                     schemas.AppUserResponse,
                 )
@@ -219,7 +219,7 @@ class AppUserService(CrudService):
             )
 
     def check_app_user_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(model_id=model_id)
+        request_metadata = schemas.RequestMetadata(request_object_id=model_id)
         app_user_response = self.read_app_user(request, request_metadata)
         if not app_user_response or not app_user_response.data:
             raise_http_exception(
@@ -307,13 +307,13 @@ class AppRoleService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppRoleResponse:
         try:
-            if metadata is not None and metadata.request_object_id is not None:
-                read_response = self.read(model_id=metadata.request_object_id)
+            if metadata is not None and metadata.model_id is not None:
+                read_response = self.read(model_id=metadata.model_id)
                 return get_user_management_response(
                     read_response,
                     True,
                     request,
-                    metadata.request_object_id,
+                    metadata.model_id,
                     schemas.AppRole,
                     schemas.AppRoleResponse,
                 )
@@ -434,13 +434,13 @@ class AppPermissionService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppPermissionResponse:
         try:
-            if metadata is not None and metadata.request_object_id is not None:
-                read_response = self.read(model_id=metadata.request_object_id)
+            if metadata is not None and metadata.model_id is not None:
+                read_response = self.read(model_id=metadata.model_id)
                 return get_user_management_response(
                     read_response,
                     True,
                     request,
-                    metadata.request_object_id,
+                    metadata.model_id,
                     schemas.AppPermission,
                     schemas.AppPermissionResponse,
                 )
@@ -566,13 +566,13 @@ class AppUserRoleService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppUserRoleResponse:
         try:
-            if metadata is not None and metadata.request_object_id is not None:
-                read_response = self.read(model_id=metadata.request_object_id)
+            if metadata is not None and metadata.model_id is not None:
+                read_response = self.read(model_id=metadata.model_id)
                 return get_user_management_response(
                     read_response,
                     True,
                     request,
-                    metadata.request_object_id,
+                    metadata.model_id,
                     schemas.AppUserRole,
                     schemas.AppUserRoleResponse,
                 )
@@ -702,13 +702,13 @@ class AppRolePermissionService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppRolePermissionResponse:
         try:
-            if metadata is not None and metadata.request_object_id is not None:
-                read_response = self.read(model_id=metadata.request_object_id)
+            if metadata is not None and metadata.model_id is not None:
+                read_response = self.read(model_id=metadata.model_id)
                 return get_user_management_response(
                     read_response,
                     True,
                     request,
-                    metadata.request_object_id,
+                    metadata.model_id,
                     schemas.AppRolePermission,
                     schemas.AppRolePermissionResponse,
                 )

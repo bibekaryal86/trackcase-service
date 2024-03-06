@@ -26,7 +26,7 @@ class FilterConfig(BaseSchema):
 
 
 class RequestMetadata(BaseSchema):
-    request_object_id: Optional[int] = None
+    model_id: Optional[int] = None
     sort_config: Optional[SortConfig] = None
     filter_config: list[FilterConfig] = []
     page_number: Optional[int] = 1
@@ -746,3 +746,14 @@ class RefTypesServiceRegistry(str, Enum):
 class CalendarServiceRegistry(str, Enum):
     HEARING_CALENDAR = "hearing_calendar"
     TASK_CALENDAR = "task_calendar"
+
+
+class ComponentStatusNames(str, Enum):
+    APP_USER = "app_user"
+    COURT = "court"
+    JUDGE = "judge"
+    CLIENT = "client"
+    COURT_CASE = "court_case"
+    CALENDAR = "calendars"
+    FILING = "filing"
+    COLLECTION = "collections"

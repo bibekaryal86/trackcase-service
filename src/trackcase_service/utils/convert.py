@@ -60,7 +60,9 @@ def _copy_objects(
             value = getattr(source_object, attr)
             if value and isinstance(value, str):
                 setattr(destination_object, attr, value.strip().upper())
-            elif isinstance(value, bool) or value:
+            elif isinstance(value, bool) and value is not None:
+                setattr(destination_object, attr, value)
+            elif value:
                 setattr(destination_object, attr, value)
             else:
                 setattr(destination_object, attr, None)
