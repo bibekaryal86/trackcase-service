@@ -59,7 +59,7 @@ class HearingCalendarService(CrudService):
                     "history_task_calendars",
                 ],
             )
-            self.create_task_calendar(request, schema_model)
+            self.create_related_task_calendar(request, schema_model)
             return schemas.HearingCalendarResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
@@ -231,7 +231,7 @@ class HearingCalendarService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def create_task_calendar(
+    def create_related_task_calendar(
         self, request: Request, hearing_calendar: schemas.HearingCalendar
     ):
         task_date_diff: int = (

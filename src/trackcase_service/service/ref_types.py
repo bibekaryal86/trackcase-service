@@ -9,6 +9,10 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db import models
 from src.trackcase_service.db.crud import CrudService, DataKeys
 from src.trackcase_service.service import schemas
+from src.trackcase_service.utils.cache import (
+    get_component_statuses_cache,
+    set_component_statuses_cache,
+)
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
@@ -26,6 +30,7 @@ class ComponentStatusService(CrudService):
     def create_component_status(
         self, request: Request, request_object: schemas.ComponentStatusRequest
     ) -> schemas.ComponentStatusResponse:
+        set_component_statuses_cache([])
         try:
             data_model: models.ComponentStatus = convert_schema_to_model(
                 request_object, models.ComponentStatus
@@ -98,7 +103,10 @@ class ComponentStatusService(CrudService):
         component_name: schemas.ComponentStatusNames,
         status_type: schemas.ComponentStatusTypes = None,
     ) -> list[schemas.ComponentStatus]:
-        component_statuses = self.read_component_status(request).data or []
+        component_statuses = get_component_statuses_cache()
+        if not component_statuses:
+            component_statuses = self.read_component_status(request).data or []
+            set_component_statuses_cache(component_statuses)
         component_name_statuses = [
             component_status
             for component_status in component_statuses
@@ -144,6 +152,7 @@ class ComponentStatusService(CrudService):
         request: Request,
         request_object: schemas.ComponentStatusRequest,
     ) -> schemas.ComponentStatusResponse:
+        set_component_statuses_cache([])
         self.check_component_status_exists(model_id, request)
 
         try:
@@ -170,6 +179,7 @@ class ComponentStatusService(CrudService):
     def delete_component_status(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.ComponentStatusResponse:
+        set_component_statuses_cache([])
         self.check_component_status_exists(model_id, request)
 
         try:
