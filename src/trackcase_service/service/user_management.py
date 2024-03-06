@@ -11,7 +11,6 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db import models
 from src.trackcase_service.db.crud import CrudService, DataKeys
 from src.trackcase_service.service import schemas
-from src.trackcase_service.service.schemas import UserManagementServiceRegistry
 from src.trackcase_service.utils.commons import (
     decode_email_address,
     encode_auth_credentials,
@@ -808,7 +807,7 @@ class AppRolePermissionService(CrudService):
 
 
 def get_user_management_service(
-    service_type: UserManagementServiceRegistry, db_session: Session
+    service_type: schemas.UserManagementServiceRegistry, db_session: Session
 ) -> (
     AppUserService
     | AppRoleService
@@ -817,11 +816,11 @@ def get_user_management_service(
     | AppRolePermissionService
 ):
     service_registry = {
-        UserManagementServiceRegistry.APP_USER: AppUserService,
-        UserManagementServiceRegistry.APP_ROLE: AppRoleService,
-        UserManagementServiceRegistry.APP_PERMISSION: AppPermissionService,
-        UserManagementServiceRegistry.APP_USER_ROLE: AppUserRoleService,
-        UserManagementServiceRegistry.APP_ROLE_PERMISSION: AppRolePermissionService,
+        schemas.UserManagementServiceRegistry.APP_USER: AppUserService,
+        schemas.UserManagementServiceRegistry.APP_ROLE: AppRoleService,
+        schemas.UserManagementServiceRegistry.APP_PERMISSION: AppPermissionService,
+        schemas.UserManagementServiceRegistry.APP_USER_ROLE: AppUserRoleService,
+        schemas.UserManagementServiceRegistry.APP_ROLE_PERMISSION: AppRolePermissionService,
     }
     return service_registry.get(service_type)(db_session)
 

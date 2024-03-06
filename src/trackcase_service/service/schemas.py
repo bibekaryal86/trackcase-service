@@ -748,6 +748,11 @@ class CalendarServiceRegistry(str, Enum):
     TASK_CALENDAR = "task_calendar"
 
 
+class CollectionServiceRegistry(str, Enum):
+    CASE_COLLECTION = "case_collection"
+    CASH_COLLECTION = "cash_collection"
+
+
 class ComponentStatusNames(str, Enum):
     APP_USER = "app_user"
     COURT = "court"
@@ -757,3 +762,9 @@ class ComponentStatusNames(str, Enum):
     CALENDAR = "calendars"
     FILING = "filing"
     COLLECTION = "collections"
+
+
+class ComponentStatusTypes(str, Enum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    ALL = "all"

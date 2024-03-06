@@ -6,10 +6,8 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service import schemas
-from src.trackcase_service.service.calendars import (
-    get_calendar_service,
-    get_calendar_statuses,
-)
+from src.trackcase_service.service.calendars import get_calendar_service
+from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils.commons import parse_request_metadata
 
 router = APIRouter(prefix="/calendars", tags=["Calendars"])
@@ -225,7 +223,14 @@ def _check_and_set_status(
     request: Request,
     db_session: Session,
 ) -> str:
-    calendar_inactive_statuses = get_calendar_statuses(db_session, request, "inactive")
+    calendar_inactive_statuses = get_ref_types_service(
+        service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
+        db_session=db_session,
+    ).get_component_status(
+        request,
+        schemas.ComponentStatusNames.CALENDAR,
+        schemas.ComponentStatusTypes.INACTIVE,
+    )
     calendar_inactive_statuses = [
         component_status.id for component_status in calendar_inactive_statuses
     ]

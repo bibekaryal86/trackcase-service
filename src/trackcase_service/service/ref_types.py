@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db import models
 from src.trackcase_service.db.crud import CrudService, DataKeys
 from src.trackcase_service.service import schemas
-from src.trackcase_service.service.schemas import RefTypesServiceRegistry
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
@@ -94,14 +93,31 @@ class ComponentStatusService(CrudService):
             )
 
     def get_component_status(
-        self, request: Request, component_name: schemas.ComponentStatusNames
+        self,
+        request: Request,
+        component_name: schemas.ComponentStatusNames,
+        status_type: schemas.ComponentStatusTypes = None,
     ) -> list[schemas.ComponentStatus]:
         component_statuses = self.read_component_status(request).data or []
-        return [
+        component_name_statuses = [
             component_status
             for component_status in component_statuses
             if component_status.component_name == component_name
         ]
+        if status_type and status_type == schemas.ComponentStatusTypes.ACTIVE:
+            return [
+                component_status
+                for component_status in component_name_statuses
+                if component_status.is_active is True
+            ]
+        elif status_type and status_type == schemas.ComponentStatusTypes.INACTIVE:
+            return [
+                component_status
+                for component_status in component_name_statuses
+                if component_status.is_active is False
+            ]
+        else:
+            return component_name_statuses
         # return list(
         #     filter(
         #         lambda component_status: component_status.component_name
@@ -842,7 +858,7 @@ class TaskTypeService(CrudService):
 
 
 def get_ref_types_service(
-    service_type: RefTypesServiceRegistry, db_session: Session
+    service_type: schemas.RefTypesServiceRegistry, db_session: Session
 ) -> (
     ComponentStatusService
     | CollectionMethodService
@@ -852,12 +868,12 @@ def get_ref_types_service(
     | TaskTypeService
 ):
     service_registry = {
-        RefTypesServiceRegistry.COMPONENT_STATUS: ComponentStatusService,
-        RefTypesServiceRegistry.COLLECTION_METHOD: CollectionMethodService,
-        RefTypesServiceRegistry.CASE_TYPE: CaseTypeService,
-        RefTypesServiceRegistry.FILING_TYPE: FilingTypeService,
-        RefTypesServiceRegistry.HEARING_TYPE: HearingTypeService,
-        RefTypesServiceRegistry.TASK_TYPE: TaskTypeService,
+        schemas.RefTypesServiceRegistry.COMPONENT_STATUS: ComponentStatusService,
+        schemas.RefTypesServiceRegistry.COLLECTION_METHOD: CollectionMethodService,
+        schemas.RefTypesServiceRegistry.CASE_TYPE: CaseTypeService,
+        schemas.RefTypesServiceRegistry.FILING_TYPE: FilingTypeService,
+        schemas.RefTypesServiceRegistry.HEARING_TYPE: HearingTypeService,
+        schemas.RefTypesServiceRegistry.TASK_TYPE: TaskTypeService,
     }
     return service_registry.get(service_type)(db_session)
 

@@ -11,7 +11,6 @@ from src.trackcase_service.db.crud import CrudService
 from src.trackcase_service.service import schemas
 from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
-from src.trackcase_service.service.schemas import CalendarServiceRegistry
 from src.trackcase_service.utils.commons import (
     check_active_component_status,
     get_err_msg,
@@ -255,7 +254,7 @@ class HearingCalendarService(CrudService):
             status=hearing_calendar.status,
         )
         get_calendar_service(
-            CalendarServiceRegistry.TASK_CALENDAR, db_session=self.db_session
+            schemas.CalendarServiceRegistry.TASK_CALENDAR, db_session=self.db_session
         ).create_task_calendar(request, task_calendar_request)
 
     def check_hearing_calendar_exists(
@@ -281,8 +280,13 @@ class HearingCalendarService(CrudService):
         status_new: int,
         hearing_calendar_old: schemas.HearingCalendar,
     ):
-        calendar_active_statuses = get_calendar_statuses(
-            db_session=self.db_session, request=request, status_type="active"
+        calendar_active_statuses = get_ref_types_service(
+            service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
+            db_session=self.db_session,
+        ).get_component_status(
+            request,
+            schemas.ComponentStatusNames.CALENDAR,
+            schemas.ComponentStatusTypes.ACTIVE,
         )
         status_old = hearing_calendar_old.component_status_id
         active_statuses = [
@@ -505,34 +509,10 @@ class TaskCalendarService(CrudService):
 
 
 def get_calendar_service(
-    service_type: CalendarServiceRegistry, db_session: Session
+    service_type: schemas.CalendarServiceRegistry, db_session: Session
 ) -> HearingCalendarService | TaskCalendarService:
     service_registry = {
-        CalendarServiceRegistry.HEARING_CALENDAR: HearingCalendarService,
-        CalendarServiceRegistry.TASK_CALENDAR: TaskCalendarService,
+        schemas.CalendarServiceRegistry.HEARING_CALENDAR: HearingCalendarService,
+        schemas.CalendarServiceRegistry.TASK_CALENDAR: TaskCalendarService,
     }
     return service_registry.get(service_type)(db_session)
-
-
-def get_calendar_statuses(
-    db_session: Session, request: Request, status_type: str = None
-):
-    calendar_statuses = get_ref_types_service(
-        service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
-        db_session=db_session,
-    ).get_component_status(request, schemas.ComponentStatusNames.CALENDAR)
-
-    if status_type == "active":
-        return [
-            component_status
-            for component_status in calendar_statuses
-            if component_status.is_active is True
-        ]
-    elif status_type == "inactive":
-        return [
-            component_status
-            for component_status in calendar_statuses
-            if component_status.is_active is False
-        ]
-    else:
-        return calendar_statuses
