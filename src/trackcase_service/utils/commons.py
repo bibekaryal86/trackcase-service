@@ -92,76 +92,6 @@ def raise_http_exception(
     raise HTTPException(status_code=sts_code, detail={"error": error})
 
 
-def check_active_courts(courts: list[schemas.Court]) -> bool:
-    active_statuses = constants.get_statuses().get("court").get("active")
-    for court in courts:
-        if court.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_judges(judges: list[schemas.Judge]) -> bool:
-    active_statuses = constants.get_statuses().get("judge").get("active")
-    for judge in judges:
-        if judge.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_clients(clients: list[schemas.Client]) -> bool:
-    active_statuses = constants.get_statuses().get("client").get("active")
-    for client in clients:
-        if client.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_court_cases(court_cases: list[schemas.CourtCase]) -> bool:
-    active_statuses = constants.get_statuses().get("court_case").get("active")
-    for court_case in court_cases:
-        if court_case.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_hearing_calendars(
-    hearing_calendars: list[schemas.HearingCalendar],
-) -> bool:
-    active_statuses = constants.get_statuses().get("calendars").get("active")
-    for hearing_calendar in hearing_calendars:
-        if hearing_calendar.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_forms(forms: list[schemas.Filing]) -> bool:
-    active_statuses = constants.get_statuses().get("form").get("active")
-    for form in forms:
-        if form.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_case_collections(
-    case_collections: list[schemas.CaseCollection],
-) -> bool:
-    active_statuses = constants.get_statuses().get("collections").get("active")
-    for case_collection in case_collections:
-        if case_collection.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_cash_collections(
-    cash_collections: list[schemas.CashCollection],
-) -> bool:
-    active_statuses = constants.get_statuses().get("collections").get("active")
-    for cash_collection in cash_collections:
-        if cash_collection.status in active_statuses:
-            return True
-    return False
-
-
 def request_metadata_example() -> str:
     return """For example -:-:- {
     "request_object_id": 1,
@@ -183,7 +113,9 @@ def request_metadata_example() -> str:
     ],
     "page_number": 1,
     "per_page": 100,
-    "is_include_deleted": false
+    "is_include_deleted": false,
+    "is_include_extra": false,
+    "is_include_history": false
 }"""
 
 
