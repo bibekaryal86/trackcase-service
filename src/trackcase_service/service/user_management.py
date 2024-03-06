@@ -57,8 +57,9 @@ class AppUserPasswordService:
                     app_user_data_model.last_login = datetime.datetime.now()
                     crud_service.update(app_user_data_model.id, app_user_data_model)
 
-                    app_user_schema_model = convert_user_management_model_to_schema(
-                        app_user_data_model, schemas.AppUser
+                    app_user_schema_model = convert_model_to_schema(
+                        data_model=app_user_data_model,
+                        schema_class=schemas.AppUser,
                     )
                     token_claim = encode_auth_credentials(app_user_schema_model)
                     return schemas.AppUserLoginResponse(
@@ -159,12 +160,11 @@ class AppUserService(CrudService):
             data_model.password = get_user_password_service(request_object.password)
             data_model.is_validated = False
             data_model = self.create(data_model)
-            schema_model = convert_user_management_model_to_schema(
-                data_model, schemas.AppUser
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.AppUser,
             )
-
             get_email_service().app_user_validation_email(request, data_model.email)
-
             return schemas.AppUserResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
@@ -242,8 +242,9 @@ class AppUserService(CrudService):
                     request_object.password
                 ).hash_password()
             data_model = self.update(model_id, data_model)
-            schema_model = convert_user_management_model_to_schema(
-                data_model, schemas.AppUser
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.AppUser,
             )
             return schemas.AppUserResponse(data=[schema_model])
         except Exception as ex:
@@ -289,8 +290,9 @@ class AppRoleService(CrudService):
                 request_object, models.AppRole
             )
             data_model = self.create(data_model)
-            schema_model = convert_user_management_model_to_schema(
-                data_model, schemas.AppRole
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.AppRole,
             )
             return schemas.AppRoleResponse(data=[schema_model])
         except Exception as ex:
@@ -365,8 +367,9 @@ class AppRoleService(CrudService):
                 request_object, models.AppRole
             )
             data_model = self.update(model_id, data_model)
-            schema_model = convert_user_management_model_to_schema(
-                data_model, schemas.AppRole
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.AppRole,
             )
             return schemas.AppRoleResponse(data=[schema_model])
         except Exception as ex:
@@ -412,8 +415,9 @@ class AppPermissionService(CrudService):
                 request_object, models.AppPermission
             )
             data_model = self.create(data_model)
-            schema_model = convert_user_management_model_to_schema(
-                data_model, schemas.AppPermission
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.AppPermission,
             )
             return schemas.AppPermissionResponse(data=[schema_model])
         except Exception as ex:
@@ -495,8 +499,9 @@ class AppPermissionService(CrudService):
                 request_object, models.AppPermission
             )
             data_model = self.update(model_id, data_model)
-            schema_model = convert_user_management_model_to_schema(
-                data_model, schemas.AppPermission
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.AppPermission,
             )
             return schemas.AppPermissionResponse(data=[schema_model])
         except Exception as ex:
@@ -542,8 +547,9 @@ class AppUserRoleService(CrudService):
                 request_object, models.AppUserRole
             )
             data_model = self.create(data_model)
-            schema_model = convert_user_management_model_to_schema(
-                data_model, schemas.AppUserRole
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.AppUserRole,
             )
             return schemas.AppUserRoleResponse(data=[schema_model])
         except Exception as ex:
@@ -625,8 +631,9 @@ class AppUserRoleService(CrudService):
                 request_object, models.AppUserRole
             )
             data_model = self.update(model_id, data_model)
-            schema_model = convert_user_management_model_to_schema(
-                data_model, schemas.AppUserRole
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.AppUserRole,
             )
             return schemas.AppUserRoleResponse(data=[schema_model])
         except Exception as ex:
@@ -674,8 +681,9 @@ class AppRolePermissionService(CrudService):
                 request_object, models.AppRolePermission
             )
             data_model = self.create(data_model)
-            schema_model = convert_user_management_model_to_schema(
-                data_model, schemas.AppRolePermission
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.AppRolePermission,
             )
             return schemas.AppRolePermissionResponse(
                 app_role_permissions=[schema_model]
@@ -761,8 +769,9 @@ class AppRolePermissionService(CrudService):
                 request_object, models.AppRolePermission
             )
             data_model = self.update(model_id, data_model)
-            schema_model = convert_user_management_model_to_schema(
-                data_model, schemas.AppRolePermission
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.AppRolePermission,
             )
             return schemas.AppRolePermissionResponse(
                 app_role_permissions=[schema_model]
@@ -861,7 +870,7 @@ def get_user_management_response(
 
     metadata = read_response.get(DataKeys.metadata)
     schema_models = [
-        convert_user_management_model_to_schema(data_model, schema_type)
+        convert_model_to_schema(data_model=data_model, schema_class=schema_type)
         for data_model in data_models
     ]
     return return_type(
@@ -869,34 +878,4 @@ def get_user_management_response(
             "metadata": metadata,
             "data": schema_models,
         }
-    )
-
-
-def convert_user_management_model_to_schema(
-    data_model: Union[
-        models.AppUser,
-        models.AppRole,
-        models.AppPermission,
-        models.AppUserRole,
-        models.AppRolePermission,
-    ],
-    schema_class: Type[
-        Union[
-            schemas.AppUser,
-            schemas.AppRole,
-            schemas.AppPermission,
-            schemas.AppUserRole,
-            schemas.AppRolePermission,
-        ]
-    ],
-) -> Union[
-    schemas.AppUser,
-    schemas.AppRole,
-    schemas.AppPermission,
-    schemas.AppUserRole,
-    schemas.AppRolePermission,
-]:
-    return convert_model_to_schema(
-        data_model=data_model,
-        schema_class=schema_class,
     )

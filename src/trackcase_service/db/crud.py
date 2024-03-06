@@ -54,10 +54,12 @@ class CrudService:
             }
         elif model_ids and len(model_ids) > 0:
             data = (
-                self.db_session.query(self.db_model).filter()
+                self.db_session.query(self.db_model)
+                .filter()
                 .filter(
                     self.db_model.id.in_(model_ids), self.db_model.is_deleted == False
-                ).all()
+                )
+                .all()
             )
             return {
                 DataKeys.data: data,

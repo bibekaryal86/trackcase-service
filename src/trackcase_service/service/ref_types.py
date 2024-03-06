@@ -32,10 +32,10 @@ class ComponentStatusService(CrudService):
                 request_object, models.ComponentStatus
             )
             data_model = self.create(data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model, schemas.ComponentStatus, []
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.ComponentStatus,
             )
-
             return schemas.ComponentStatusResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
@@ -118,8 +118,9 @@ class ComponentStatusService(CrudService):
                 request_object, models.ComponentStatus
             )
             data_model = self.update(model_id, data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model, schemas.ComponentStatus, []
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.ComponentStatus,
             )
             return schemas.ComponentStatusResponse(data=[schema_model])
         except Exception as ex:
@@ -167,12 +168,11 @@ class CollectionMethodService(CrudService):
                 request_object, models.CollectionMethod
             )
             data_model = self.create(data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model,
-                schemas.CollectionMethod,
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.CollectionMethod,
                 exclusions=["cash_collections", "history_cash_collections"],
             )
-
             return schemas.CollectionMethodResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
@@ -258,9 +258,9 @@ class CollectionMethodService(CrudService):
                 request_object, models.CollectionMethod
             )
             data_model = self.update(model_id, data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model,
-                schemas.CollectionMethod,
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.CollectionMethod,
                 exclusions=["cash_collections", "history_cash_collections"],
             )
             return schemas.CollectionMethodResponse(data=[schema_model])
@@ -307,12 +307,11 @@ class CaseTypeService(CrudService):
                 request_object, models.CaseType
             )
             data_model = self.create(data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model,
-                schemas.CaseType,
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.CaseType,
                 exclusions=["court_cases", "history_court_cases"],
             )
-
             return schemas.CaseTypeResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
@@ -389,9 +388,9 @@ class CaseTypeService(CrudService):
                 request_object, models.CaseType
             )
             data_model = self.update(model_id, data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model,
-                schemas.CaseType,
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.CaseType,
                 exclusions=["court_cases", "history_court_cases"],
             )
             return schemas.CaseTypeResponse(data=[schema_model])
@@ -438,12 +437,11 @@ class FilingTypeService(CrudService):
                 request_object, models.FilingType
             )
             data_model = self.create(data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model,
-                schemas.FilingType,
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.FilingType,
                 exclusions=["filings", "history_filings"],
             )
-
             return schemas.FilingTypeResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
@@ -522,9 +520,9 @@ class FilingTypeService(CrudService):
                 request_object, models.FilingType
             )
             data_model = self.update(model_id, data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model,
-                schemas.FilingType,
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.FilingType,
                 exclusions=["filings", "history_filings"],
             )
             return schemas.FilingTypeResponse(data=[schema_model])
@@ -571,12 +569,11 @@ class HearingTypeService(CrudService):
                 request_object, models.HearingType
             )
             data_model = self.create(data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model,
-                schemas.HearingType,
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.HearingType,
                 exclusions=["hearing_calendars", "history_hearing_calendars"],
             )
-
             return schemas.HearingTypeResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
@@ -660,9 +657,9 @@ class HearingTypeService(CrudService):
                 request_object, models.HearingType
             )
             data_model = self.update(model_id, data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model,
-                schemas.HearingType,
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.HearingType,
                 exclusions=["hearing_calendars", "history_hearing_calendars"],
             )
             return schemas.HearingTypeResponse(data=[schema_model])
@@ -709,12 +706,11 @@ class TaskTypeService(CrudService):
                 request_object, models.TaskType
             )
             data_model = self.create(data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model,
-                schemas.TaskType,
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.TaskType,
                 exclusions=["task_calendars", "history_task_calendars"],
             )
-
             return schemas.TaskTypeResponse(data=[schema_model])
         except Exception as ex:
             raise_http_exception(
@@ -791,9 +787,9 @@ class TaskTypeService(CrudService):
                 request_object, models.TaskType
             )
             data_model = self.update(model_id, data_model)
-            schema_model = convert_ref_types_model_to_schema(
-                data_model,
-                schemas.TaskType,
+            schema_model = convert_model_to_schema(
+                data_model=data_model,
+                schema_class=schemas.TaskType,
                 exclusions=["task_calendars", "history_task_calendars"],
             )
             return schemas.TaskTypeResponse(data=[schema_model])
@@ -893,7 +889,9 @@ def get_ref_types_response(
 
     metadata = read_response.get(DataKeys.metadata)
     schema_models = [
-        convert_ref_types_model_to_schema(data_model, schema_type, exclusions)
+        convert_model_to_schema(
+            data_model=data_model, schema_class=schema_type, exclusions=exclusions
+        )
         for data_model in data_models
     ]
     return return_type(
@@ -901,39 +899,4 @@ def get_ref_types_response(
             "metadata": metadata,
             "data": schema_models,
         }
-    )
-
-
-def convert_ref_types_model_to_schema(
-    data_model: Union[
-        models.ComponentStatus,
-        models.CollectionMethod,
-        models.CaseType,
-        models.FilingType,
-        models.HearingType,
-        models.TaskType,
-    ],
-    schema_class: Type[
-        Union[
-            schemas.ComponentStatus,
-            schemas.CollectionMethod,
-            schemas.CaseType,
-            schemas.FilingType,
-            schemas.HearingType,
-            schemas.TaskType,
-        ]
-    ],
-    exclusions: list[str],
-) -> Union[
-    schemas.ComponentStatus,
-    schemas.CollectionMethod,
-    schemas.CaseType,
-    schemas.FilingType,
-    schemas.HearingType,
-    schemas.TaskType,
-]:
-    return convert_model_to_schema(
-        data_model=data_model,
-        schema_class=schema_class,
-        exclusions=exclusions,
     )
