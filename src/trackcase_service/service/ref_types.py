@@ -98,7 +98,7 @@ class ComponentStatusService(CrudService):
         component_status_response = self.read_component_status(
             request, request_metadata
         )
-        if not (component_status_response and component_status_response.data):
+        if not component_status_response or not component_status_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -238,7 +238,7 @@ class CollectionMethodService(CrudService):
         collection_method_response = self.read_collection_method(
             request, request_metadata
         )
-        if not (collection_method_response and collection_method_response.data):
+        if not collection_method_response or not collection_method_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -372,7 +372,7 @@ class CaseTypeService(CrudService):
     def check_case_type_exists(self, model_id: int, request: Request):
         request_metadata = schemas.RequestMetadata(model_id=model_id)
         case_type_response = self.read_case_type(request, request_metadata)
-        if not (case_type_response and case_type_response.data):
+        if not case_type_response or not case_type_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -505,7 +505,7 @@ class FilingTypeService(CrudService):
     def check_filing_type_exists(self, model_id: int, request: Request):
         request_metadata = schemas.RequestMetadata(model_id=model_id)
         filing_type_response = self.read_filing_type(request, request_metadata)
-        if not (filing_type_response and filing_type_response.data):
+        if not filing_type_response or not filing_type_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -640,7 +640,7 @@ class HearingTypeService(CrudService):
     def check_hearing_type_exists(self, model_id: int, request: Request):
         request_metadata = schemas.RequestMetadata(model_id=model_id)
         hearing_type_response = self.read_hearing_type(request, request_metadata)
-        if not (hearing_type_response and hearing_type_response.data):
+        if not hearing_type_response or not hearing_type_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -774,7 +774,7 @@ class TaskTypeService(CrudService):
     def check_task_type_exists(self, model_id: int, request: Request):
         request_metadata = schemas.RequestMetadata(model_id=model_id)
         task_type_response = self.read_task_type(request, request_metadata)
-        if not (task_type_response and task_type_response.data):
+        if not task_type_response or not task_type_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,

@@ -221,7 +221,7 @@ class AppUserService(CrudService):
     def check_app_user_exists(self, model_id: int, request: Request):
         request_metadata = schemas.RequestMetadata(model_id=model_id)
         app_user_response = self.read_app_user(request, request_metadata)
-        if not (app_user_response and app_user_response.data):
+        if not app_user_response or not app_user_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -348,7 +348,7 @@ class AppRoleService(CrudService):
     def check_app_role_exists(self, model_id: int, request: Request):
         request_metadata = schemas.RequestMetadata(model_id=model_id)
         app_role_response = self.read_app_role(request, request_metadata)
-        if not (app_role_response and app_role_response.data):
+        if not app_role_response or not app_role_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -475,7 +475,7 @@ class AppPermissionService(CrudService):
     def check_app_permission_exists(self, model_id: int, request: Request):
         request_metadata = schemas.RequestMetadata(model_id=model_id)
         app_permission_response = self.read_app_permission(request, request_metadata)
-        if not (app_permission_response and app_permission_response.data):
+        if not app_permission_response or not app_permission_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -605,7 +605,7 @@ class AppUserRoleService(CrudService):
     def check_app_user_role_exists(self, model_id: int, request: Request):
         request_metadata = schemas.RequestMetadata(model_id=model_id)
         app_user_role_response = self.read_app_user_role(request, request_metadata)
-        if not (app_user_role_response and app_user_role_response.data):
+        if not app_user_role_response or not app_user_role_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
@@ -741,7 +741,7 @@ class AppRolePermissionService(CrudService):
         app_role_permission_response = self.read_app_role_permission(
             request, request_metadata
         )
-        if not (app_role_permission_response and app_role_permission_response.data):
+        if not app_role_permission_response or not app_role_permission_response.data:
             raise_http_exception(
                 request,
                 HTTPStatus.NOT_FOUND,
