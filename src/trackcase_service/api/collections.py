@@ -16,7 +16,6 @@ router = APIRouter(prefix="/collections", tags=["Collections"])
     "/case/",
     response_model=schemas.CaseCollectionResponse,
     status_code=HTTPStatus.OK,
-    include_in_schema=False,
 )
 def insert_case_collection(
     request: Request,
@@ -80,7 +79,6 @@ def remove_case_collection(
     "/cash/",
     response_model=schemas.CashCollectionResponse,
     status_code=HTTPStatus.OK,
-    include_in_schema=False,
 )
 def insert_cash_collection(
     request: Request,

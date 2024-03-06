@@ -64,7 +64,6 @@ def get_all_ref_types(
     "/component_status/",
     response_model=schemas.ComponentStatusResponse,
     status_code=HTTPStatus.OK,
-    include_in_schema=False,
 )
 def insert_component_status(
     request: Request,
@@ -128,7 +127,6 @@ def remove_component_status(
     "/collection_method/",
     response_model=schemas.CollectionMethodResponse,
     status_code=HTTPStatus.OK,
-    include_in_schema=False,
 )
 def insert_collection_method(
     request: Request,
@@ -192,7 +190,6 @@ def remove_collection_method(
     "/case_type/",
     response_model=schemas.CaseTypeResponse,
     status_code=HTTPStatus.OK,
-    include_in_schema=False,
 )
 def insert_case_type(
     request: Request,
@@ -254,7 +251,6 @@ def remove_case_type(
     "/filing_type/",
     response_model=schemas.FilingTypeResponse,
     status_code=HTTPStatus.OK,
-    include_in_schema=False,
 )
 def insert_filing_type(
     request: Request,
@@ -318,7 +314,6 @@ def remove_filing_type(
     "/hearing_type/",
     response_model=schemas.HearingTypeResponse,
     status_code=HTTPStatus.OK,
-    include_in_schema=False,
 )
 def insert_hearing_type(
     request: Request,
@@ -382,7 +377,6 @@ def remove_hearing_type(
     "/task_type/",
     response_model=schemas.TaskTypeResponse,
     status_code=HTTPStatus.OK,
-    include_in_schema=False,
 )
 def insert_task_type(
     request: Request,

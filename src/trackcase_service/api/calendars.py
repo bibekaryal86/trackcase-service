@@ -46,7 +46,6 @@ def get_calendars(
     "/hearing/",
     response_model=schemas.HearingCalendarResponse,
     status_code=HTTPStatus.OK,
-    include_in_schema=False,
 )
 def insert_hearing_calendar(
     request: Request,
@@ -110,7 +109,6 @@ def remove_hearing_calendar(
     "/task/",
     response_model=schemas.TaskCalendarResponse,
     status_code=HTTPStatus.OK,
-    include_in_schema=False,
 )
 def insert_task_calendar(
     request: Request,
