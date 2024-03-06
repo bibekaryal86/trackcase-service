@@ -29,11 +29,11 @@ class RequestMetadata(BaseSchema):
     request_object_id: Optional[int] = None
     sort_config: Optional[SortConfig] = None
     filter_config: list[FilterConfig] = []
-    page_number: Optional[int] = None
-    per_page: Optional[int] = None
-    is_include_deleted: Optional[bool] = None
-    is_include_extra: Optional[bool] = None
-    is_include_history: Optional[bool] = None
+    page_number: Optional[int] = 1
+    per_page: Optional[int] = 100
+    is_include_deleted: Optional[bool] = False
+    is_include_extra: Optional[bool] = False
+    is_include_history: Optional[bool] = False
 
 
 class ResponseMetadata(BaseSchema):

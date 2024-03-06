@@ -199,9 +199,9 @@ def parse_request_metadata(
     metadata: Optional[str] = Query(
         default=None, description=request_metadata_example()
     ),
-) -> schemas.RequestMetadata | None:
+) -> schemas.RequestMetadata:
     if metadata is None:
-        return None
+        return schemas.RequestMetadata()
     try:
         metadata_dict = json.loads(metadata)
         return schemas.RequestMetadata(**metadata_dict)

@@ -65,8 +65,8 @@ class ComponentStatusService(CrudService):
                 read_response = self.read(
                     sort_config=metadata.sort_config,
                     filter_config=metadata.filter_config,
-                    page_number=metadata.page_number or 1,
-                    per_page=metadata.per_page or 100,
+                    page_number=metadata.page_number,
+                    per_page=metadata.per_page,
                     is_include_soft_deleted=metadata.is_include_deleted is True,
                 )
                 return get_ref_types_response(
@@ -203,8 +203,8 @@ class CollectionMethodService(CrudService):
                 read_response = self.read(
                     sort_config=metadata.sort_config,
                     filter_config=metadata.filter_config,
-                    page_number=metadata.page_number or 1,
-                    per_page=metadata.per_page or 100,
+                    page_number=metadata.page_number,
+                    per_page=metadata.per_page,
                     is_include_soft_deleted=metadata.is_include_deleted is True,
                 )
                 return get_ref_types_response(
@@ -340,8 +340,8 @@ class CaseTypeService(CrudService):
                 read_response = self.read(
                     sort_config=metadata.sort_config,
                     filter_config=metadata.filter_config,
-                    page_number=metadata.page_number or 1,
-                    per_page=metadata.per_page or 100,
+                    page_number=metadata.page_number,
+                    per_page=metadata.per_page,
                     is_include_soft_deleted=metadata.is_include_deleted is True,
                 )
                 return get_ref_types_response(
@@ -470,8 +470,8 @@ class FilingTypeService(CrudService):
                 read_response = self.read(
                     sort_config=metadata.sort_config,
                     filter_config=metadata.filter_config,
-                    page_number=metadata.page_number or 1,
-                    per_page=metadata.per_page or 100,
+                    page_number=metadata.page_number,
+                    per_page=metadata.per_page,
                     is_include_soft_deleted=metadata.is_include_deleted is True,
                 )
                 return get_ref_types_response(
@@ -604,8 +604,8 @@ class HearingTypeService(CrudService):
                 read_response = self.read(
                     sort_config=metadata.sort_config,
                     filter_config=metadata.filter_config,
-                    page_number=metadata.page_number or 1,
-                    per_page=metadata.per_page or 100,
+                    page_number=metadata.page_number,
+                    per_page=metadata.per_page,
                     is_include_soft_deleted=metadata.is_include_deleted is True,
                 )
                 return get_ref_types_response(
@@ -739,8 +739,8 @@ class TaskTypeService(CrudService):
                 read_response = self.read(
                     sort_config=metadata.sort_config,
                     filter_config=metadata.filter_config,
-                    page_number=metadata.page_number or 1,
-                    per_page=metadata.per_page or 100,
+                    page_number=metadata.page_number,
+                    per_page=metadata.per_page,
                     is_include_soft_deleted=metadata.is_include_deleted is True,
                 )
                 return get_ref_types_response(

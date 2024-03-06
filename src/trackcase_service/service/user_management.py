@@ -192,8 +192,8 @@ class AppUserService(CrudService):
                 read_response = self.read(
                     sort_config=metadata.sort_config,
                     filter_config=metadata.filter_config,
-                    page_number=metadata.page_number or 1,
-                    per_page=metadata.per_page or 100,
+                    page_number=metadata.page_number,
+                    per_page=metadata.per_page,
                     is_include_soft_deleted=metadata.is_include_deleted is True,
                 )
                 return get_user_management_response(
@@ -321,8 +321,8 @@ class AppRoleService(CrudService):
                 read_response = self.read(
                     sort_config=metadata.sort_config,
                     filter_config=metadata.filter_config,
-                    page_number=metadata.page_number or 1,
-                    per_page=metadata.per_page or 100,
+                    page_number=metadata.page_number,
+                    per_page=metadata.per_page,
                     is_include_soft_deleted=metadata.is_include_deleted is True,
                 )
                 return get_user_management_response(
@@ -448,8 +448,8 @@ class AppPermissionService(CrudService):
                 read_response = self.read(
                     sort_config=metadata.sort_config,
                     filter_config=metadata.filter_config,
-                    page_number=metadata.page_number or 1,
-                    per_page=metadata.per_page or 100,
+                    page_number=metadata.page_number,
+                    per_page=metadata.per_page,
                     is_include_soft_deleted=metadata.is_include_deleted is True,
                 )
                 return get_user_management_response(
@@ -580,8 +580,8 @@ class AppUserRoleService(CrudService):
                 read_response = self.read(
                     sort_config=metadata.sort_config,
                     filter_config=metadata.filter_config,
-                    page_number=metadata.page_number or 1,
-                    per_page=metadata.per_page or 100,
+                    page_number=metadata.page_number,
+                    per_page=metadata.per_page,
                     is_include_soft_deleted=metadata.is_include_deleted is True,
                 )
                 return get_user_management_response(
@@ -716,8 +716,8 @@ class AppRolePermissionService(CrudService):
                 read_response = self.read(
                     sort_config=metadata.sort_config,
                     filter_config=metadata.filter_config,
-                    page_number=metadata.page_number or 1,
-                    per_page=metadata.per_page or 100,
+                    page_number=metadata.page_number,
+                    per_page=metadata.per_page,
                     is_include_soft_deleted=metadata.is_include_deleted is True,
                 )
                 return get_user_management_response(
