@@ -134,9 +134,6 @@ def check_active_hearing_calendars(
     return False
 
 
-
-
-
 def check_active_forms(forms: list[schemas.Filing]) -> bool:
     active_statuses = constants.get_statuses().get("form").get("active")
     for form in forms:
@@ -300,3 +297,10 @@ def get_read_response_data_metadata(read_response):
             DataKeys.metadata
         )
     return [], None
+
+
+def check_active_component_status(components: list, active_statuses: list[int]) -> bool:
+    for component in components:
+        if component.component_status_id in active_statuses:
+            return True
+    return False

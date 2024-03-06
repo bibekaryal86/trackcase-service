@@ -8,21 +8,21 @@ from src.trackcase_service.service.collection_method_service import (
     get_collection_method_service,
 )
 from src.trackcase_service.service.form_type_service import get_form_type_service
-from src.trackcase_service.service.hearing_type_service import get_hearing_type_service
-
-from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.hearing_calendar_service import (
     get_hearing_calendar_service,
 )
+from src.trackcase_service.service.hearing_type_service import get_hearing_type_service
+from src.trackcase_service.service.task_calendar_service import (
+    get_task_calendar_service,
+)
+
+from src.trackcase_service.db.session import get_db_session
 from src.trackcase_service.service.schemas import (
     CalendarEvent,
     CalendarObjectTypes,
     CalendarResponse,
     HearingCalendar,
     TaskCalendar,
-)
-from src.trackcase_service.service.task_calendar_service import (
-    get_task_calendar_service,
 )
 
 router = APIRouter(prefix="/trackcase-service/common", tags=["Common"])
