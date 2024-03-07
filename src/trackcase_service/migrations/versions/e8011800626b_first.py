@@ -969,9 +969,44 @@ def upgrade() -> None:
         postgresql_where="(filing_id IS NOT NULL)",
     )
     op.execute(
-        """INSERT INTO task_type (created, modified, name, description, is_deleted) VALUES (now(), now(), 'DUE AT HEARING', 'DUE AT HEARING', False)"""     # noqa: E501
+        """INSERT INTO task_type (created, modified, name, description, is_deleted) VALUES (now(), now(), 'DUE AT HEARING', 'DUE AT HEARING', False)"""  # noqa: E501
     )
-
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'app_user', 'ACTIVE', True, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'app_user', 'INACTIVE', True, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'app_user', 'DISABLED', True, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_role (created, modified, name, description, is_deleted) VALUES (now(), now(), 'SUPERUSER', 'User Has All and Maximum Access', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_role (created, modified, name, description, is_deleted) VALUES (now(), now(), 'POWERUSER', 'User Has Access to All Parts of App', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_role (created, modified, name, description, is_deleted) VALUES (now(), now(), 'STANDARD', 'User does not have access to ref data', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'can_update_ref_types', 'can update ref types', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'can_soft_delete_ref_types', 'can soft delete ref types', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'can_hard_delete_ref_types', 'can hard delete ref types', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_user (created, modified, component_status_id, full_name, email, password, is_deleted) VALUES (now(), now(), 1, 'Super User', 'super@user.com', 'examplepassword', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_user (created, modified, component_status_id, full_name, email, password, is_deleted) VALUES (now(), now(), 1, 'Power User', 'power@user.com', 'examplepassword', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_user (created, modified, component_status_id, full_name, email, password, is_deleted) VALUES (now(), now(), 1, 'Standard User', 'standard@user.com', 'examplepassword', False)"""  # noqa: E501
+    )
     # ### end Alembic commands ###
 
 
