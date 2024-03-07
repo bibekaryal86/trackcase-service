@@ -156,7 +156,9 @@ class AppUserService(CrudService):
             data_model: models.AppUser = convert_schema_to_model(
                 request_object, models.AppUser
             )
-            data_model.password = get_user_password_service(request_object.password)
+            data_model.password = get_user_password_service(
+                request_object.password
+            ).hash_password()
             data_model.is_validated = False
             data_model = self.create(data_model)
             schema_model = convert_model_to_schema(
