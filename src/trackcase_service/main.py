@@ -16,7 +16,7 @@ from src.trackcase_service.api import (
     calendars,
     client,
     collections,
-    court_api,
+    court,
     court_case,
     filing,
     judge,
@@ -65,6 +65,10 @@ def validate_credentials(
 
 
 app.include_router(
+    court.router,
+    dependencies=[Depends(validate_credentials)],
+)
+app.include_router(
     judge.router,
     dependencies=[Depends(validate_credentials)],
 )
@@ -98,10 +102,6 @@ app.include_router(
 )
 app.include_router(
     user_management_noauth.router,
-)
-app.include_router(
-    court_api.router,
-    dependencies=[Depends(validate_credentials)],
 )
 
 

@@ -13,3 +13,8 @@ backend service for trackcase
   * python -m src.trackcase_service.main
 * For History
   * To retrieve history, use the `find_one` endpoint with `is_include_history=True`
+
+
+
+request_metadata.is_include_deleted
+request_metadata.is_include_deleted is True
