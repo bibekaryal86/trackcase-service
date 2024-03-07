@@ -968,6 +968,10 @@ def upgrade() -> None:
         unique=False,
         postgresql_where="(filing_id IS NOT NULL)",
     )
+    op.execute(
+        """INSERT INTO task_type (created, modified, name, description, is_deleted) VALUES (now(), now(), 'DUE AT HEARING', 'DUE AT HEARING', False)"""     # noqa: E501
+    )
+
     # ### end Alembic commands ###
 
 
