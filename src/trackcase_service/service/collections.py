@@ -244,29 +244,30 @@ class CaseCollectionService(CrudService):
         status_new: int,
         case_collection_old: schemas.CaseCollection,
     ):
-        collection_active_statuses = get_ref_types_service(
-            service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
-            db_session=self.db_session,
-        ).get_component_status(
-            request,
-            schemas.ComponentStatusNames.COLLECTION,
-            schemas.ComponentStatusTypes.ACTIVE,
-        )
-        status_old = case_collection_old.component_status_id
-        active_status_ids = [
-            component_status.id
-            for component_status in collection_active_statuses
-        ]
+        if case_collection_old.cash_collections:
+            status_old = case_collection_old.component_status_id
+            collection_active_statuses = get_ref_types_service(
+                service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
+                db_session=self.db_session,
+            ).get_component_status(
+                request,
+                schemas.ComponentStatusNames.COLLECTION,
+                schemas.ComponentStatusTypes.ACTIVE,
+            )
+            active_status_ids = [
+                component_status.id
+                for component_status in collection_active_statuses
+            ]
 
-        if status_new != status_old and status_new not in active_status_ids:
-            if check_active_component_status(
-                case_collection_old.cash_collections, active_status_ids
-            ):
-                raise_http_exception(
-                    request,
-                    HTTPStatus.UNPROCESSABLE_ENTITY,
-                    f"Cannot Update Case Collection {case_collection_old.id} Status to {status_new}, There are Active Cash Collections!",  # noqa: E501
-                )
+            if status_new != status_old and status_new not in active_status_ids:
+                if check_active_component_status(
+                    case_collection_old.cash_collections, active_status_ids
+                ):
+                    raise_http_exception(
+                        request,
+                        HTTPStatus.UNPROCESSABLE_ENTITY,
+                        f"Cannot Update Case Collection {case_collection_old.id} Status to {status_new}, There are Active Cash Collections!",  # noqa: E501
+                    )
 
 
 class CashCollectionService(CrudService):

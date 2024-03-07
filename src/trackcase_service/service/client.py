@@ -238,6 +238,7 @@ class ClientService(CrudService):
         client_old: schemas.Client,
     ):
         if client_old.court_cases:
+            status_old = client_old.component_status_id
             ref_types_service = get_ref_types_service(
                 service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
                 db_session=self.db_session,
@@ -247,21 +248,20 @@ class ClientService(CrudService):
                 schemas.ComponentStatusNames.CLIENT,
                 schemas.ComponentStatusTypes.ACTIVE,
             )
-            court_case_active_statuses = ref_types_service.get_component_status(
-                request,
-                schemas.ComponentStatusNames.COURT_CASE,
-                schemas.ComponentStatusTypes.ACTIVE,
-            )
-            status_old = client_old.component_status_id
             active_status_ids_client = [
                 component_status.id
                 for component_status in client_active_statuses
             ]
-            active_status_ids_court_case = [
-                component_status.id for component_status in court_case_active_statuses
-            ]
 
             if status_new != status_old and status_new not in active_status_ids_client:
+                court_case_active_statuses = ref_types_service.get_component_status(
+                    request,
+                    schemas.ComponentStatusNames.COURT_CASE,
+                    schemas.ComponentStatusTypes.ACTIVE,
+                )
+                active_status_ids_court_case = [
+                    component_status.id for component_status in court_case_active_statuses
+                ]
                 if check_active_component_status(
                     client_old.court_cases, active_status_ids_court_case
                 ):
