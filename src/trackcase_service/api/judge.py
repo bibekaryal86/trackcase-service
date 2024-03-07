@@ -48,9 +48,7 @@ def modify_judge(
     judge_request: schemas.JudgeRequest,
     db_session: Session = Depends(get_db_session),
 ):
-    return get_judge_service(db_session).update_judge(
-        judge_id, request, judge_request
-    )
+    return get_judge_service(db_session).update_judge(judge_id, request, judge_request)
 
 
 @router.delete(
@@ -64,6 +62,4 @@ def remove_judge(
     is_hard_delete: bool = False,
     db_session: Session = Depends(get_db_session),
 ):
-    return get_judge_service(db_session).delete_judge(
-        judge_id, is_hard_delete, request
-    )
+    return get_judge_service(db_session).delete_judge(judge_id, is_hard_delete, request)

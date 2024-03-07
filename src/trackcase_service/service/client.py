@@ -249,8 +249,7 @@ class ClientService(CrudService):
                 schemas.ComponentStatusTypes.ACTIVE,
             )
             active_status_ids_client = [
-                component_status.id
-                for component_status in client_active_statuses
+                component_status.id for component_status in client_active_statuses
             ]
 
             if status_new != status_old and status_new not in active_status_ids_client:
@@ -260,7 +259,8 @@ class ClientService(CrudService):
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_court_case = [
-                    component_status.id for component_status in court_case_active_statuses
+                    component_status.id
+                    for component_status in court_case_active_statuses
                 ]
                 if check_active_component_status(
                     client_old.court_cases, active_status_ids_court_case

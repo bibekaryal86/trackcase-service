@@ -114,7 +114,11 @@ class CourtCaseService(CrudService):
                         "history_filings",
                         "history_case_collections",
                     ],
-                    extra_to_include=["filings", "case_collections", "hearing_calendars"],
+                    extra_to_include=[
+                        "filings",
+                        "case_collections",
+                        "hearing_calendars",
+                    ],
                     history_to_include=["history_court_cases"],
                 )
                 for data_model in response_data
@@ -242,7 +246,9 @@ class CourtCaseService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_court_case_exists(self, model_id: int, request: Request) -> schemas.CourtCase:
+    def check_court_case_exists(
+        self, model_id: int, request: Request
+    ) -> schemas.CourtCase:
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_extra=True
         )
@@ -272,8 +278,7 @@ class CourtCaseService(CrudService):
             schemas.ComponentStatusTypes.ACTIVE,
         )
         active_status_ids_court_case = [
-            component_status.id
-            for component_status in court_case_active_statuses
+            component_status.id for component_status in court_case_active_statuses
         ]
 
         if status_new != status_old and status_new not in active_status_ids_court_case:
@@ -302,7 +307,8 @@ class CourtCaseService(CrudService):
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_collection = [
-                    component_status.id for component_status in collection_active_statuses
+                    component_status.id
+                    for component_status in collection_active_statuses
                 ]
                 if check_active_component_status(
                     court_case_old.case_collections, active_status_ids_collection

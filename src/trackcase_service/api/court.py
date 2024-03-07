@@ -48,9 +48,7 @@ def modify_court(
     court_request: schemas.CourtRequest,
     db_session: Session = Depends(get_db_session),
 ):
-    return get_court_service(db_session).update_court(
-        court_id, request, court_request
-    )
+    return get_court_service(db_session).update_court(court_id, request, court_request)
 
 
 @router.delete(
@@ -64,6 +62,4 @@ def remove_court(
     is_hard_delete: bool = False,
     db_session: Session = Depends(get_db_session),
 ):
-    return get_court_service(db_session).delete_court(
-        court_id, is_hard_delete, request
-    )
+    return get_court_service(db_session).delete_court(court_id, is_hard_delete, request)

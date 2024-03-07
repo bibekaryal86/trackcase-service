@@ -21,7 +21,9 @@ def insert_court_case(
     court_case_request: schemas.CourtCaseRequest,
     db_session: Session = Depends(get_db_session),
 ):
-    return get_court_case_service(db_session).create_court_case(request, court_case_request)
+    return get_court_case_service(db_session).create_court_case(
+        request, court_case_request
+    )
 
 
 @router.get(

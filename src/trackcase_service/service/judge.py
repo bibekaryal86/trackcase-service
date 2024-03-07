@@ -111,9 +111,7 @@ class JudgeService(CrudService):
                 )
                 for data_model in response_data
             ]
-            return schemas.JudgeResponse(
-                data=schema_models, metadata=response_metadata
-            )
+            return schemas.JudgeResponse(data=schema_models, metadata=response_metadata)
         except Exception as ex:
             if isinstance(ex, HTTPException):
                 raise
@@ -249,8 +247,7 @@ class JudgeService(CrudService):
                 schemas.ComponentStatusTypes.ACTIVE,
             )
             active_status_ids_judge = [
-                component_status.id
-                for component_status in judge_active_statuses
+                component_status.id for component_status in judge_active_statuses
             ]
 
             if status_new != status_old and status_new not in active_status_ids_judge:

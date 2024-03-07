@@ -290,8 +290,7 @@ class HearingCalendarService(CrudService):
                 schemas.ComponentStatusTypes.ACTIVE,
             )
             active_status_ids = [
-                component_status.id
-                for component_status in calendar_active_statuses
+                component_status.id for component_status in calendar_active_statuses
             ]
 
             if status_new != status_old and status_new not in active_status_ids:
