@@ -998,15 +998,6 @@ def upgrade() -> None:
     op.execute(
         """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'can_hard_delete_ref_types', 'can hard delete ref types', False)"""  # noqa: E501
     )
-    op.execute(
-        """INSERT INTO app_user (created, modified, component_status_id, full_name, email, password, is_deleted) VALUES (now(), now(), 1, 'Super User', 'super@user.com', 'examplepassword', False)"""  # noqa: E501
-    )
-    op.execute(
-        """INSERT INTO app_user (created, modified, component_status_id, full_name, email, password, is_deleted) VALUES (now(), now(), 1, 'Power User', 'power@user.com', 'examplepassword', False)"""  # noqa: E501
-    )
-    op.execute(
-        """INSERT INTO app_user (created, modified, component_status_id, full_name, email, password, is_deleted) VALUES (now(), now(), 1, 'Standard User', 'standard@user.com', 'examplepassword', False)"""  # noqa: E501
-    )
     # ### end Alembic commands ###
 
 
