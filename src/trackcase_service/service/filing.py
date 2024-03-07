@@ -83,7 +83,8 @@ class FilingService(CrudService):
                         filter_config=request_metadata.filter_config,
                         page_number=request_metadata.page_number,
                         per_page=request_metadata.per_page,
-                        is_include_soft_deleted=request_metadata.is_include_deleted is True,
+                        is_include_soft_deleted=request_metadata.is_include_deleted
+                        is True,
                     )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
