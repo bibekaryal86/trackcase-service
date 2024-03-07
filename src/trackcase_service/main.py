@@ -19,7 +19,7 @@ from src.trackcase_service.api import (
     court_api,
     court_case,
     filing,
-    judge_api,
+    judge,
     ref_types,
     user_management,
     user_management_noauth,
@@ -65,7 +65,7 @@ def validate_credentials(
 
 
 app.include_router(
-    court_case.router,
+    judge.router,
     dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
@@ -73,15 +73,19 @@ app.include_router(
     dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
+    court_case.router,
+    dependencies=[Depends(validate_credentials)],
+)
+app.include_router(
     filing.router,
     dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
-    collections.router,
+    calendars.router,
     dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
-    calendars.router,
+    collections.router,
     dependencies=[Depends(validate_credentials)],
 )
 app.include_router(
@@ -97,10 +101,6 @@ app.include_router(
 )
 app.include_router(
     court_api.router,
-    dependencies=[Depends(validate_credentials)],
-)
-app.include_router(
-    judge_api.router,
     dependencies=[Depends(validate_credentials)],
 )
 
