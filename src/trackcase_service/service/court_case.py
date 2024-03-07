@@ -79,7 +79,7 @@ class CourtCaseService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"CourtCase Not Found By Id: {request_metadata.model_id}!!!",
+                            f"CourtCase Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(

@@ -85,7 +85,7 @@ class HearingCalendarService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Hearing Calendar Not Found By Id: {request_metadata.model_id}!!!",
+                            f"Hearing Calendar Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(
@@ -359,7 +359,7 @@ class TaskCalendarService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Task Calendar Not Found By Id: {request_metadata.model_id}!!!",
+                            f"Task Calendar Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(

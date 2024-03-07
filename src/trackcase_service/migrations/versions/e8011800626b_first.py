@@ -1,7 +1,7 @@
 """first
 
 Revision ID: e8011800626b
-Revises: 
+Revises:
 Create Date: 2024-02-28 23:24:13.217557
 
 """

@@ -78,7 +78,7 @@ class CaseCollectionService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Case Collection Not Found By Id: {request_metadata.model_id}!!!",
+                            f"Case Collection Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(
@@ -324,7 +324,7 @@ class CashCollectionService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Cash Collection Not Found By Id: {request_metadata.model_id}!!!",
+                            f"Cash Collection Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(

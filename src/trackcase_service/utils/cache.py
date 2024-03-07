@@ -1,4 +1,5 @@
-# do not use lru-cache because the result differs per param and `request` param will be different
+# do not use lru-cache because the result differs per param
+# and `request` param will be different
 # this should suffice for now
 from src.trackcase_service.service import schemas
 

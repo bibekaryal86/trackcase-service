@@ -66,20 +66,20 @@ class AppUserPasswordService:
                     )
                 else:
                     log.info(
-                        "Logging Unsuccessful, password not match for email: [ {} ]".format(
+                        "Logging Unsuccessful, password not match for email: [ {} ]".format(  # noqa: E501
                             self.user_name
                         )
                     )
             else:
                 log.info(
-                    "Logging Unsuccessful, user not validated, please check email: [ {} ]".format(
+                    "Logging Unsuccessful, user not validated, please check email: [ {} ]".format(  # noqa: E501
                         self.user_name
                     )
                 )
                 raise_http_exception(
                     request,
                     HTTPStatus.FORBIDDEN,
-                    "Logging Unsuccessful, user not validated, please check email: [ {} ]".format(
+                    "Logging Unsuccessful, user not validated, please check email: [ {} ]".format(  # noqa: E501
                         self.user_name
                     ),
                 )
@@ -93,7 +93,7 @@ class AppUserPasswordService:
         raise_http_exception(
             request,
             HTTPStatus.UNAUTHORIZED,
-            "Login Unsuccessful! Email and/or password not found in system!! Please try again!!!",
+            "Login Unsuccessful! Email and/or password not found in system!! Please try again!!!",  # noqa: E501
         )
 
     def validate_reset_user(
@@ -822,7 +822,7 @@ def get_user_management_service(
         schemas.UserManagementServiceRegistry.APP_ROLE: AppRoleService,
         schemas.UserManagementServiceRegistry.APP_PERMISSION: AppPermissionService,
         schemas.UserManagementServiceRegistry.APP_USER_ROLE: AppUserRoleService,
-        schemas.UserManagementServiceRegistry.APP_ROLE_PERMISSION: AppRolePermissionService,
+        schemas.UserManagementServiceRegistry.APP_ROLE_PERMISSION: AppRolePermissionService,  # noqa: E501
     }
     return service_registry.get(service_type)(db_session)
 

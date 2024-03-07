@@ -70,7 +70,7 @@ def validate_app_user(
             plain_password=None, user_name=to_validate
         ).validate_reset_user(request, db_session)
         url = f"{url}?is_validated=true"
-    except Exception as ex:
+    except Exception:
         url = f"{url}?is_validated=false"
     return RedirectResponse(url=url)
 
@@ -79,7 +79,7 @@ def validate_app_user(
     "/app_users/reset_init/",
     include_in_schema=False,
 )
-def reset_app_user(
+def reset_app_user_init(
     request: Request,
     to_reset: str,
 ):
@@ -93,7 +93,7 @@ def reset_app_user(
     "/app_users/reset_exit/",
     include_in_schema=False,
 )
-def reset_app_user(
+def reset_app_user_exit(
     request: Request,
     to_reset: str,
     db_session: Session = Depends(get_db_session),

@@ -45,7 +45,10 @@ class CrudService:
         if model_id and model_id > 0:
             data = (
                 self.db_session.query(self.db_model)
-                .filter(self.db_model.id == model_id, self.db_model.is_deleted == False)
+                .filter(
+                    self.db_model.id == model_id,
+                    self.db_model.is_deleted == False,  # noqa: E501, E712
+                )
                 .first()
             )
             return {
@@ -57,7 +60,8 @@ class CrudService:
                 self.db_session.query(self.db_model)
                 .filter()
                 .filter(
-                    self.db_model.id.in_(model_ids), self.db_model.is_deleted == False
+                    self.db_model.id.in_(model_ids),
+                    self.db_model.is_deleted == False,  # noqa: E501, E712
                 )
                 .all()
             )
@@ -73,7 +77,9 @@ class CrudService:
 
         if not is_include_soft_deleted:
             # Add filter to exclude deleted rows
-            query = query.filter(getattr(self.db_model, "is_deleted") == False)
+            query = query.filter(
+                getattr(self.db_model, "is_deleted") == False  # noqa: E501, E712
+            )
 
         if filter_config:
             query = _apply_filters(self.db_model, query, filter_config)

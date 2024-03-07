@@ -20,7 +20,8 @@ class Logger:
 
         self.formatter = logging.Formatter(
             "[%(asctime)s][trackcase-service][%(name)s]"
-            "[%(levelname)s] [MESSAGE: %(message)s] | [EXTRA: %(extra)s] | [EXCEPTION: %(exc_info)s]"
+            "[%(levelname)s] [MESSAGE: %(message)s] | [EXTRA: %(extra)s] "
+            "| [EXCEPTION: %(exc_info)s]"
         )
 
         def converter(timestamp):
