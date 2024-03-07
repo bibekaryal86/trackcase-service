@@ -66,7 +66,7 @@ class RequestBase(BaseSchema):
 
 class ResponseBase(BaseSchema):
     delete_count: Optional[int] = None
-    error_detail: Optional[ErrorDetail] = None
+    error: Optional[ErrorDetail] = None
     metadata: Optional[ResponseMetadata] = None
 
 
