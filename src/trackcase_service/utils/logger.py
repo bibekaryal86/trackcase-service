@@ -20,7 +20,8 @@ class Logger:
 
         self.formatter = logging.Formatter(
             "[%(asctime)s][trackcase-service][%(name)s]"
-            "[%(levelname)s] %(message)s | %(extra)s"
+            "[%(levelname)s] [MESSAGE: %(message)s] | [EXTRA: %(extra)s] "
+            "| [EXCEPTION: %(exc_info)s]"
         )
 
         def converter(timestamp):
@@ -59,12 +60,5 @@ class Logger:
     def info(self, msg, extra=None):
         self.logger.info(msg, extra={"extra": extra})
 
-    def error(self, msg, extra=None):
-        self.logger.error(msg, extra={"extra": extra})
-
-    def set_level(self, level):
-        self.logger.setLevel(level)
-        self.stream_handler.setLevel(level)
-
-        if self.file_handler is not None:
-            self.file_handler.setLevel(level)
+    def error(self, msg, extra=None, exc_info=None):
+        self.logger.error(msg, extra={"extra": extra}, exc_info=exc_info)

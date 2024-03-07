@@ -1,16 +1,21 @@
+import datetime
 import http
+import json
 import logging
-import secrets
+import os
+import sys
+from typing import Optional
 
-from fastapi import HTTPException, Request
-from fastapi.security import HTTPBasicCredentials
-from sqlalchemy import text
-from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm import Session
+import jwt
+from fastapi import HTTPException, Query, Request
+from fastapi.security import HTTPAuthorizationCredentials
+from jwt import PyJWTError
+from pydantic import ValidationError
 
 import src.trackcase_service.service.schemas as schemas
 import src.trackcase_service.utils.constants as constants
 import src.trackcase_service.utils.logger as logger
+from src.trackcase_service.db.crud import DataKeys
 
 log = logger.Logger(logging.getLogger(__name__))
 
@@ -36,6 +41,16 @@ def validate_input():
         missing_variables.append("DB_NAME")
     if constants.REPO_HOME is None:
         missing_variables.append("REPO_HOME")
+    if constants.SECRET_KEY is None:
+        missing_variables.append("SECRET_KEY")
+    if constants.CORS_ORIGINS is None or len(constants.CORS_ORIGINS) == 0:
+        missing_variables.append("CORS_ORIGINS")
+    if constants.MJ_PUBLIC is None:
+        missing_variables.append("MJ_PUBLIC")
+    if constants.MJ_PRIVATE is None:
+        missing_variables.append("MJ_PRIVATE")
+    if constants.MJ_EMAIL is None:
+        missing_variables.append("MJ_EMAIL")
 
     if len(missing_variables) != 0:
         raise ValueError(
@@ -51,140 +66,173 @@ def shutdown_app():
     log.info("App Shutting Down...")
 
 
-def validate_http_basic_credentials(
-    request: Request,
-    http_basic_credentials: HTTPBasicCredentials,
-    is_ignore_username: bool = False,
-):
-    valid_username = constants.BASIC_AUTH_USR
-    valid_password = constants.BASIC_AUTH_PWD
-    input_username = http_basic_credentials.username
-    input_password = http_basic_credentials.password
-    is_correct_username = secrets.compare_digest(
-        valid_username.encode("utf-8"), input_username.encode("utf-8")
-    )
-    is_correct_password = secrets.compare_digest(
-        valid_password.encode("utf-8"), input_password.encode("utf-8")
-    )
-    if not (is_correct_username and is_correct_password):
-        raise_http_exception(
-            request=request,
-            sts_code=http.HTTPStatus.UNAUTHORIZED,
-            error="Invalid Credentials",
-        )
+def get_err_msg(msg: str, err_msg: str = ""):
+    return msg + "\n" + err_msg
 
-    # also check if user_name present in request headers or not
-    user_name = request.headers.get(constants.USERNAME_HEADER)
-    if not is_ignore_username and not user_name:
-        raise_http_exception(
-            request=request,
-            sts_code=http.HTTPStatus.BAD_REQUEST,
-            error="Missing Username",
-        )
+
+def get_auth_user_token(request: Request) -> dict:
+    return request.state.user_details
+
+
+def set_auth_user_token(request: Request, app_user_token: dict):
+    request.state.user_details = app_user_token
 
 
 def raise_http_exception(
     request: Request,
     sts_code: http.HTTPStatus | int,
     error: str = "",
+    exc_info=None,
 ):
     log.error(
-        "ERROR:::HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
+        "HTTPException: [ {} ] | Status: [ {} ]".format(request.url, sts_code),
         extra=error,
+        exc_info=exc_info,
     )
     raise HTTPException(status_code=sts_code, detail={"error": error})
 
 
-def test_database(db_session: Session):
+def request_metadata_example() -> str:
+    return """For example -:-:- {
+    "request_object_id": 1,
+    "sort_config": {
+        "column": "full_name",
+        "direction": "asc"
+    },
+    "filter_config": [
+        {
+            "column": "full_name",
+            "value": "some name",
+            "operation": "eq"
+        },
+        {
+            "column": "email",
+            "value": "column@value.com",
+            "operation": "eq"
+        }
+    ],
+    "page_number": 1,
+    "per_page": 100,
+    "is_include_deleted": false,
+    "is_include_extra": false,
+    "is_include_history": false
+}"""
+
+
+def parse_request_metadata(
+    request: Request,
+    metadata: Optional[str] = Query(
+        default=None, description=request_metadata_example()
+    ),
+) -> schemas.RequestMetadata | None:
+    if metadata is None:
+        return None
     try:
-        test_database_sql = text("SELECT VERSION_NUM FROM ALEMBIC_VERSION")
-        result = db_session.execute(test_database_sql)
-        result_row = result.fetchone()
-        if result_row:
-            return {"test_db_success": result_row[0]}
+        metadata_dict = json.loads(metadata)
+        return schemas.RequestMetadata(**metadata_dict)
+    except (json.JSONDecodeError, ValidationError) as ex:
+        raise_http_exception(
+            request,
+            http.HTTPStatus.BAD_REQUEST,
+            get_err_msg("Invalid Request Metadata JSON", str(ex)),
+            exc_info=sys.exc_info(),
+        )
+
+
+def encode_auth_credentials(app_user: schemas.AppUser):
+    token_claim = {
+        "app_user_token": app_user.to_token(),
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+    }
+    return jwt.encode(payload=token_claim, key=constants.SECRET_KEY, algorithm="HS256")
+
+
+def encode_email_address(email: str, minutes: int):
+    token_claim = {
+        "email_token": email,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=minutes),
+    }
+    return jwt.encode(payload=token_claim, key=constants.SECRET_KEY, algorithm="HS256")
+
+
+def decode_email_address(
+    request: Request,
+    encoded_email: str,
+):
+    try:
+        token_claims = jwt.decode(
+            jwt=encoded_email,
+            key=constants.SECRET_KEY,
+            algorithms=["HS256"],
+        )
+
+        email_token_claim = token_claims.get("email_token")
+
+        if email_token_claim:
+            return email_token_claim
+
+        raise_http_exception(
+            request,
+            http.HTTPStatus.FORBIDDEN,
+            error="Incorrect Email Credentials",
+        )
+    except PyJWTError as ex:
+        raise_http_exception(
+            request,
+            http.HTTPStatus.BAD_REQUEST,
+            get_err_msg("Invalid Email Credentials", str(ex)),
+            exc_info=sys.exc_info(),
+        )
+
+
+def decode_auth_credentials(
+    request: Request,
+    http_auth_credentials: HTTPAuthorizationCredentials,
+):
+    try:
+        token_claims = jwt.decode(
+            jwt=http_auth_credentials.credentials,
+            key=constants.SECRET_KEY,
+            algorithms=["HS256"],
+        )
+
+        app_user_token = token_claims.get("app_user_token")
+
+        if app_user_token:
+            set_auth_user_token(request, app_user_token)
         else:
-            return {"test_db": "maybe_success_but_no_data"}
-    except OperationalError as ex:
-        return {"test_db_failure": str(ex)}
+            raise_http_exception(
+                request,
+                http.HTTPStatus.UNAUTHORIZED,
+                error="Incorrect Credentials",
+            )
+    except PyJWTError as ex:
+        raise_http_exception(
+            request,
+            http.HTTPStatus.BAD_REQUEST,
+            get_err_msg("Invalid Credentials", str(ex)),
+            exc_info=sys.exc_info(),
+        )
 
 
-def get_err_msg(msg: str, err_msg: str = ""):
-    return msg + "\n" + err_msg
+def read_file(file_name):
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.join(script_dir, file_name)
+    with open(file_path, "r") as file:
+        content = file.read()
+    return content
 
 
-def check_active_courts(courts: list[schemas.Court]) -> bool:
-    active_statuses = constants.get_statuses().get("court").get("active")
-    for court in courts:
-        if court.status in active_statuses:
-            return True
-    return False
+def get_read_response_data_metadata(read_response):
+    if read_response:
+        return read_response.get(DataKeys.data) or [], read_response.get(
+            DataKeys.metadata
+        )
+    return [], None
 
 
-def check_active_judges(judges: list[schemas.Judge]) -> bool:
-    active_statuses = constants.get_statuses().get("judge").get("active")
-    for judge in judges:
-        if judge.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_clients(clients: list[schemas.Client]) -> bool:
-    active_statuses = constants.get_statuses().get("client").get("active")
-    for client in clients:
-        if client.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_court_cases(court_cases: list[schemas.CourtCase]) -> bool:
-    active_statuses = constants.get_statuses().get("court_case").get("active")
-    for court_case in court_cases:
-        if court_case.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_hearing_calendars(
-    hearing_calendars: list[schemas.HearingCalendar],
-) -> bool:
-    active_statuses = constants.get_statuses().get("calendars").get("active")
-    for hearing_calendar in hearing_calendars:
-        if hearing_calendar.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_task_calendars(task_calendars: list[schemas.TaskCalendar]) -> bool:
-    active_statuses = constants.get_statuses().get("calendars").get("active")
-    for task_calendar in task_calendars:
-        if task_calendar.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_forms(forms: list[schemas.Form]) -> bool:
-    active_statuses = constants.get_statuses().get("form").get("active")
-    for form in forms:
-        if form.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_case_collections(
-    case_collections: list[schemas.CaseCollection],
-) -> bool:
-    active_statuses = constants.get_statuses().get("collections").get("active")
-    for case_collection in case_collections:
-        if case_collection.status in active_statuses:
-            return True
-    return False
-
-
-def check_active_cash_collections(
-    cash_collections: list[schemas.CashCollection],
-) -> bool:
-    active_statuses = constants.get_statuses().get("collections").get("active")
-    for cash_collection in cash_collections:
-        if cash_collection.status in active_statuses:
+def check_active_component_status(components: list, active_statuses: list[int]) -> bool:
+    for component in components:
+        if component.component_status_id in active_statuses:
             return True
     return False
