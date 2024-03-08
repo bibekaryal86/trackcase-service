@@ -130,7 +130,7 @@ class AppUserPasswordService:
                     app_user_data_model.is_validated = True
                     crud_service.update(app_user_data_model.id, app_user_data_model)
                 else:
-                    return app_user_data_model.id
+                    return app_user_data_model.email
             else:
                 raise_http_exception(
                     request,
