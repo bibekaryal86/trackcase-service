@@ -32,12 +32,12 @@ class Email:
                 {
                     "From": {
                         "Email": self.api_email,
-                        "Name": f"TrackCase Service {self.api_email}",
+                        "Name": f"[TrackCase Service] {self.api_email}",
                     },
                     "To": [
                         {
                             "Email": user_name,
-                            "Name": f"TrackCase Service {user_name}",
+                            "Name": f"[TrackCase Service] {user_name}",
                         }
                     ],
                     "Subject": "TrackCase Service (Activate)",
