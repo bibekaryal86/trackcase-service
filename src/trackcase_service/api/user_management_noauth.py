@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -56,10 +56,22 @@ def login_app_user(
 
 
 @router.get(
-    "/app_users/validate/",
+    "/app_users/validate_init/",
     include_in_schema=False,
 )
-def validate_app_user(
+def validate_app_user_init(
+    request: Request,
+    to_validate: str,
+):
+    get_email_service().app_user_validation_email(request, to_validate)
+    return JSONResponse(content={})
+
+
+@router.get(
+    "/app_users/validate_exit/",
+    include_in_schema=False,
+)
+def validate_app_user_exit(
     request: Request,
     to_validate: str,
     db_session: Session = Depends(get_db_session),
@@ -84,9 +96,7 @@ def reset_app_user_init(
     to_reset: str,
 ):
     get_email_service().app_user_reset_email(request, to_reset)
-    url = _get_redirect_base_url()
-    url = f"{url}?is_reset_email_sent=true"
-    return RedirectResponse(url=url)
+    return JSONResponse(content={})
 
 
 @router.get(

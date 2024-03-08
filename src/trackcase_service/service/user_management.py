@@ -36,16 +36,26 @@ class AppUserPasswordService:
         self, request: Request, db_session: Session
     ) -> schemas.AppUserLoginResponse:
         crud_service = CrudService(db_session, models.AppUser)
-        read_response = crud_service.read(
-            filter_config=[
-                schemas.FilterConfig(
-                    column="email",
-                    value=self.user_name.upper(),
-                    operation=schemas.FilterOperation.EQUAL_TO,
-                )
-            ]
-        )
-        app_user_data_models = read_response.get(DataKeys.data)
+        app_user_data_models = []
+        try:
+            read_response = crud_service.read(
+                filter_config=[
+                    schemas.FilterConfig(
+                        column="email",
+                        value=self.user_name.upper(),
+                        operation=schemas.FilterOperation.EQUAL_TO,
+                    )
+                ]
+            )
+            app_user_data_models = read_response.get(DataKeys.data)
+        except Exception as ex:
+            raise_http_exception(
+                request,
+                HTTPStatus.SERVICE_UNAVAILABLE,
+                get_err_msg("Error Logging in AppUser. Please Try Again!!!", str(ex)),
+                exc_info=sys.exc_info(),
+            )
+
         if app_user_data_models and len(app_user_data_models) == 1:
             app_user_data_model: models.AppUser = app_user_data_models[0]
 
@@ -120,11 +130,12 @@ class AppUserPasswordService:
                 crud_service.update(app_user_data_model.id, app_user_data_model)
             else:
                 return app_user_data_model.id
-        raise_http_exception(
-            request,
-            HTTPStatus.FORBIDDEN,
-            "Validate Unsuccessful! Email not found in system!! Please try again!!!",
-        )
+        else:
+            raise_http_exception(
+                request,
+                HTTPStatus.FORBIDDEN,
+                "Validate Unsuccessful! Email not found in system!! Please try again!!!",
+            )
 
     def hash_password(self) -> str:
         salt = bcrypt.gensalt(rounds=12)
