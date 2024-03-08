@@ -110,10 +110,10 @@ def reset_app_user_mid(
 ):
     url = _get_redirect_base_url()
     try:
-        user_model_id = get_user_password_service(
+        get_user_password_service(
             plain_password=None, user_name=to_reset
         ).validate_reset_user(request, db_session, False)
-        url = f"{url}?is_reset=true&user_model_id={user_model_id}"
+        url = f"{url}?is_reset=true&to_reset={to_reset}"
     except Exception as ex:
         url = f"{url}?is_reset=false"
     return RedirectResponse(url=url)

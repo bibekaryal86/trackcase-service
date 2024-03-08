@@ -145,8 +145,11 @@ class AppUserPasswordService:
                 sys.exc_info(),
             )
 
-    def _read_and_respond(self, request: Request, crud_service: CrudService):
-        decoded_email_address = decode_email_address(request, self.user_name)
+    def _read_and_respond(self, request: Request, crud_service: CrudService, is_plain_username: bool = False):
+        if is_plain_username:
+            decoded_email_address = self.user_name
+        else:
+            decoded_email_address = decode_email_address(request, self.user_name)
         read_response = crud_service.read(
             filter_config=[
                 schemas.FilterConfig(
@@ -161,7 +164,7 @@ class AppUserPasswordService:
     def reset_user_password(self, request: Request, db_session: Session):
         try:
             crud_service = CrudService(db_session, models.AppUser)
-            app_user_data_models = self._read_and_respond(request, crud_service)
+            app_user_data_models = self._read_and_respond(request, crud_service, True)
 
             if app_user_data_models and len(app_user_data_models) == 1:
                 app_user_data_model: models.AppUser = app_user_data_models[0]
