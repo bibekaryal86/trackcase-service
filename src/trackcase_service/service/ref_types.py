@@ -44,7 +44,7 @@ class ComponentStatusService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting ComponentStatus. Please Try Again!!!", str(ex)
                 ),
@@ -90,7 +90,7 @@ class ComponentStatusService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving ComponentStatus. Please Try Again!!!", str(ex)
                 ),
@@ -168,7 +168,7 @@ class ComponentStatusService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating ComponentStatus By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -188,7 +188,7 @@ class ComponentStatusService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting ComponentStatus By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -220,7 +220,7 @@ class CollectionMethodService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting CollectionMethod. Please Try Again!!!", str(ex)
                 ),
@@ -269,7 +269,7 @@ class CollectionMethodService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving CollectionMethod. Please Try Again!!!", str(ex)
                 ),
@@ -310,7 +310,7 @@ class CollectionMethodService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating CollectionMethod By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -329,7 +329,7 @@ class CollectionMethodService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting CollectionMethod By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -359,7 +359,7 @@ class CaseTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Inserting CaseType. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -406,7 +406,7 @@ class CaseTypeService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Retrieving CaseType. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -440,7 +440,7 @@ class CaseTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating CaseType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -459,7 +459,7 @@ class CaseTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting CaseType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -489,7 +489,7 @@ class FilingTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Inserting FilingType. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -536,7 +536,7 @@ class FilingTypeService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving FilingType. Please Try Again!!!", str(ex)
                 ),
@@ -572,7 +572,7 @@ class FilingTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating FilingType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -591,7 +591,7 @@ class FilingTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting FilingType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -621,7 +621,7 @@ class HearingTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting HearingType. Please Try Again!!!", str(ex)
                 ),
@@ -670,7 +670,7 @@ class HearingTypeService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving HearingType. Please Try Again!!!", str(ex)
                 ),
@@ -709,7 +709,7 @@ class HearingTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating HearingType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -728,7 +728,7 @@ class HearingTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting HearingType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -758,7 +758,7 @@ class TaskTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Inserting TaskType. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -805,7 +805,7 @@ class TaskTypeService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Retrieving TaskType. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -839,7 +839,7 @@ class TaskTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating TaskType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -858,7 +858,7 @@ class TaskTypeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting TaskType By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),

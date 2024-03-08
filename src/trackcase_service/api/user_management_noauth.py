@@ -100,10 +100,10 @@ def reset_app_user_init(
 
 
 @router.get(
-    "/app_users/reset_exit/",
+    "/app_users/reset_mid/",
     include_in_schema=False,
 )
-def reset_app_user_exit(
+def reset_app_user_mid(
     request: Request,
     to_reset: str,
     db_session: Session = Depends(get_db_session),
@@ -113,10 +113,25 @@ def reset_app_user_exit(
         user_model_id = get_user_password_service(
             plain_password=None, user_name=to_reset
         ).validate_reset_user(request, db_session, False)
-        url = f"{url}/reset_password/{user_model_id}"
+        url = f"{url}?is_reset=true&user_model_id={user_model_id}"
     except Exception as ex:
-        url = f"{url}/reset_password/0/?error={str(ex)}"
+        url = f"{url}?is_reset=false"
     return RedirectResponse(url=url)
+
+
+@router.get(
+    "/app_users/reset_exit/",
+    include_in_schema=False,
+)
+def reset_app_user_exit(
+    request: Request,
+    reset_request: schemas.AppUserLoginRequest,
+    db_session: Session = Depends(get_db_session),
+):
+    get_user_password_service(
+        plain_password=reset_request.password, user_name=reset_request.username
+    ).reset_user_password(request, db_session)
+    return JSONResponse(content={})
 
 
 def _get_redirect_base_url():

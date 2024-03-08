@@ -57,7 +57,7 @@ class CaseCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting Case Collection. Please Try Again!!!", str(ex)
                 ),
@@ -123,7 +123,7 @@ class CaseCollectionService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving Case Collection. Please Try Again!!!", str(ex)
                 ),
@@ -169,7 +169,7 @@ class CaseCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Case Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -216,7 +216,7 @@ class CaseCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Case Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -303,7 +303,7 @@ class CashCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting Cash Collection. Please Try Again!!!", str(ex)
                 ),
@@ -366,7 +366,7 @@ class CashCollectionService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving Cash Collection. Please Try Again!!!", str(ex)
                 ),
@@ -407,7 +407,7 @@ class CashCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Cash Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -448,7 +448,7 @@ class CashCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Cash Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),

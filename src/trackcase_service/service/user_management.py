@@ -51,7 +51,7 @@ class AppUserPasswordService:
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Logging in AppUser. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -63,8 +63,18 @@ class AppUserPasswordService:
                 is_login_success = self.verify_password(app_user_data_model.password)
 
                 if is_login_success:
-                    app_user_data_model.last_login = datetime.datetime.now()
-                    crud_service.update(app_user_data_model.id, app_user_data_model)
+                    try:
+                        # this should not prevent users from logging in
+                        app_user_data_model.last_login = datetime.datetime.now()
+                        crud_service.update(app_user_data_model.id, app_user_data_model)
+                    except Exception as ex:
+                        log.error(
+                            "Logging successful, but last_login not updated for email: [ {} ]".format(  # noqa: E501
+                                self.user_name
+                            ),
+                            extra=str(ex),
+                            exc_info=sys.exc_info(),
+                        )
 
                     app_user_schema_model = convert_model_to_schema(
                         data_model=app_user_data_model,
@@ -109,9 +119,34 @@ class AppUserPasswordService:
     def validate_reset_user(
         self, request: Request, db_session: Session, is_validate: bool = True
     ):
-        decoded_email_address = decode_email_address(request, self.user_name)
-        crud_service = CrudService(db_session, models.AppUser)
+        try:
+            crud_service = CrudService(db_session, models.AppUser)
+            app_user_data_models = self._read_and_respond(request, crud_service)
 
+            if app_user_data_models and len(app_user_data_models) == 1:
+                app_user_data_model: models.AppUser = app_user_data_models[0]
+
+                if is_validate:
+                    app_user_data_model.is_validated = True
+                    crud_service.update(app_user_data_model.id, app_user_data_model)
+                else:
+                    return app_user_data_model.id
+            else:
+                raise_http_exception(
+                    request,
+                    HTTPStatus.FORBIDDEN,
+                    "Validate Unsuccessful! User not found in system!! Please try again!!!",
+                )
+        except Exception as ex:
+            raise_http_exception(
+                request,
+                HTTPStatus.FORBIDDEN,
+                f"Validate Unsuccessful. Please try again! {str(ex)} ",
+                sys.exc_info(),
+            )
+
+    def _read_and_respond(self, request: Request, crud_service: CrudService):
+        decoded_email_address = decode_email_address(request, self.user_name)
         read_response = crud_service.read(
             filter_config=[
                 schemas.FilterConfig(
@@ -121,20 +156,29 @@ class AppUserPasswordService:
                 )
             ]
         )
-        app_user_data_models = read_response.get(DataKeys.data)
-        if app_user_data_models and len(app_user_data_models) == 1:
-            app_user_data_model: models.AppUser = app_user_data_models[0]
+        return read_response.get(DataKeys.data)
 
-            if is_validate:
-                app_user_data_model.is_validated = True
+    def reset_user_password(self, request: Request, db_session: Session):
+        try:
+            crud_service = CrudService(db_session, models.AppUser)
+            app_user_data_models = self._read_and_respond(request, crud_service)
+
+            if app_user_data_models and len(app_user_data_models) == 1:
+                app_user_data_model: models.AppUser = app_user_data_models[0]
+                app_user_data_model.password = self.hash_password()
                 crud_service.update(app_user_data_model.id, app_user_data_model)
             else:
-                return app_user_data_model.id
-        else:
+                raise_http_exception(
+                    request,
+                    HTTPStatus.FORBIDDEN,
+                    "Reset Unsuccessful! User not found in system!! Please try again!!!",
+                )
+        except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.FORBIDDEN,
-                "Validate Unsuccessful! Email not found in system!! Please try again!!!",
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                f"Reset Unsuccessful. Please try again! {str(ex)} ",
+                sys.exc_info(),
             )
 
     def hash_password(self) -> str:
@@ -181,7 +225,7 @@ class AppUserService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Inserting AppUser. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -225,7 +269,7 @@ class AppUserService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Retrieving AppUser. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -262,7 +306,7 @@ class AppUserService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating AppUser By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -281,7 +325,7 @@ class AppUserService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting AppUser By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -310,7 +354,7 @@ class AppRoleService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Inserting AppRole. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -354,7 +398,7 @@ class AppRoleService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Retrieving AppRole. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -387,7 +431,7 @@ class AppRoleService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating AppRole By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -406,7 +450,7 @@ class AppRoleService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting AppRole By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -435,7 +479,7 @@ class AppPermissionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting AppPermission. Please Try Again!!!", str(ex)
                 ),
@@ -481,7 +525,7 @@ class AppPermissionService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving AppPermission. Please Try Again!!!", str(ex)
                 ),
@@ -519,7 +563,7 @@ class AppPermissionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating AppPermission By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -538,7 +582,7 @@ class AppPermissionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting AppPermission By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -567,7 +611,7 @@ class AppUserRoleService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting AppUserRole. Please Try Again!!!", str(ex)
                 ),
@@ -613,7 +657,7 @@ class AppUserRoleService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving AppUserRole. Please Try Again!!!", str(ex)
                 ),
@@ -651,7 +695,7 @@ class AppUserRoleService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating AppUserRole By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -670,7 +714,7 @@ class AppUserRoleService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting AppUserRole By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -703,7 +747,7 @@ class AppRolePermissionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting AppRolePermission. Please Try Again!!!", str(ex)
                 ),
@@ -749,7 +793,7 @@ class AppRolePermissionService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving AppRolePermission. Please Try Again!!!", str(ex)
                 ),
@@ -791,7 +835,7 @@ class AppRolePermissionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating AppRolePermission By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -810,7 +854,7 @@ class AppRolePermissionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting AppRolePermission By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),

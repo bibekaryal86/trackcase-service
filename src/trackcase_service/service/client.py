@@ -56,7 +56,7 @@ class ClientService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Inserting Client. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -120,7 +120,7 @@ class ClientService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Retrieving Client. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -164,7 +164,7 @@ class ClientService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Client By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -211,7 +211,7 @@ class ClientService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Client By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),

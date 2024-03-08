@@ -56,7 +56,7 @@ class JudgeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Inserting Judge. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -118,7 +118,7 @@ class JudgeService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Retrieving Judge. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
@@ -162,7 +162,7 @@ class JudgeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Judge By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -209,7 +209,7 @@ class JudgeService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Judge By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),

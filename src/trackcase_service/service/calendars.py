@@ -64,7 +64,7 @@ class HearingCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting Hearing Calendar. Please Try Again!!!", str(ex)
                 ),
@@ -130,7 +130,7 @@ class HearingCalendarService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving Hearing Calendar. Please Try Again!!!", str(ex)
                 ),
@@ -176,7 +176,7 @@ class HearingCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Hearing Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -223,7 +223,7 @@ class HearingCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Hearing Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -338,7 +338,7 @@ class TaskCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting Task Calendar. Please Try Again!!!", str(ex)
                 ),
@@ -401,7 +401,7 @@ class TaskCalendarService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving Task Calendar. Please Try Again!!!", str(ex)
                 ),
@@ -442,7 +442,7 @@ class TaskCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Task Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -483,7 +483,7 @@ class TaskCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Task Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
