@@ -119,7 +119,7 @@ def reset_app_user_mid(
     return RedirectResponse(url=url)
 
 
-@router.get(
+@router.post(
     "/app_users/reset_exit/",
     include_in_schema=False,
 )
