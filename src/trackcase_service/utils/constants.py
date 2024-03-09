@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 # Constants
 ENV_APP_PORT = "APP_PORT"
 
+STANDARD_USER_ROLE_ID = 3
 TASK_ID_DUE_AT_HEARING = 1
 DEFAULT_HEARING_TO_TASK_CALENDAR_DATE = 15
 HEARING_TO_TASK_CALENDAR_DATE: dict[str, int] = {

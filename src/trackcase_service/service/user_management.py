@@ -17,6 +17,7 @@ from src.trackcase_service.utils.commons import (
     get_err_msg,
     raise_http_exception,
 )
+from src.trackcase_service.utils.constants import STANDARD_USER_ROLE_ID
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
     convert_schema_to_model,
@@ -145,7 +146,12 @@ class AppUserPasswordService:
                 sys.exc_info(),
             )
 
-    def _read_and_respond(self, request: Request, crud_service: CrudService, is_plain_username: bool = False):
+    def _read_and_respond(
+        self,
+        request: Request,
+        crud_service: CrudService,
+        is_plain_username: bool = False,
+    ):
         if is_plain_username:
             decoded_email_address = self.user_name
         else:
@@ -222,6 +228,15 @@ class AppUserService(CrudService):
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.AppUser,
+            )
+
+            get_user_management_service(
+                schemas.UserManagementServiceRegistry.APP_USER_ROLE, self.db_session
+            ).create_app_user_role(
+                request,
+                schemas.AppUserRoleRequest(
+                    app_user_id=data_model.id, app_role_id=STANDARD_USER_ROLE_ID
+                ),
             )
             get_email_service().app_user_validation_email(request, data_model.email)
             return schemas.AppUserResponse(data=[schema_model])
