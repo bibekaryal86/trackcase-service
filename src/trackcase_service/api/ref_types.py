@@ -134,7 +134,7 @@ def insert_collection_method(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
     ).create_collection_method(request, collection_method_request)
 
 
@@ -149,7 +149,7 @@ def find_collection_method(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
     ).read_collection_method(request, request_metadata)
 
 
@@ -165,7 +165,7 @@ def modify_collection_method(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
     ).update_collection_method(collection_method_id, request, collection_method_request)
 
 
@@ -181,7 +181,7 @@ def remove_collection_method(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
     ).delete_collection_method(collection_method_id, is_hard_delete, request)
 
 
@@ -197,7 +197,7 @@ def insert_case_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
     ).create_case_type(request, case_type_request)
 
 
@@ -210,7 +210,7 @@ def find_case_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
     ).read_case_type(request, request_metadata)
 
 
@@ -226,7 +226,7 @@ def modify_case_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
     ).update_case_type(case_type_id, request, case_type_request)
 
 
@@ -242,7 +242,7 @@ def remove_case_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
     ).delete_case_type(case_type_id, is_hard_delete, request)
 
 
@@ -258,7 +258,7 @@ def insert_filing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
     ).create_filing_type(request, filing_type_request)
 
 
@@ -273,7 +273,7 @@ def find_filing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
     ).read_filing_type(request, request_metadata)
 
 
@@ -289,7 +289,7 @@ def modify_filing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
     ).update_filing_type(filing_type_id, request, filing_type_request)
 
 
@@ -305,7 +305,7 @@ def remove_filing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
     ).delete_filing_type(filing_type_id, is_hard_delete, request)
 
 
@@ -321,7 +321,7 @@ def insert_hearing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
     ).create_hearing_type(request, hearing_type_request)
 
 
@@ -336,7 +336,7 @@ def find_hearing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
     ).read_hearing_type(request, request_metadata)
 
 
@@ -352,7 +352,7 @@ def modify_hearing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
     ).update_hearing_type(hearing_type_id, request, hearing_type_request)
 
 
@@ -368,7 +368,7 @@ def remove_hearing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
     ).delete_hearing_type(hearing_type_id, is_hard_delete, request)
 
 
@@ -384,7 +384,7 @@ def insert_task_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
     ).create_task_type(request, task_type_request)
 
 
@@ -397,7 +397,7 @@ def find_task_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
     ).read_task_type(request, request_metadata)
 
 
@@ -413,7 +413,7 @@ def modify_task_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
     ).update_task_type(task_type_id, request, task_type_request)
 
 
@@ -429,5 +429,5 @@ def remove_task_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
     ).delete_task_type(task_type_id, is_hard_delete, request)
