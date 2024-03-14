@@ -142,7 +142,7 @@ class CourtService(CrudService):
             data_model: models.Court = convert_schema_to_model(
                 request_object, models.Court
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryCourt
             ).add_to_history(

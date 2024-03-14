@@ -103,10 +103,16 @@ class CrudService:
             DataKeys.metadata: metadata,
         }
 
-    def update(self, model_id: int, model_data: ModelBase) -> ModelBase:
+    def update(
+        self, model_id: int, model_data: ModelBase, is_restore: bool = False
+    ) -> ModelBase:
         db_record = self.db_session.query(self.db_model).get(model_id)
         # exists check done in controller/api for better messaging, so no need again
-        db_record = _copy_key_values(model_data, db_record)
+        if is_restore:
+            setattr(db_record, "deleted_date", None)
+            setattr(db_record, "is_deleted", False)
+        else:
+            db_record = _copy_key_values(model_data, db_record)
         setattr(db_record, "modified", func.now())
         self.db_session.commit()
         self.db_session.refresh(db_record)

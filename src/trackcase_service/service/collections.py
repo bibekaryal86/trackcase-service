@@ -151,7 +151,7 @@ class CaseCollectionService(CrudService):
             data_model: models.CaseCollection = convert_schema_to_model(
                 request_object, models.CaseCollection
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryCaseCollection
             ).add_to_history(
@@ -399,7 +399,7 @@ class CashCollectionService(CrudService):
             data_model: models.CashCollection = convert_schema_to_model(
                 request_object, models.CashCollection
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryCashCollection
             ).add_to_history(

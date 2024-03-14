@@ -142,7 +142,7 @@ class JudgeService(CrudService):
             data_model: models.Judge = convert_schema_to_model(
                 request_object, models.Judge
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryJudge
             ).add_to_history(

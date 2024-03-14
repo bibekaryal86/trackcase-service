@@ -144,7 +144,7 @@ class FilingService(CrudService):
             data_model: models.Filing = convert_schema_to_model(
                 request_object, models.Filing
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryFiling
             ).add_to_history(

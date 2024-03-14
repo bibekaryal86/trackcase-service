@@ -167,7 +167,7 @@ class ComponentStatusService(CrudService):
             data_model: models.ComponentStatus = convert_schema_to_model(
                 request_object, models.ComponentStatus
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.ComponentStatus,
@@ -316,7 +316,7 @@ class CollectionMethodService(CrudService):
             data_model: models.CollectionMethod = convert_schema_to_model(
                 request_object, models.CollectionMethod
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.CollectionMethod,
@@ -457,7 +457,7 @@ class CaseTypeService(CrudService):
             data_model: models.CaseType = convert_schema_to_model(
                 request_object, models.CaseType
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.CaseType,
@@ -600,7 +600,7 @@ class FilingTypeService(CrudService):
             data_model: models.FilingType = convert_schema_to_model(
                 request_object, models.FilingType
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.FilingType,
@@ -745,7 +745,7 @@ class HearingTypeService(CrudService):
             data_model: models.HearingType = convert_schema_to_model(
                 request_object, models.HearingType
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.HearingType,
@@ -886,7 +886,7 @@ class TaskTypeService(CrudService):
             data_model: models.TaskType = convert_schema_to_model(
                 request_object, models.TaskType
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.TaskType,

@@ -326,7 +326,7 @@ class AppUserService(CrudService):
                 data_model.password = get_user_password_service(
                     request_object.password
                 ).hash_password()
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.AppUser,
@@ -462,7 +462,7 @@ class AppRoleService(CrudService):
             data_model: models.AppRole = convert_schema_to_model(
                 request_object, models.AppRole
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.AppRole,
@@ -602,7 +602,7 @@ class AppPermissionService(CrudService):
             data_model: models.AppPermission = convert_schema_to_model(
                 request_object, models.AppPermission
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.AppPermission,
@@ -742,7 +742,7 @@ class AppUserRoleService(CrudService):
             data_model: models.AppUserRole = convert_schema_to_model(
                 request_object, models.AppUserRole
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.AppUserRole,
@@ -888,7 +888,7 @@ class AppRolePermissionService(CrudService):
             data_model: models.AppRolePermission = convert_schema_to_model(
                 request_object, models.AppRolePermission
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             schema_model = convert_model_to_schema(
                 data_model=data_model,
                 schema_class=schemas.AppRolePermission,
