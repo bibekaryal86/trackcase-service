@@ -194,7 +194,7 @@ class CourtCaseService(CrudService):
     def delete_court_case(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CourtCaseResponse:
-        court_case_old = self.check_court_case_exists(model_id, request)
+        court_case_old = self.check_court_case_exists(model_id, request, is_hard_delete)
         if court_case_old.filings:
             raise_http_exception(
                 request,

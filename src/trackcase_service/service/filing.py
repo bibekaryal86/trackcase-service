@@ -178,7 +178,7 @@ class FilingService(CrudService):
     def delete_filing(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.FilingResponse:
-        filing_old = self.check_filing_exists(model_id, request)
+        filing_old = self.check_filing_exists(model_id, request, is_hard_delete)
         if filing_old.task_calendars:
             raise_http_exception(
                 request,

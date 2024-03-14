@@ -340,7 +340,7 @@ class AppUserService(CrudService):
     def delete_app_user(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.AppUserResponse:
-        self.check_app_user_exists(model_id, request)
+        self.check_app_user_exists(model_id, request, is_hard_delete)
 
         try:
             self.delete(model_id, is_hard_delete)
@@ -470,7 +470,7 @@ class AppRoleService(CrudService):
     def delete_app_role(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.AppRoleResponse:
-        self.check_app_role_exists(model_id, request)
+        self.check_app_role_exists(model_id, request, is_hard_delete)
 
         try:
             self.delete(model_id, is_hard_delete)
@@ -607,7 +607,7 @@ class AppPermissionService(CrudService):
     def delete_app_permission(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.AppPermissionResponse:
-        self.check_app_permission_exists(model_id, request)
+        self.check_app_permission_exists(model_id, request, is_hard_delete)
 
         try:
             self.delete(model_id, is_hard_delete)
@@ -744,7 +744,7 @@ class AppUserRoleService(CrudService):
     def delete_app_user_role(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.AppUserRoleResponse:
-        self.check_app_user_role_exists(model_id, request)
+        self.check_app_user_role_exists(model_id, request, is_hard_delete)
 
         try:
             self.delete(model_id, is_hard_delete)
@@ -889,7 +889,7 @@ class AppRolePermissionService(CrudService):
     def delete_app_role_permission(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.AppRolePermissionResponse:
-        self.check_app_role_permission_exists(model_id, request)
+        self.check_app_role_permission_exists(model_id, request, is_hard_delete)
 
         try:
             self.delete(model_id, is_hard_delete)

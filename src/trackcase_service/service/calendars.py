@@ -190,7 +190,7 @@ class HearingCalendarService(CrudService):
     def delete_hearing_calendar(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.HearingCalendarResponse:
-        hearing_calendar_old = self.check_hearing_calendar_exists(model_id, request)
+        hearing_calendar_old = self.check_hearing_calendar_exists(model_id, request, is_hard_delete)
         if hearing_calendar_old.task_calendars:
             raise_http_exception(
                 request,
@@ -459,7 +459,7 @@ class TaskCalendarService(CrudService):
     def delete_task_calendar(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.TaskCalendarResponse:
-        task_calendar_old = self.check_task_calendar_exists(model_id, request)
+        task_calendar_old = self.check_task_calendar_exists(model_id, request, is_hard_delete)
 
         if is_hard_delete:
             get_history_service(

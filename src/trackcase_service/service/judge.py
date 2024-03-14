@@ -176,7 +176,7 @@ class JudgeService(CrudService):
     def delete_judge(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.JudgeResponse:
-        judge_old = self.check_judge_exists(model_id, request)
+        judge_old = self.check_judge_exists(model_id, request, is_hard_delete)
         if judge_old.clients:
             raise_http_exception(
                 request,

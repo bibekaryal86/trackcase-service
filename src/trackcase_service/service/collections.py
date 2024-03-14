@@ -183,7 +183,7 @@ class CaseCollectionService(CrudService):
     def delete_case_collection(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CaseCollectionResponse:
-        case_collection_old = self.check_case_collection_exists(model_id, request)
+        case_collection_old = self.check_case_collection_exists(model_id, request, is_hard_delete)
         if case_collection_old.cash_collections:
             raise_http_exception(
                 request,
@@ -424,7 +424,7 @@ class CashCollectionService(CrudService):
     def delete_cash_collection(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CashCollectionResponse:
-        cash_collection_old = self.check_cash_collection_exists(model_id, request)
+        cash_collection_old = self.check_cash_collection_exists(model_id, request, is_hard_delete)
 
         if is_hard_delete:
             get_history_service(

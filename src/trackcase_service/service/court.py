@@ -176,7 +176,7 @@ class CourtService(CrudService):
     def delete_court(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CourtResponse:
-        court_old = self.check_court_exists(model_id, request)
+        court_old = self.check_court_exists(model_id, request, is_hard_delete)
         if court_old.judges:
             raise_http_exception(
                 request,

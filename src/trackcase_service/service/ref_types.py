@@ -603,7 +603,7 @@ class FilingTypeService(CrudService):
     def delete_filing_type(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.FilingTypeResponse:
-        self.check_filing_type_exists(model_id, request)
+        self.check_filing_type_exists(model_id, request, is_hard_delete)
 
         try:
             self.delete(model_id, is_hard_delete)

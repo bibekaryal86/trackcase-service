@@ -178,7 +178,7 @@ class ClientService(CrudService):
     def delete_client(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.ClientResponse:
-        client_old = self.check_client_exists(model_id, request)
+        client_old = self.check_client_exists(model_id, request, is_hard_delete)
         if client_old.court_cases:
             raise_http_exception(
                 request,
