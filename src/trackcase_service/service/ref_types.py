@@ -56,7 +56,10 @@ class ComponentStatusService(CrudService):
     ) -> schemas.ComponentStatusResponse:
         try:
             if metadata is not None and metadata.model_id is not None:
-                read_response = self.read(model_id=metadata.model_id)
+                read_response = self.read(
+                    model_id=metadata.model_id,
+                    is_include_soft_deleted=metadata.is_include_deleted,
+                )
                 return get_ref_types_response(
                     read_response,
                     True,
@@ -134,8 +137,10 @@ class ComponentStatusService(CrudService):
         #     )
         # )
 
-    def check_component_status_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(model_id=model_id)
+    def check_component_status_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+        request_metadata = schemas.RequestMetadata(
+            model_id=model_id, is_include_deleted=is_include_deleted
+        )
         component_status_response = self.read_component_status(
             request, request_metadata
         )
@@ -232,7 +237,10 @@ class CollectionMethodService(CrudService):
     ) -> schemas.CollectionMethodResponse:
         try:
             if metadata is not None and metadata.model_id is not None:
-                read_response = self.read(model_id=metadata.model_id)
+                read_response = self.read(
+                    model_id=metadata.model_id,
+                    is_include_soft_deleted=metadata.is_include_deleted,
+                )
                 return get_ref_types_response(
                     read_response,
                     True,
@@ -276,8 +284,10 @@ class CollectionMethodService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_collection_method_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(model_id=model_id)
+    def check_collection_method_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+        request_metadata = schemas.RequestMetadata(
+            model_id=model_id, is_include_deleted=is_include_deleted
+        )
         collection_method_response = self.read_collection_method(
             request, request_metadata
         )
@@ -369,7 +379,10 @@ class CaseTypeService(CrudService):
     ) -> schemas.CaseTypeResponse:
         try:
             if metadata is not None and metadata.model_id is not None:
-                read_response = self.read(model_id=metadata.model_id)
+                read_response = self.read(
+                    model_id=metadata.model_id,
+                    is_include_soft_deleted=metadata.is_include_deleted,
+                )
                 return get_ref_types_response(
                     read_response,
                     True,
@@ -411,8 +424,10 @@ class CaseTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_case_type_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(model_id=model_id)
+    def check_case_type_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+        request_metadata = schemas.RequestMetadata(
+            model_id=model_id, is_include_deleted=is_include_deleted
+        )
         case_type_response = self.read_case_type(request, request_metadata)
         if not case_type_response or not case_type_response.data:
             raise_http_exception(
@@ -499,7 +514,10 @@ class FilingTypeService(CrudService):
     ) -> schemas.FilingTypeResponse:
         try:
             if metadata is not None and metadata.model_id is not None:
-                read_response = self.read(model_id=metadata.model_id)
+                read_response = self.read(
+                    model_id=metadata.model_id,
+                    is_include_soft_deleted=metadata.is_include_deleted,
+                )
                 return get_ref_types_response(
                     read_response,
                     True,
@@ -543,8 +561,10 @@ class FilingTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_filing_type_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(model_id=model_id)
+    def check_filing_type_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+        request_metadata = schemas.RequestMetadata(
+            model_id=model_id, is_include_deleted=is_include_deleted
+        )
         filing_type_response = self.read_filing_type(request, request_metadata)
         if not filing_type_response or not filing_type_response.data:
             raise_http_exception(
@@ -633,7 +653,10 @@ class HearingTypeService(CrudService):
     ) -> schemas.HearingTypeResponse:
         try:
             if metadata is not None and metadata.model_id is not None:
-                read_response = self.read(model_id=metadata.model_id)
+                read_response = self.read(
+                    model_id=metadata.model_id,
+                    is_include_soft_deleted=metadata.is_include_deleted,
+                )
                 return get_ref_types_response(
                     read_response,
                     True,
@@ -677,8 +700,10 @@ class HearingTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_hearing_type_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(model_id=model_id)
+    def check_hearing_type_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+        request_metadata = schemas.RequestMetadata(
+            model_id=model_id, is_include_deleted=is_include_deleted
+        )
         hearing_type_response = self.read_hearing_type(request, request_metadata)
         if not hearing_type_response or not hearing_type_response.data:
             raise_http_exception(
@@ -768,7 +793,10 @@ class TaskTypeService(CrudService):
     ) -> schemas.TaskTypeResponse:
         try:
             if metadata is not None and metadata.model_id is not None:
-                read_response = self.read(model_id=metadata.model_id)
+                read_response = self.read(
+                    model_id=metadata.model_id,
+                    is_include_soft_deleted=metadata.is_include_deleted,
+                )
                 return get_ref_types_response(
                     read_response,
                     True,
@@ -810,8 +838,10 @@ class TaskTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_task_type_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(model_id=model_id)
+    def check_task_type_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+        request_metadata = schemas.RequestMetadata(
+            model_id=model_id, is_include_deleted=is_include_deleted
+        )
         task_type_response = self.read_task_type(request, request_metadata)
         if not task_type_response or not task_type_response.data:
             raise_http_exception(

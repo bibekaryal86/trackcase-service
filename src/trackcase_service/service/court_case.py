@@ -71,7 +71,10 @@ class CourtCaseService(CrudService):
         try:
             if request_metadata:
                 if request_metadata.model_id:
-                    read_response = self.read(model_id=request_metadata.model_id)
+                    read_response = self.read(
+                        model_id=request_metadata.model_id,
+                        is_include_soft_deleted=request_metadata.is_include_deleted,
+                    )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
                     )
@@ -248,10 +251,10 @@ class CourtCaseService(CrudService):
             )
 
     def check_court_case_exists(
-        self, model_id: int, request: Request
+        self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.CourtCase:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True
+            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
         )
         court_case_response = self.read_court_case(request, request_metadata)
         if not court_case_response or not court_case_response.data:

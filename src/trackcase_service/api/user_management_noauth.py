@@ -114,7 +114,7 @@ def reset_app_user_mid(
             plain_password=None, user_name=to_reset
         ).validate_reset_user(request, db_session, False)
         url = f"{url}?is_reset=true&to_reset={user_to_reset}"
-    except Exception as ex:
+    except Exception:
         url = f"{url}?is_reset=false"
     return RedirectResponse(url=url)
 

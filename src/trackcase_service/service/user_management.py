@@ -136,7 +136,7 @@ class AppUserPasswordService:
                 raise_http_exception(
                     request,
                     HTTPStatus.FORBIDDEN,
-                    "Validate Unsuccessful! User not found in system!! Please try again!!!",
+                    "Validate Unsuccessful! User not found in system!! Please try again!!!",  # noqa: E501
                 )
         except Exception as ex:
             raise_http_exception(
@@ -180,7 +180,7 @@ class AppUserPasswordService:
                 raise_http_exception(
                     request,
                     HTTPStatus.FORBIDDEN,
-                    "Reset Unsuccessful! User not found in system!! Please try again!!!",
+                    "Reset Unsuccessful! User not found in system!! Please try again!!!",  # noqa: E501
                 )
         except Exception as ex:
             raise_http_exception(
@@ -253,7 +253,10 @@ class AppUserService(CrudService):
     ) -> schemas.AppUserResponse:
         try:
             if metadata is not None and metadata.model_id is not None:
-                read_response = self.read(model_id=metadata.model_id)
+                read_response = self.read(
+                    model_id=metadata.model_id,
+                    is_include_soft_deleted=metadata.is_include_deleted,
+                )
                 return get_user_management_response(
                     read_response,
                     True,
@@ -292,8 +295,10 @@ class AppUserService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_app_user_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(request_object_id=model_id)
+    def check_app_user_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+        request_metadata = schemas.RequestMetadata(
+            request_object_id=model_id, is_include_deleted=is_include_deleted
+        )
         app_user_response = self.read_app_user(request, request_metadata)
         if not app_user_response or not app_user_response.data:
             raise_http_exception(
@@ -382,7 +387,10 @@ class AppRoleService(CrudService):
     ) -> schemas.AppRoleResponse:
         try:
             if metadata is not None and metadata.model_id is not None:
-                read_response = self.read(model_id=metadata.model_id)
+                read_response = self.read(
+                    model_id=metadata.model_id,
+                    is_include_soft_deleted=metadata.is_include_deleted,
+                )
                 return get_user_management_response(
                     read_response,
                     True,
@@ -421,8 +429,10 @@ class AppRoleService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_app_role_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(model_id=model_id)
+    def check_app_role_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+        request_metadata = schemas.RequestMetadata(
+            model_id=model_id, is_include_deleted=is_include_deleted
+        )
         app_role_response = self.read_app_role(request, request_metadata)
         if not app_role_response or not app_role_response.data:
             raise_http_exception(
@@ -509,7 +519,10 @@ class AppPermissionService(CrudService):
     ) -> schemas.AppPermissionResponse:
         try:
             if metadata is not None and metadata.model_id is not None:
-                read_response = self.read(model_id=metadata.model_id)
+                read_response = self.read(
+                    model_id=metadata.model_id,
+                    is_include_soft_deleted=metadata.is_include_deleted,
+                )
                 return get_user_management_response(
                     read_response,
                     True,
@@ -550,8 +563,10 @@ class AppPermissionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_app_permission_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(model_id=model_id)
+    def check_app_permission_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+        request_metadata = schemas.RequestMetadata(
+            model_id=model_id, is_include_deleted=is_include_deleted
+        )
         app_permission_response = self.read_app_permission(request, request_metadata)
         if not app_permission_response or not app_permission_response.data:
             raise_http_exception(
@@ -641,7 +656,10 @@ class AppUserRoleService(CrudService):
     ) -> schemas.AppUserRoleResponse:
         try:
             if metadata is not None and metadata.model_id is not None:
-                read_response = self.read(model_id=metadata.model_id)
+                read_response = self.read(
+                    model_id=metadata.model_id,
+                    is_include_soft_deleted=metadata.is_include_deleted,
+                )
                 return get_user_management_response(
                     read_response,
                     True,
@@ -682,8 +700,10 @@ class AppUserRoleService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_app_user_role_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(model_id=model_id)
+    def check_app_user_role_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+        request_metadata = schemas.RequestMetadata(
+            model_id=model_id, is_include_deleted=is_include_deleted
+        )
         app_user_role_response = self.read_app_user_role(request, request_metadata)
         if not app_user_role_response or not app_user_role_response.data:
             raise_http_exception(
@@ -777,7 +797,10 @@ class AppRolePermissionService(CrudService):
     ) -> schemas.AppRolePermissionResponse:
         try:
             if metadata is not None and metadata.model_id is not None:
-                read_response = self.read(model_id=metadata.model_id)
+                read_response = self.read(
+                    model_id=metadata.model_id,
+                    is_include_soft_deleted=metadata.is_include_deleted,
+                )
                 return get_user_management_response(
                     read_response,
                     True,
@@ -818,8 +841,10 @@ class AppRolePermissionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_app_role_permission_exists(self, model_id: int, request: Request):
-        request_metadata = schemas.RequestMetadata(model_id=model_id)
+    def check_app_role_permission_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+        request_metadata = schemas.RequestMetadata(
+            model_id=model_id, is_include_deleted=is_include_deleted
+        )
         app_role_permission_response = self.read_app_role_permission(
             request, request_metadata
         )

@@ -77,7 +77,10 @@ class HearingCalendarService(CrudService):
         try:
             if request_metadata:
                 if request_metadata.model_id:
-                    read_response = self.read(model_id=request_metadata.model_id)
+                    read_response = self.read(
+                        model_id=request_metadata.model_id,
+                        is_include_soft_deleted=request_metadata.is_include_deleted,
+                    )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
                     )
@@ -258,10 +261,10 @@ class HearingCalendarService(CrudService):
         ).create_task_calendar(request, task_calendar_request)
 
     def check_hearing_calendar_exists(
-        self, model_id: int, request: Request
+        self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.HearingCalendar:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True
+            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
         )
         hearing_calendar_response = self.read_hearing_calendar(
             request, request_metadata
@@ -351,7 +354,10 @@ class TaskCalendarService(CrudService):
         try:
             if request_metadata:
                 if request_metadata.model_id:
-                    read_response = self.read(model_id=request_metadata.model_id)
+                    read_response = self.read(
+                        model_id=request_metadata.model_id,
+                        is_include_soft_deleted=request_metadata.is_include_deleted,
+                    )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
                     )
@@ -492,10 +498,10 @@ class TaskCalendarService(CrudService):
             )
 
     def check_task_calendar_exists(
-        self, model_id: int, request: Request
+        self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.TaskCalendar:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True
+            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
         )
         task_calendar_response = self.read_task_calendar(request, request_metadata)
         if not task_calendar_response or not task_calendar_response.data:

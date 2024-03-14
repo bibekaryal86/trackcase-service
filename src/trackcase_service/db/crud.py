@@ -43,28 +43,27 @@ class CrudService:
         is_include_soft_deleted: bool = False,
     ) -> Dict[str, Union[List[ModelBase], ResponseMetadata]]:
         if model_id and model_id > 0:
-            data = (
-                self.db_session.query(self.db_model)
-                .filter(
-                    self.db_model.id == model_id,
-                    self.db_model.is_deleted == False,  # noqa: E501, E712
-                )
-                .first()
+            query = self.db_session.query(self.db_model).filter(
+                self.db_model.id == model_id
             )
+            if not is_include_soft_deleted:
+                query = query.filter(
+                    self.db_model.is_deleted == False  # noqa: E501, E712
+                )
+            data = query.first()
             return {
                 DataKeys.data: [data] if data else [],
                 DataKeys.metadata: None,
             }
         elif model_ids and len(model_ids) > 0:
-            data = (
-                self.db_session.query(self.db_model)
-                .filter()
-                .filter(
-                    self.db_model.id.in_(model_ids),
-                    self.db_model.is_deleted == False,  # noqa: E501, E712
-                )
-                .all()
+            query = self.db_session.query(self.db_model).filter(
+                self.db_model.id.in_(model_ids)
             )
+            if not is_include_soft_deleted:
+                query = query.filter(
+                    self.db_model.is_deleted == False  # noqa: E501, E712
+                )
+            data = query.all()
             return {
                 DataKeys.data: data,
                 DataKeys.metadata: None,

@@ -67,7 +67,10 @@ class JudgeService(CrudService):
         try:
             if request_metadata:
                 if request_metadata.model_id:
-                    read_response = self.read(model_id=request_metadata.model_id)
+                    read_response = self.read(
+                        model_id=request_metadata.model_id,
+                        is_include_soft_deleted=request_metadata.is_include_deleted,
+                    )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
                     )
@@ -217,9 +220,9 @@ class JudgeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_judge_exists(self, model_id: int, request: Request) -> schemas.Judge:
+    def check_judge_exists(self, model_id: int, request: Request, is_include_deleted: bool = False) -> schemas.Judge:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True
+            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
         )
         judge_response = self.read_judge(request, request_metadata)
         if not judge_response or not judge_response.data:
