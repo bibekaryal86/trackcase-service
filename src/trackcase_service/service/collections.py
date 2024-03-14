@@ -138,8 +138,11 @@ class CaseCollectionService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.CaseCollectionRequest,
+        is_restore: bool = False,
     ) -> schemas.CaseCollectionResponse:
-        case_collection_old = self.check_case_collection_exists(model_id, request)
+        case_collection_old = self.check_case_collection_exists(
+            model_id, request, is_restore
+        )
         self.check_case_collection_dependents_statuses(
             request, request_object.component_status_id, case_collection_old
         )
@@ -183,7 +186,9 @@ class CaseCollectionService(CrudService):
     def delete_case_collection(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CaseCollectionResponse:
-        case_collection_old = self.check_case_collection_exists(model_id, request, is_hard_delete)
+        case_collection_old = self.check_case_collection_exists(
+            model_id, request, is_hard_delete
+        )
         if case_collection_old.cash_collections:
             raise_http_exception(
                 request,
@@ -231,7 +236,9 @@ class CaseCollectionService(CrudService):
         self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.CaseCollection:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         case_collection_response = self.read_case_collection(request, request_metadata)
         if not case_collection_response or not case_collection_response.data:
@@ -384,8 +391,9 @@ class CashCollectionService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.CashCollectionRequest,
+        is_restore: bool = False,
     ) -> schemas.CashCollectionResponse:
-        self.check_cash_collection_exists(model_id, request)
+        self.check_cash_collection_exists(model_id, request, is_restore)
 
         try:
             data_model: models.CashCollection = convert_schema_to_model(
@@ -424,7 +432,9 @@ class CashCollectionService(CrudService):
     def delete_cash_collection(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CashCollectionResponse:
-        cash_collection_old = self.check_cash_collection_exists(model_id, request, is_hard_delete)
+        cash_collection_old = self.check_cash_collection_exists(
+            model_id, request, is_hard_delete
+        )
 
         if is_hard_delete:
             get_history_service(
@@ -466,7 +476,9 @@ class CashCollectionService(CrudService):
         self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.CashCollection:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         cash_collection_response = self.read_cash_collection(request, request_metadata)
         if not cash_collection_response or not cash_collection_response.data:

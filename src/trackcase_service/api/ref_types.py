@@ -99,11 +99,14 @@ def modify_component_status(
     component_status_id: int,
     request: Request,
     component_status_request: schemas.ComponentStatusRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
-    ).update_component_status(component_status_id, request, component_status_request)
+    ).update_component_status(
+        component_status_id, request, component_status_request, is_restore
+    )
 
 
 @router.delete(
@@ -162,11 +165,14 @@ def modify_collection_method(
     collection_method_id: int,
     request: Request,
     collection_method_request: schemas.CollectionMethodRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
-    ).update_collection_method(collection_method_id, request, collection_method_request)
+    ).update_collection_method(
+        collection_method_id, request, collection_method_request, is_restore
+    )
 
 
 @router.delete(
@@ -223,11 +229,12 @@ def modify_case_type(
     case_type_id: int,
     request: Request,
     case_type_request: schemas.CaseTypeRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
-    ).update_case_type(case_type_id, request, case_type_request)
+    ).update_case_type(case_type_id, request, case_type_request, is_restore)
 
 
 @router.delete(
@@ -286,11 +293,12 @@ def modify_filing_type(
     filing_type_id: int,
     request: Request,
     filing_type_request: schemas.FilingTypeRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
-    ).update_filing_type(filing_type_id, request, filing_type_request)
+    ).update_filing_type(filing_type_id, request, filing_type_request, is_restore)
 
 
 @router.delete(
@@ -349,11 +357,12 @@ def modify_hearing_type(
     hearing_type_id: int,
     request: Request,
     hearing_type_request: schemas.HearingTypeRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
-    ).update_hearing_type(hearing_type_id, request, hearing_type_request)
+    ).update_hearing_type(hearing_type_id, request, hearing_type_request, is_restore)
 
 
 @router.delete(
@@ -410,11 +419,12 @@ def modify_task_type(
     task_type_id: int,
     request: Request,
     task_type_request: schemas.TaskTypeRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
-    ).update_task_type(task_type_id, request, task_type_request)
+    ).update_task_type(task_type_id, request, task_type_request, is_restore)
 
 
 @router.delete(

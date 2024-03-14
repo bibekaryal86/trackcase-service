@@ -133,8 +133,9 @@ class FilingService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.FilingRequest,
+        is_restore: bool = False,
     ) -> schemas.FilingResponse:
-        filing_old = self.check_filing_exists(model_id, request)
+        filing_old = self.check_filing_exists(model_id, request, is_restore)
         self.check_filing_dependents_statuses(
             request, request_object.component_status_id, filing_old
         )
@@ -222,9 +223,13 @@ class FilingService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_filing_exists(self, model_id: int, request: Request, is_include_deleted: bool = False) -> schemas.Filing:
+    def check_filing_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ) -> schemas.Filing:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         filing_response = self.read_filing(request, request_metadata)
         if not filing_response or not filing_response.data:

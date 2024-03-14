@@ -145,8 +145,9 @@ class CourtCaseService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.CourtCaseRequest,
+        is_restore: bool = False,
     ) -> schemas.CourtCaseResponse:
-        court_case_old = self.check_court_case_exists(model_id, request)
+        court_case_old = self.check_court_case_exists(model_id, request, is_restore)
         self.check_court_case_dependents_statuses(
             request, request_object.component_status_id, court_case_old
         )
@@ -254,7 +255,9 @@ class CourtCaseService(CrudService):
         self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.CourtCase:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         court_case_response = self.read_court_case(request, request_metadata)
         if not court_case_response or not court_case_response.data:

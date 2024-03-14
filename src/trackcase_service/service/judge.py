@@ -131,8 +131,9 @@ class JudgeService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.JudgeRequest,
+        is_restore: bool = False,
     ) -> schemas.JudgeResponse:
-        judge_old = self.check_judge_exists(model_id, request)
+        judge_old = self.check_judge_exists(model_id, request, is_restore)
         self.check_judge_dependents_statuses(
             request, request_object.component_status_id, judge_old
         )
@@ -220,9 +221,13 @@ class JudgeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_judge_exists(self, model_id: int, request: Request, is_include_deleted: bool = False) -> schemas.Judge:
+    def check_judge_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ) -> schemas.Judge:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         judge_response = self.read_judge(request, request_metadata)
         if not judge_response or not judge_response.data:

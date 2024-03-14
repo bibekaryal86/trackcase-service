@@ -137,7 +137,9 @@ class ComponentStatusService(CrudService):
         #     )
         # )
 
-    def check_component_status_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+    def check_component_status_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ):
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_deleted=is_include_deleted
         )
@@ -156,9 +158,10 @@ class ComponentStatusService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.ComponentStatusRequest,
+        is_restore: bool = False,
     ) -> schemas.ComponentStatusResponse:
         set_component_statuses_cache([])
-        self.check_component_status_exists(model_id, request)
+        self.check_component_status_exists(model_id, request, is_restore)
 
         try:
             data_model: models.ComponentStatus = convert_schema_to_model(
@@ -284,7 +287,9 @@ class CollectionMethodService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_collection_method_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+    def check_collection_method_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ):
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_deleted=is_include_deleted
         )
@@ -303,8 +308,9 @@ class CollectionMethodService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.CollectionMethodRequest,
+        is_restore: bool = False,
     ) -> schemas.CollectionMethodResponse:
-        self.check_collection_method_exists(model_id, request)
+        self.check_collection_method_exists(model_id, request, is_restore)
 
         try:
             data_model: models.CollectionMethod = convert_schema_to_model(
@@ -424,7 +430,9 @@ class CaseTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_case_type_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+    def check_case_type_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ):
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_deleted=is_include_deleted
         )
@@ -437,9 +445,13 @@ class CaseTypeService(CrudService):
             )
 
     def update_case_type(
-        self, model_id: int, request: Request, request_object: schemas.CaseTypeRequest
+        self,
+        model_id: int,
+        request: Request,
+        request_object: schemas.CaseTypeRequest,
+        is_restore: bool = False,
     ) -> schemas.CaseTypeResponse:
-        self.check_case_type_exists(model_id, request)
+        self.check_case_type_exists(model_id, request, is_restore)
 
         try:
             data_model: models.CaseType = convert_schema_to_model(
@@ -561,7 +573,9 @@ class FilingTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_filing_type_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+    def check_filing_type_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ):
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_deleted=is_include_deleted
         )
@@ -574,9 +588,13 @@ class FilingTypeService(CrudService):
             )
 
     def update_filing_type(
-        self, model_id: int, request: Request, request_object: schemas.FilingTypeRequest
+        self,
+        model_id: int,
+        request: Request,
+        request_object: schemas.FilingTypeRequest,
+        is_restore: bool = False,
     ) -> schemas.FilingTypeResponse:
-        self.check_filing_type_exists(model_id, request)
+        self.check_filing_type_exists(model_id, request, is_restore)
 
         try:
             data_model: models.FilingType = convert_schema_to_model(
@@ -700,7 +718,9 @@ class HearingTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_hearing_type_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+    def check_hearing_type_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ):
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_deleted=is_include_deleted
         )
@@ -717,8 +737,9 @@ class HearingTypeService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.HearingTypeRequest,
+        is_restore: bool = False,
     ) -> schemas.HearingTypeResponse:
-        self.check_hearing_type_exists(model_id, request)
+        self.check_hearing_type_exists(model_id, request, is_restore)
 
         try:
             data_model: models.HearingType = convert_schema_to_model(
@@ -838,7 +859,9 @@ class TaskTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_task_type_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+    def check_task_type_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ):
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_deleted=is_include_deleted
         )
@@ -851,9 +874,13 @@ class TaskTypeService(CrudService):
             )
 
     def update_task_type(
-        self, model_id: int, request: Request, request_object: schemas.TaskTypeRequest
+        self,
+        model_id: int,
+        request: Request,
+        request_object: schemas.TaskTypeRequest,
+        is_restore: bool = False,
     ) -> schemas.TaskTypeResponse:
-        self.check_task_type_exists(model_id, request)
+        self.check_task_type_exists(model_id, request, is_restore)
 
         try:
             data_model: models.TaskType = convert_schema_to_model(

@@ -133,8 +133,9 @@ class ClientService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.ClientRequest,
+        is_restore: bool = False,
     ) -> schemas.ClientResponse:
-        client_old = self.check_client_exists(model_id, request)
+        client_old = self.check_client_exists(model_id, request, is_restore)
         self.check_client_dependents_statuses(
             request, request_object.component_status_id, client_old
         )
@@ -222,9 +223,13 @@ class ClientService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_client_exists(self, model_id: int, request: Request, is_include_deleted: bool = False) -> schemas.Client:
+    def check_client_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ) -> schemas.Client:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         client_response = self.read_client(request, request_metadata)
         if not client_response or not client_response.data:

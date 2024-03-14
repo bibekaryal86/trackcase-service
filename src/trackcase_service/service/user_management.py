@@ -295,7 +295,9 @@ class AppUserService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_app_user_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+    def check_app_user_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ):
         request_metadata = schemas.RequestMetadata(
             request_object_id=model_id, is_include_deleted=is_include_deleted
         )
@@ -308,9 +310,13 @@ class AppUserService(CrudService):
             )
 
     def update_app_user(
-        self, model_id: int, request: Request, request_object: schemas.AppUserRequest
+        self,
+        model_id: int,
+        request: Request,
+        request_object: schemas.AppUserRequest,
+        is_restore: bool = False,
     ) -> schemas.AppUserResponse:
-        self.check_app_user_exists(model_id, request)
+        self.check_app_user_exists(model_id, request, is_restore)
 
         try:
             data_model: models.AppUser = convert_schema_to_model(
@@ -429,7 +435,9 @@ class AppRoleService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_app_role_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+    def check_app_role_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ):
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_deleted=is_include_deleted
         )
@@ -442,9 +450,13 @@ class AppRoleService(CrudService):
             )
 
     def update_app_role(
-        self, model_id: int, request: Request, request_object: schemas.AppRoleRequest
+        self,
+        model_id: int,
+        request: Request,
+        request_object: schemas.AppRoleRequest,
+        is_restore: bool = False,
     ) -> schemas.AppRoleResponse:
-        self.check_app_role_exists(model_id, request)
+        self.check_app_role_exists(model_id, request, is_restore)
 
         try:
             data_model: models.AppRole = convert_schema_to_model(
@@ -563,7 +575,9 @@ class AppPermissionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_app_permission_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+    def check_app_permission_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ):
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_deleted=is_include_deleted
         )
@@ -580,8 +594,9 @@ class AppPermissionService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.AppPermissionRequest,
+        is_restore: bool = False,
     ) -> schemas.AppPermissionResponse:
-        self.check_app_permission_exists(model_id, request)
+        self.check_app_permission_exists(model_id, request, is_restore)
 
         try:
             data_model: models.AppPermission = convert_schema_to_model(
@@ -700,7 +715,9 @@ class AppUserRoleService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_app_user_role_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+    def check_app_user_role_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ):
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_deleted=is_include_deleted
         )
@@ -717,8 +734,9 @@ class AppUserRoleService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.AppUserRoleRequest,
+        is_restore: bool = False,
     ) -> schemas.AppUserRoleResponse:
-        self.check_app_user_role_exists(model_id, request)
+        self.check_app_user_role_exists(model_id, request, is_restore)
 
         try:
             data_model: models.AppUserRole = convert_schema_to_model(
@@ -841,7 +859,9 @@ class AppRolePermissionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_app_role_permission_exists(self, model_id: int, request: Request, is_include_deleted: bool = False):
+    def check_app_role_permission_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ):
         request_metadata = schemas.RequestMetadata(
             model_id=model_id, is_include_deleted=is_include_deleted
         )
@@ -860,8 +880,9 @@ class AppRolePermissionService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.AppRolePermissionRequest,
+        is_restore: bool = False,
     ) -> schemas.AppRolePermissionResponse:
-        self.check_app_role_permission_exists(model_id, request)
+        self.check_app_role_permission_exists(model_id, request, is_restore)
 
         try:
             data_model: models.AppRolePermission = convert_schema_to_model(

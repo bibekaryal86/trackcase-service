@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -38,11 +38,12 @@ def modify_app_user(
     app_user_id: int,
     request: Request,
     app_user_request: schemas.AppUserRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_user_management_service(
         schemas.UserManagementServiceRegistry.APP_USER, db_session
-    ).update_app_user(app_user_id, request, app_user_request)
+    ).update_app_user(app_user_id, request, app_user_request, is_restore)
 
 
 @router.delete(
@@ -97,11 +98,12 @@ def modify_app_role(
     app_role_id: int,
     request: Request,
     app_role_request: schemas.AppRoleRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_user_management_service(
         schemas.UserManagementServiceRegistry.APP_ROLE, db_session
-    ).update_app_role(app_role_id, request, app_role_request)
+    ).update_app_role(app_role_id, request, app_role_request, is_restore)
 
 
 @router.delete(
@@ -160,11 +162,14 @@ def modify_app_permission(
     app_permission_id: int,
     request: Request,
     app_permission_request: schemas.AppPermissionRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_user_management_service(
         schemas.UserManagementServiceRegistry.APP_PERMISSION, db_session
-    ).update_app_permission(app_permission_id, request, app_permission_request)
+    ).update_app_permission(
+        app_permission_id, request, app_permission_request, is_restore
+    )
 
 
 @router.delete(
@@ -223,11 +228,12 @@ def modify_app_user_role(
     app_user_role_id: int,
     request: Request,
     app_user_role_request: schemas.AppUserRoleRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_user_management_service(
         schemas.UserManagementServiceRegistry.APP_USER_ROLE, db_session
-    ).update_app_user_role(app_user_role_id, request, app_user_role_request)
+    ).update_app_user_role(app_user_role_id, request, app_user_role_request, is_restore)
 
 
 @router.delete(
@@ -286,12 +292,13 @@ def modify_app_role_permission(
     app_role_permission_id: int,
     request: Request,
     app_role_permission_request: schemas.AppRolePermissionRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_user_management_service(
         schemas.UserManagementServiceRegistry.APP_ROLE_PERMISSION, db_session
     ).update_app_role_permission(
-        app_role_permission_id, request, app_role_permission_request
+        app_role_permission_id, request, app_role_permission_request, is_restore
     )
 
 

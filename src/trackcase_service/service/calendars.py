@@ -145,8 +145,11 @@ class HearingCalendarService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.HearingCalendarRequest,
+        is_restore: bool = False,
     ) -> schemas.HearingCalendarResponse:
-        hearing_calendar_old = self.check_hearing_calendar_exists(model_id, request)
+        hearing_calendar_old = self.check_hearing_calendar_exists(
+            model_id, request, is_restore
+        )
         self.check_hearing_calendar_dependents_statuses(
             request, request_object.component_status_id, hearing_calendar_old
         )
@@ -190,7 +193,9 @@ class HearingCalendarService(CrudService):
     def delete_hearing_calendar(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.HearingCalendarResponse:
-        hearing_calendar_old = self.check_hearing_calendar_exists(model_id, request, is_hard_delete)
+        hearing_calendar_old = self.check_hearing_calendar_exists(
+            model_id, request, is_hard_delete
+        )
         if hearing_calendar_old.task_calendars:
             raise_http_exception(
                 request,
@@ -264,7 +269,9 @@ class HearingCalendarService(CrudService):
         self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.HearingCalendar:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         hearing_calendar_response = self.read_hearing_calendar(
             request, request_metadata
@@ -419,8 +426,9 @@ class TaskCalendarService(CrudService):
         model_id: int,
         request: Request,
         request_object: schemas.TaskCalendarRequest,
+        is_restore: bool = False,
     ) -> schemas.TaskCalendarResponse:
-        self.check_task_calendar_exists(model_id, request)
+        self.check_task_calendar_exists(model_id, request, is_restore)
 
         try:
             data_model: models.TaskCalendar = convert_schema_to_model(
@@ -459,7 +467,9 @@ class TaskCalendarService(CrudService):
     def delete_task_calendar(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.TaskCalendarResponse:
-        task_calendar_old = self.check_task_calendar_exists(model_id, request, is_hard_delete)
+        task_calendar_old = self.check_task_calendar_exists(
+            model_id, request, is_hard_delete
+        )
 
         if is_hard_delete:
             get_history_service(
@@ -501,7 +511,9 @@ class TaskCalendarService(CrudService):
         self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.TaskCalendar:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True, is_include_deleted=is_include_deleted
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         task_calendar_response = self.read_task_calendar(request, request_metadata)
         if not task_calendar_response or not task_calendar_response.data:

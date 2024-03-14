@@ -1,7 +1,7 @@
 import datetime
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -81,11 +81,14 @@ def modify_hearing_calendar(
     hearing_calendar_id: int,
     request: Request,
     hearing_calendar_request: schemas.HearingCalendarRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_calendar_service(
         schemas.CalendarServiceRegistry.HEARING_CALENDAR, db_session
-    ).update_hearing_calendar(hearing_calendar_id, request, hearing_calendar_request)
+    ).update_hearing_calendar(
+        hearing_calendar_id, request, hearing_calendar_request, is_restore
+    )
 
 
 @router.delete(
@@ -144,11 +147,12 @@ def modify_task_calendar(
     task_calendar_id: int,
     request: Request,
     task_calendar_request: schemas.TaskCalendarRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_calendar_service(
         schemas.CalendarServiceRegistry.TASK_CALENDAR, db_session
-    ).update_task_calendar(task_calendar_id, request, task_calendar_request)
+    ).update_task_calendar(task_calendar_id, request, task_calendar_request, is_restore)
 
 
 @router.delete(

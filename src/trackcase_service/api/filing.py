@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -46,10 +46,11 @@ def modify_filing(
     filing_id: int,
     request: Request,
     filing_request: schemas.FilingRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_filing_service(db_session).update_filing(
-        filing_id, request, filing_request
+        filing_id, request, filing_request, is_restore
     )
 
 
