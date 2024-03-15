@@ -81,6 +81,24 @@ class AppUserPasswordService:
                         data_model=app_user_data_model,
                         schema_class=schemas.AppUser,
                     )
+
+                    role_ids = [
+                        app_role.id for app_role in app_user_schema_model.app_roles
+                    ]
+                    app_role_models = (
+                        CrudService(db_session, models.AppRole)
+                        .read(model_ids=role_ids)
+                        .get(DataKeys.data)
+                    )
+                    app_role_schemas = [
+                        convert_model_to_schema(
+                            data_model=app_role_model,
+                            schema_class=schemas.AppRole,
+                            exclusions=["app_users"],
+                        )
+                        for app_role_model in app_role_models
+                    ]
+                    app_user_schema_model.app_roles = app_role_schemas
                     token_claim = encode_auth_credentials(app_user_schema_model)
                     return schemas.AppUserLoginResponse(
                         token=token_claim, app_user_details=app_user_schema_model
