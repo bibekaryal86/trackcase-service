@@ -10,8 +10,8 @@ from src.trackcase_service.db import models
 from src.trackcase_service.db.crud import CrudService, DataKeys
 from src.trackcase_service.service import schemas
 from src.trackcase_service.utils.cache import (
-    get_component_statuses_cache,
-    set_component_statuses_cache,
+    get_ref_types_cache,
+    set_ref_types_cache,
 )
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
@@ -30,7 +30,8 @@ class ComponentStatusService(CrudService):
     def create_component_status(
         self, request: Request, request_object: schemas.ComponentStatusRequest
     ) -> schemas.ComponentStatusResponse:
-        set_component_statuses_cache([])
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.COMPONENT_STATUS, [])
+
         try:
             data_model: models.ComponentStatus = convert_schema_to_model(
                 request_object, models.ComponentStatus
@@ -106,29 +107,29 @@ class ComponentStatusService(CrudService):
         component_name: schemas.ComponentStatusNames,
         status_type: schemas.ComponentStatusTypes = None,
     ) -> list[schemas.ComponentStatus]:
-        component_statuses = get_component_statuses_cache()
+        component_statuses = get_ref_types_cache(schemas.RefTypesServiceRegistry.COMPONENT_STATUS)
         if not component_statuses:
             component_statuses = self.read_component_status(request).data or []
-            set_component_statuses_cache(component_statuses)
+            set_ref_types_cache(schemas.RefTypesServiceRegistry.COMPONENT_STATUS, component_statuses)
         component_name_statuses = [
             component_status
             for component_status in component_statuses
             if component_status.component_name == component_name
         ]
-        if status_type and status_type == schemas.ComponentStatusTypes.ACTIVE:
+        if not status_type or status_type == schemas.ComponentStatusTypes.ALL:
+            return component_name_statuses
+        elif status_type == schemas.ComponentStatusTypes.ACTIVE:
             return [
                 component_status
                 for component_status in component_name_statuses
                 if component_status.is_active is True
             ]
-        elif status_type and status_type == schemas.ComponentStatusTypes.INACTIVE:
+        else:
             return [
                 component_status
                 for component_status in component_name_statuses
                 if component_status.is_active is False
             ]
-        else:
-            return component_name_statuses
         # return list(
         #     filter(
         #         lambda component_status: component_status.component_name
@@ -160,7 +161,7 @@ class ComponentStatusService(CrudService):
         request_object: schemas.ComponentStatusRequest,
         is_restore: bool = False,
     ) -> schemas.ComponentStatusResponse:
-        set_component_statuses_cache([])
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.COMPONENT_STATUS, [])
         self.check_component_status_exists(model_id, request, is_restore)
 
         try:
@@ -187,7 +188,7 @@ class ComponentStatusService(CrudService):
     def delete_component_status(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.ComponentStatusResponse:
-        set_component_statuses_cache([])
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.COMPONENT_STATUS, [])
         self.check_component_status_exists(model_id, request)
 
         try:
@@ -214,6 +215,7 @@ class CollectionMethodService(CrudService):
     def create_collection_method(
         self, request: Request, request_object: schemas.CollectionMethodRequest
     ) -> schemas.CollectionMethodResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.COLLECTION_METHOD, [])
         try:
             data_model: models.CollectionMethod = convert_schema_to_model(
                 request_object, models.CollectionMethod
@@ -287,6 +289,16 @@ class CollectionMethodService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    def get_collection_method(
+        self,
+        request: Request,
+    ) -> list[schemas.CollectionMethod]:
+        collection_methods = get_ref_types_cache(schemas.RefTypesServiceRegistry.COLLECTION_METHOD)
+        if not collection_methods:
+            collection_methods = self.read_collection_method(request).data or []
+            set_ref_types_cache(schemas.RefTypesServiceRegistry.COLLECTION_METHOD, collection_methods)
+            return collection_methods
+
     def check_collection_method_exists(
         self, model_id: int, request: Request, is_include_deleted: bool = False
     ):
@@ -310,6 +322,7 @@ class CollectionMethodService(CrudService):
         request_object: schemas.CollectionMethodRequest,
         is_restore: bool = False,
     ) -> schemas.CollectionMethodResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.COLLECTION_METHOD, [])
         self.check_collection_method_exists(model_id, request, is_restore)
 
         try:
@@ -337,6 +350,7 @@ class CollectionMethodService(CrudService):
     def delete_collection_method(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CollectionMethodResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.COLLECTION_METHOD, [])
         self.check_collection_method_exists(model_id, request)
 
         try:
@@ -361,6 +375,7 @@ class CaseTypeService(CrudService):
     def create_case_type(
         self, request: Request, request_object: schemas.CaseTypeRequest
     ) -> schemas.CaseTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.CASE_TYPE, [])
         try:
             data_model: models.CaseType = convert_schema_to_model(
                 request_object, models.CaseType
@@ -430,6 +445,16 @@ class CaseTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    def get_case_type(
+        self,
+        request: Request,
+    ) -> list[schemas.CaseType]:
+        case_types = get_ref_types_cache(schemas.RefTypesServiceRegistry.CASE_TYPE)
+        if not case_types:
+            case_types = self.read_case_type(request).data or []
+            set_ref_types_cache(schemas.RefTypesServiceRegistry.CASE_TYPE, case_types)
+            return case_types
+
     def check_case_type_exists(
         self, model_id: int, request: Request, is_include_deleted: bool = False
     ):
@@ -451,6 +476,7 @@ class CaseTypeService(CrudService):
         request_object: schemas.CaseTypeRequest,
         is_restore: bool = False,
     ) -> schemas.CaseTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.CASE_TYPE, [])
         self.check_case_type_exists(model_id, request, is_restore)
 
         try:
@@ -478,6 +504,7 @@ class CaseTypeService(CrudService):
     def delete_case_type(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CaseTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.CASE_TYPE, [])
         self.check_case_type_exists(model_id, request)
 
         try:
@@ -502,6 +529,7 @@ class FilingTypeService(CrudService):
     def create_filing_type(
         self, request: Request, request_object: schemas.FilingTypeRequest
     ) -> schemas.FilingTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.FILING_TYPE, [])
         try:
             data_model: models.FilingType = convert_schema_to_model(
                 request_object, models.FilingType
@@ -573,6 +601,16 @@ class FilingTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    def get_filing_type(
+        self,
+        request: Request,
+    ) -> list[schemas.FilingType]:
+        filing_types = get_ref_types_cache(schemas.RefTypesServiceRegistry.FILING_TYPE)
+        if not filing_types:
+            filing_types = self.read_filing_type(request).data or []
+            set_ref_types_cache(schemas.RefTypesServiceRegistry.FILING_TYPE, filing_types)
+            return filing_types
+
     def check_filing_type_exists(
         self, model_id: int, request: Request, is_include_deleted: bool = False
     ):
@@ -594,6 +632,7 @@ class FilingTypeService(CrudService):
         request_object: schemas.FilingTypeRequest,
         is_restore: bool = False,
     ) -> schemas.FilingTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.FILING_TYPE, [])
         self.check_filing_type_exists(model_id, request, is_restore)
 
         try:
@@ -621,6 +660,7 @@ class FilingTypeService(CrudService):
     def delete_filing_type(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.FilingTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.FILING_TYPE, [])
         self.check_filing_type_exists(model_id, request, is_hard_delete)
 
         try:
@@ -645,6 +685,7 @@ class HearingTypeService(CrudService):
     def create_hearing_type(
         self, request: Request, request_object: schemas.HearingTypeRequest
     ) -> schemas.HearingTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.HEARING_TYPE, [])
         try:
             data_model: models.HearingType = convert_schema_to_model(
                 request_object, models.HearingType
@@ -718,6 +759,16 @@ class HearingTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    def get_hearing_type(
+        self,
+        request: Request,
+    ) -> list[schemas.HearingType]:
+        hearing_types = get_ref_types_cache(schemas.RefTypesServiceRegistry.HEARING_TYPE)
+        if not hearing_types:
+            hearing_types = self.read_hearing_type(request).data or []
+            set_ref_types_cache(schemas.RefTypesServiceRegistry.HEARING_TYPE, hearing_types)
+            return hearing_types
+
     def check_hearing_type_exists(
         self, model_id: int, request: Request, is_include_deleted: bool = False
     ):
@@ -739,6 +790,7 @@ class HearingTypeService(CrudService):
         request_object: schemas.HearingTypeRequest,
         is_restore: bool = False,
     ) -> schemas.HearingTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.HEARING_TYPE, [])
         self.check_hearing_type_exists(model_id, request, is_restore)
 
         try:
@@ -766,6 +818,7 @@ class HearingTypeService(CrudService):
     def delete_hearing_type(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.HearingTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.HEARING_TYPE, [])
         self.check_hearing_type_exists(model_id, request)
 
         try:
@@ -790,6 +843,7 @@ class TaskTypeService(CrudService):
     def create_task_type(
         self, request: Request, request_object: schemas.TaskTypeRequest
     ) -> schemas.TaskTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.TASK_TYPE, [])
         try:
             data_model: models.TaskType = convert_schema_to_model(
                 request_object, models.TaskType
@@ -859,6 +913,16 @@ class TaskTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    def get_task_type(
+        self,
+        request: Request,
+    ) -> list[schemas.TaskType]:
+        task_types = get_ref_types_cache(schemas.RefTypesServiceRegistry.TASK_TYPE)
+        if not task_types:
+            task_types = self.read_task_type(request).data or []
+            set_ref_types_cache(schemas.RefTypesServiceRegistry.TASK_TYPE, task_types)
+            return task_types
+
     def check_task_type_exists(
         self, model_id: int, request: Request, is_include_deleted: bool = False
     ):
@@ -880,6 +944,7 @@ class TaskTypeService(CrudService):
         request_object: schemas.TaskTypeRequest,
         is_restore: bool = False,
     ) -> schemas.TaskTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.TASK_TYPE, [])
         self.check_task_type_exists(model_id, request, is_restore)
 
         try:
@@ -907,6 +972,7 @@ class TaskTypeService(CrudService):
     def delete_task_type(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.TaskTypeResponse:
+        set_ref_types_cache(schemas.RefTypesServiceRegistry.TASK_TYPE, [])
         self.check_task_type_exists(model_id, request)
 
         try:

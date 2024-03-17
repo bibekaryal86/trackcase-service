@@ -11,6 +11,8 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db import models
 from src.trackcase_service.db.crud import CrudService, DataKeys
 from src.trackcase_service.service import schemas
+from src.trackcase_service.utils.cache import get_app_roles_cache, set_app_roles_cache, set_app_permissions_cache, \
+    get_app_permissions_cache
 from src.trackcase_service.utils.commons import (
     decode_email_address,
     encode_auth_credentials,
@@ -388,6 +390,7 @@ class AppRoleService(CrudService):
     def create_app_role(
         self, request: Request, request_object: schemas.AppRoleRequest
     ) -> schemas.AppRoleResponse:
+        set_app_roles_cache([])
         try:
             data_model: models.AppRole = convert_schema_to_model(
                 request_object, models.AppRole
@@ -453,6 +456,16 @@ class AppRoleService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    def get_app_role(
+        self,
+        request: Request,
+    ) -> list[schemas.AppRole]:
+        app_roles = get_app_roles_cache()
+        if not app_roles:
+            app_roles = self.read_app_role(request).data or []
+            set_app_roles_cache(app_roles)
+        return app_roles
+
     def check_app_role_exists(
         self, model_id: int, request: Request, is_include_deleted: bool = False
     ):
@@ -474,6 +487,7 @@ class AppRoleService(CrudService):
         request_object: schemas.AppRoleRequest,
         is_restore: bool = False,
     ) -> schemas.AppRoleResponse:
+        set_app_roles_cache([])
         self.check_app_role_exists(model_id, request, is_restore)
 
         try:
@@ -500,6 +514,7 @@ class AppRoleService(CrudService):
     def delete_app_role(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.AppRoleResponse:
+        set_app_roles_cache([])
         self.check_app_role_exists(model_id, request, is_hard_delete)
 
         try:
@@ -524,6 +539,7 @@ class AppPermissionService(CrudService):
     def create_app_permission(
         self, request: Request, request_object: schemas.AppPermissionRequest
     ) -> schemas.AppPermissionResponse:
+        set_app_permissions_cache([])
         try:
             data_model: models.AppPermission = convert_schema_to_model(
                 request_object, models.AppPermission
@@ -592,6 +608,16 @@ class AppPermissionService(CrudService):
                 ),
                 exc_info=sys.exc_info(),
             )
+
+    def get_app_permission(
+        self,
+        request: Request,
+    ) -> list[schemas.AppPermission]:
+        app_permissions = get_app_permissions_cache()
+        if not app_permissions:
+            app_permissions = self.read_app_permission(request).data or []
+            set_app_permissions_cache(app_permissions)
+        return app_permissions
 
     def check_app_permission_exists(
         self, model_id: int, request: Request, is_include_deleted: bool = False

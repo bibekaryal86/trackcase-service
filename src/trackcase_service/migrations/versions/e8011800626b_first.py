@@ -990,13 +990,104 @@ def upgrade() -> None:
         """INSERT INTO app_role (created, modified, name, description, is_deleted) VALUES (now(), now(), 'STANDARD', 'User does not have access to ref data', False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'can_update_ref_types', 'can update ref types', False)"""  # noqa: E501
+        """INSERT INTO app_role (created, modified, name, description, is_deleted) VALUES (now(), now(), 'GUEST', 'User has view only access, no access to ref data', False)"""     # noqa: E501
+    )
+
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'ref_types_create', 'can add ref_types', False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'can_soft_delete_ref_types', 'can soft delete ref types', False)"""  # noqa: E501
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'ref_types_read', 'can view ref_types', False)"""    # noqa: E501
     )
     op.execute(
-        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'can_hard_delete_ref_types', 'can hard delete ref types', False)"""  # noqa: E501
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'ref_types_update', 'can update ref_types', False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'ref_types_delete', 'can delete ref_types', False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'courts_create', 'can add courts', False)"""     # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'courts_read', 'can view courts', False)"""      # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'courts_update', 'can update courts', False)"""      # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'courts_delete', 'can delete courts', False)"""      # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'judges_create', 'can add judges', False)"""     # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'judges_read', 'can view judges', False)"""      # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'judges_update', 'can update judges', False)"""      # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'judges_delete', 'can delete judges', False)"""      # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'clients_create', 'can add clients', False)"""   # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'clients_read', 'can view clients', False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'clients_update', 'can update clients', False)"""     # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'clients_delete', 'can delete clients', False)"""        # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'court_cases_create', 'can add court_cases', False)"""       # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'court_cases_read', 'can view court_cases', False)"""        # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'court_cases_update', 'can update court_cases', False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'court_cases_delete', 'can delete court_cases', False)"""       # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'filings_create', 'can add filings', False)"""       # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'filings_read', 'can view filings', False)"""        # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'filings_update', 'can update filings', False)"""        # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'filings_delete', 'can delete filings', False)"""        # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'calendars_create', 'can add calendars', False)"""       # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'calendars_read', 'can view calendars', False)"""        # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'calendars_update', 'can update calendars', False)"""        # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'calendars_delete', 'can delete calendars', False)"""        # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'collections_create', 'can add collections', False)"""       # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'collections_read', 'can view collections', False)"""     # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'collections_update', 'can update collections', False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'collections_delete', 'can delete collections', False)"""    # noqa: E501
     )
     # ### end Alembic commands ###
 
