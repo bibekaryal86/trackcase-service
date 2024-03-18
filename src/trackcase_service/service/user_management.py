@@ -23,7 +23,10 @@ from src.trackcase_service.utils.commons import (
     get_err_msg,
     raise_http_exception,
 )
-from src.trackcase_service.utils.constants import STANDARD_USER_ROLE_ID
+from src.trackcase_service.utils.constants import (
+    GUEST_USER_ROLE_ID,
+    STANDARD_USER_ROLE_ID,
+)
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
     convert_schema_to_model,
@@ -254,12 +257,17 @@ class AppUserService(CrudService):
                 schema_class=schemas.AppUser,
             )
 
+            app_role_id_to_assign = (
+                GUEST_USER_ROLE_ID
+                if request_object.is_guest_user
+                else STANDARD_USER_ROLE_ID
+            )
             get_user_management_service(
                 schemas.UserManagementServiceRegistry.APP_USER_ROLE, self.db_session
             ).create_app_user_role(
                 request,
                 schemas.AppUserRoleRequest(
-                    app_user_id=data_model.id, app_role_id=STANDARD_USER_ROLE_ID
+                    app_user_id=data_model.id, app_role_id=app_role_id_to_assign
                 ),
             )
             get_email_service().app_user_validation_email(request, data_model.email)

@@ -167,8 +167,9 @@ class AppUser(AppUserBase, BaseModelSchema):
 
 
 class AppUserRequest(AppUserBase, RequestBase):
-    # Required for insert, Optional for update, enforced in user_management
+    # Password is required for insert, Optional for update
     password: Optional[str] = None
+    is_guest_user: Optional[str] = None
 
 
 class AppUserResponse(ResponseBase):

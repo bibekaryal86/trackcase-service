@@ -75,7 +75,9 @@ def shutdown_app():
 
 def initialize_caches(request: Request, db_session: Session):
     from src.trackcase_service.service.ref_types import get_ref_types_service
-    from src.trackcase_service.service.user_management import get_user_management_service
+    from src.trackcase_service.service.user_management import (
+        get_user_management_service,
+    )
 
     get_ref_types_service(
         schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session

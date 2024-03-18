@@ -104,17 +104,14 @@ class ComponentStatusService(CrudService):
         component_name: schemas.ComponentStatusNames,
         status_type: schemas.ComponentStatusTypes = None,
     ) -> list[schemas.ComponentStatus]:
-        print('in get_component_status')
         component_statuses = get_ref_types_cache(
             schemas.RefTypesServiceRegistry.COMPONENT_STATUS
         )
         if not component_statuses:
-            print('no component_statuses')
             component_statuses = self.read_component_status(request).data or []
             set_ref_types_cache(
                 schemas.RefTypesServiceRegistry.COMPONENT_STATUS, component_statuses
             )
-        print('yes component_statuses')
         component_name_statuses = [
             component_status
             for component_status in component_statuses
