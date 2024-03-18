@@ -11,8 +11,12 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db import models
 from src.trackcase_service.db.crud import CrudService, DataKeys
 from src.trackcase_service.service import schemas
-from src.trackcase_service.utils.cache import get_app_roles_cache, set_app_roles_cache, set_app_permissions_cache, \
-    get_app_permissions_cache
+from src.trackcase_service.utils.cache import (
+    get_app_permissions_cache,
+    get_app_roles_cache,
+    set_app_permissions_cache,
+    set_app_roles_cache,
+)
 from src.trackcase_service.utils.commons import (
     decode_email_address,
     encode_auth_credentials,

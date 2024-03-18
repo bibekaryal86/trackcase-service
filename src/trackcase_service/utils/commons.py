@@ -11,11 +11,13 @@ from fastapi import HTTPException, Query, Request
 from fastapi.security import HTTPAuthorizationCredentials
 from jwt import PyJWTError
 from pydantic import ValidationError
+from sqlalchemy.orm import Session
 
 import src.trackcase_service.service.schemas as schemas
 import src.trackcase_service.utils.constants as constants
 import src.trackcase_service.utils.logger as logger
 from src.trackcase_service.db.crud import DataKeys
+from src.trackcase_service.db.session import SessionLocal
 
 log = logger.Logger(logging.getLogger(__name__))
 
@@ -60,10 +62,59 @@ def validate_input():
 
 def startup_app():
     log.info("App Starting...")
+    # initialize caches
+    request = Request(scope={"type": "http"})
+    db_session: Session = SessionLocal()
+    initialize_caches(request, db_session)
+    db_session.close()
 
 
 def shutdown_app():
     log.info("App Shutting Down...")
+
+
+def initialize_caches(request: Request, db_session: Session):
+    from src.trackcase_service.service.ref_types import get_ref_types_service
+    from src.trackcase_service.service.user_management import get_user_management_service
+
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+    ).get_component_status(
+        request=request, component_name=schemas.ComponentStatusNames.APP_USER
+    )
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
+    ).get_collection_method(request)
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
+    ).get_case_type(request)
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
+    ).get_filing_type(request)
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
+    ).get_hearing_type(request)
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
+    ).get_task_type(request)
+    get_user_management_service(
+        schemas.UserManagementServiceRegistry.APP_ROLE, db_session
+    ).get_app_role(request)
+    get_user_management_service(
+        schemas.UserManagementServiceRegistry.APP_PERMISSION, db_session
+    ).get_app_permission(request)
+
+
+# def reset_caches():
+#     from src.trackcase_service.utils import cache
+#     cache.COMPONENT_STATUSES_CACHE.clear()
+#     cache.COLLECTION_METHODS_CACHE.clear()
+#     cache.CASE_TYPES_CACHE.clear()
+#     cache.FILING_TYPES_CACHE.clear()
+#     cache.HEARING_TYPES_CACHE.clear()
+#     cache.TASK_TYPES_CACHE.clear()
+#     cache.APP_ROLES_CACHE.clear()
+#     cache.APP_PERMISSIONS_CACHE.clear()
 
 
 def get_err_msg(msg: str, err_msg: str = ""):

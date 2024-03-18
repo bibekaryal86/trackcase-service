@@ -9,10 +9,7 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.db import models
 from src.trackcase_service.db.crud import CrudService, DataKeys
 from src.trackcase_service.service import schemas
-from src.trackcase_service.utils.cache import (
-    get_ref_types_cache,
-    set_ref_types_cache,
-)
+from src.trackcase_service.utils.cache import get_ref_types_cache, set_ref_types_cache
 from src.trackcase_service.utils.commons import get_err_msg, raise_http_exception
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
@@ -107,10 +104,17 @@ class ComponentStatusService(CrudService):
         component_name: schemas.ComponentStatusNames,
         status_type: schemas.ComponentStatusTypes = None,
     ) -> list[schemas.ComponentStatus]:
-        component_statuses = get_ref_types_cache(schemas.RefTypesServiceRegistry.COMPONENT_STATUS)
+        print('in get_component_status')
+        component_statuses = get_ref_types_cache(
+            schemas.RefTypesServiceRegistry.COMPONENT_STATUS
+        )
         if not component_statuses:
+            print('no component_statuses')
             component_statuses = self.read_component_status(request).data or []
-            set_ref_types_cache(schemas.RefTypesServiceRegistry.COMPONENT_STATUS, component_statuses)
+            set_ref_types_cache(
+                schemas.RefTypesServiceRegistry.COMPONENT_STATUS, component_statuses
+            )
+        print('yes component_statuses')
         component_name_statuses = [
             component_status
             for component_status in component_statuses
@@ -293,10 +297,14 @@ class CollectionMethodService(CrudService):
         self,
         request: Request,
     ) -> list[schemas.CollectionMethod]:
-        collection_methods = get_ref_types_cache(schemas.RefTypesServiceRegistry.COLLECTION_METHOD)
+        collection_methods = get_ref_types_cache(
+            schemas.RefTypesServiceRegistry.COLLECTION_METHOD
+        )
         if not collection_methods:
             collection_methods = self.read_collection_method(request).data or []
-            set_ref_types_cache(schemas.RefTypesServiceRegistry.COLLECTION_METHOD, collection_methods)
+            set_ref_types_cache(
+                schemas.RefTypesServiceRegistry.COLLECTION_METHOD, collection_methods
+            )
             return collection_methods
 
     def check_collection_method_exists(
@@ -608,7 +616,9 @@ class FilingTypeService(CrudService):
         filing_types = get_ref_types_cache(schemas.RefTypesServiceRegistry.FILING_TYPE)
         if not filing_types:
             filing_types = self.read_filing_type(request).data or []
-            set_ref_types_cache(schemas.RefTypesServiceRegistry.FILING_TYPE, filing_types)
+            set_ref_types_cache(
+                schemas.RefTypesServiceRegistry.FILING_TYPE, filing_types
+            )
             return filing_types
 
     def check_filing_type_exists(
@@ -763,10 +773,14 @@ class HearingTypeService(CrudService):
         self,
         request: Request,
     ) -> list[schemas.HearingType]:
-        hearing_types = get_ref_types_cache(schemas.RefTypesServiceRegistry.HEARING_TYPE)
+        hearing_types = get_ref_types_cache(
+            schemas.RefTypesServiceRegistry.HEARING_TYPE
+        )
         if not hearing_types:
             hearing_types = self.read_hearing_type(request).data or []
-            set_ref_types_cache(schemas.RefTypesServiceRegistry.HEARING_TYPE, hearing_types)
+            set_ref_types_cache(
+                schemas.RefTypesServiceRegistry.HEARING_TYPE, hearing_types
+            )
             return hearing_types
 
     def check_hearing_type_exists(
