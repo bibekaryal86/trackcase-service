@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import sys
+from functools import wraps
 from typing import Optional
 
 import jwt
@@ -60,24 +61,24 @@ def validate_input():
         )
 
 
-def startup_app():
+async def startup_app():
     log.info("App Starting...")
     # initialize caches
-    request = Request(scope={"type": "http"})
-    db_session: Session = SessionLocal()
-    initialize_caches(request, db_session)
-    db_session.close()
+    await initialize_caches()
 
 
 def shutdown_app():
     log.info("App Shutting Down...")
 
 
-def initialize_caches(request: Request, db_session: Session):
+async def initialize_caches():
     from src.trackcase_service.service.ref_types import get_ref_types_service
     from src.trackcase_service.service.user_management import (
         get_user_management_service,
     )
+
+    request = Request(scope={"type": "http"})
+    db_session: Session = SessionLocal()
 
     get_ref_types_service(
         schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
@@ -105,6 +106,8 @@ def initialize_caches(request: Request, db_session: Session):
     get_user_management_service(
         schemas.UserManagementServiceRegistry.APP_PERMISSION, db_session
     ).get_app_permission(request)
+    db_session.close()
+    await request.close()
 
 
 # def reset_caches():
@@ -266,6 +269,51 @@ def decode_auth_credentials(
             get_err_msg("Invalid Credentials", str(ex)),
             exc_info=sys.exc_info(),
         )
+
+
+def has_permission(permission_name: str, request: Request):
+    user_details = getattr(request.state, "user_details", None)
+    if user_details is None:
+        return False
+
+    for role in user_details.get("roles", []):
+        if role.get("name") == "SUPERUSER":
+            return True
+        else:
+            permissions = role.get("permissions", [])
+            for permission in permissions:
+                if permission.get("name") == permission_name:
+                    return True
+
+    return False
+
+
+def check_permissions(permission_name: str):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            request = None
+            for arg in args:
+                if isinstance(arg, Request):
+                    request = arg
+                    break
+            if not request:
+                raise_http_exception(
+                    request=Request(scope={"type": "http"}),
+                    sts_code=http.HTTPStatus.FORBIDDEN,
+                    error="Request object not found...",
+                )
+            if not has_permission(permission_name, request):
+                raise_http_exception(
+                    request=request,
+                    sts_code=http.HTTPStatus.FORBIDDEN,
+                    error="Insufficient permissions...",
+                )
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 def read_file(file_name):

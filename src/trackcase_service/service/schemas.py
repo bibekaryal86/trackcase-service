@@ -163,9 +163,14 @@ class AppUser(AppUserBase, BaseModelSchema):
             "roles": [
                 {
                     "name": role.name,
-                    "permissions": [
-                        {"name": permission.name} for permission in role.app_permissions if role.app_permissions
-                    ],
+                    "permissions": (
+                        [
+                            {"name": permission.name}
+                            for permission in role.app_permissions
+                        ]
+                        if role.app_permissions
+                        else []
+                    ),
                 }
                 for role in self.app_roles
             ],
@@ -325,12 +330,12 @@ class CaseTypeResponse(ResponseBase):
 
 # common ref types
 class RefTypesResponseData(BaseSchema):
-    component_statuses: list[ComponentStatus] = []
-    collection_methods: list[CollectionMethod] = []
-    case_types: list[CaseType] = []
-    filing_types: list[FilingType] = []
-    hearing_types: list[HearingType] = []
-    task_types: list[TaskType] = []
+    component_statuses: Optional[ComponentStatusResponse] = None
+    collection_methods: Optional[CollectionMethodResponse] = None
+    case_types: Optional[CaseTypeResponse] = None
+    filing_types: Optional[FilingTypeResponse] = None
+    hearing_types: Optional[HearingTypeResponse] = None
+    task_types: Optional[TaskTypeResponse] = None
 
 
 class RefTypesResponse(ResponseBase):
