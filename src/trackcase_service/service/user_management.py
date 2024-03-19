@@ -284,16 +284,16 @@ class AppUserService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppUserResponse:
         try:
-            if metadata is not None and metadata.model_id is not None:
+            if metadata is not None and metadata.schema_model_id is not None:
                 read_response = self.read(
-                    model_id=metadata.model_id,
+                    model_id=metadata.schema_model_id,
                     is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_user_management_response(
                     read_response,
                     True,
                     request,
-                    metadata.model_id,
+                    metadata.schema_model_id,
                     schemas.AppUser,
                     schemas.AppUserResponse,
                 )
@@ -425,16 +425,16 @@ class AppRoleService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppRoleResponse:
         try:
-            if metadata is not None and metadata.model_id is not None:
+            if metadata is not None and metadata.schema_model_id is not None:
                 read_response = self.read(
-                    model_id=metadata.model_id,
+                    model_id=metadata.schema_model_id,
                     is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_user_management_response(
                     read_response,
                     True,
                     request,
-                    metadata.model_id,
+                    metadata.schema_model_id,
                     schemas.AppRole,
                     schemas.AppRoleResponse,
                 )
@@ -576,16 +576,16 @@ class AppPermissionService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppPermissionResponse:
         try:
-            if metadata is not None and metadata.model_id is not None:
+            if metadata is not None and metadata.schema_model_id is not None:
                 read_response = self.read(
-                    model_id=metadata.model_id,
+                    model_id=metadata.schema_model_id,
                     is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_user_management_response(
                     read_response,
                     True,
                     request,
-                    metadata.model_id,
+                    metadata.schema_model_id,
                     schemas.AppPermission,
                     schemas.AppPermissionResponse,
                 )
@@ -726,16 +726,16 @@ class AppUserRoleService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppUserRoleResponse:
         try:
-            if metadata is not None and metadata.model_id is not None:
+            if metadata is not None and metadata.schema_model_id is not None:
                 read_response = self.read(
-                    model_id=metadata.model_id,
+                    model_id=metadata.schema_model_id,
                     is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_user_management_response(
                     read_response,
                     True,
                     request,
-                    metadata.model_id,
+                    metadata.schema_model_id,
                     schemas.AppUserRole,
                     schemas.AppUserRoleResponse,
                 )
@@ -870,16 +870,16 @@ class AppRolePermissionService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppRolePermissionResponse:
         try:
-            if metadata is not None and metadata.model_id is not None:
+            if metadata is not None and metadata.schema_model_id is not None:
                 read_response = self.read(
-                    model_id=metadata.model_id,
+                    model_id=metadata.schema_model_id,
                     is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_user_management_response(
                     read_response,
                     True,
                     request,
-                    metadata.model_id,
+                    metadata.schema_model_id,
                     schemas.AppRolePermission,
                     schemas.AppRolePermissionResponse,
                 )

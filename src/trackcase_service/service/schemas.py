@@ -26,7 +26,7 @@ class FilterConfig(BaseSchema):
 
 
 class RequestMetadata(BaseSchema):
-    model_id: Optional[int] = None
+    schema_model_id: Optional[int] = None
     sort_config: Optional[SortConfig] = None
     filter_config: list[FilterConfig] = []
     page_number: Optional[int] = 1
@@ -161,7 +161,13 @@ class AppUser(AppUserBase, BaseModelSchema):
                 ),
             },
             "roles": [
-                {"name": role.id, "description": role.name} for role in self.app_roles
+                {
+                    "name": role.name,
+                    "permissions": [
+                        {"name": permission.name} for permission in role.app_permissions if role.app_permissions
+                    ],
+                }
+                for role in self.app_roles
             ],
         }
 

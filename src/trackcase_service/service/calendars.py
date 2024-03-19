@@ -76,9 +76,9 @@ class HearingCalendarService(CrudService):
     ) -> schemas.HearingCalendarResponse:
         try:
             if request_metadata:
-                if request_metadata.model_id:
+                if request_metadata.schema_model_id:
                     read_response = self.read(
-                        model_id=request_metadata.model_id,
+                        model_id=request_metadata.schema_model_id,
                         is_include_soft_deleted=request_metadata.is_include_deleted,
                     )
                     response_data, response_metadata = get_read_response_data_metadata(
@@ -88,7 +88,7 @@ class HearingCalendarService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Hearing Calendar Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
+                            f"Hearing Calendar Not Found By Id: {request_metadata.schema_model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(
@@ -360,9 +360,9 @@ class TaskCalendarService(CrudService):
     ) -> schemas.TaskCalendarResponse:
         try:
             if request_metadata:
-                if request_metadata.model_id:
+                if request_metadata.schema_model_id:
                     read_response = self.read(
-                        model_id=request_metadata.model_id,
+                        model_id=request_metadata.schema_model_id,
                         is_include_soft_deleted=request_metadata.is_include_deleted,
                     )
                     response_data, response_metadata = get_read_response_data_metadata(
@@ -372,7 +372,7 @@ class TaskCalendarService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Task Calendar Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
+                            f"Task Calendar Not Found By Id: {request_metadata.schema_model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(

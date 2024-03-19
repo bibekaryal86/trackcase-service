@@ -53,16 +53,16 @@ class ComponentStatusService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.ComponentStatusResponse:
         try:
-            if metadata is not None and metadata.model_id is not None:
+            if metadata is not None and metadata.schema_model_id is not None:
                 read_response = self.read(
-                    model_id=metadata.model_id,
+                    model_id=metadata.schema_model_id,
                     is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.model_id,
+                    metadata.schema_model_id,
                     schemas.ComponentStatus,
                     schemas.ComponentStatusResponse,
                 )
@@ -242,16 +242,16 @@ class CollectionMethodService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.CollectionMethodResponse:
         try:
-            if metadata is not None and metadata.model_id is not None:
+            if metadata is not None and metadata.schema_model_id is not None:
                 read_response = self.read(
-                    model_id=metadata.model_id,
+                    model_id=metadata.schema_model_id,
                     is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.model_id,
+                    metadata.schema_model_id,
                     schemas.CollectionMethod,
                     schemas.CollectionMethodResponse,
                     exclusions=["cash_collections", "history_cash_collections"],
@@ -404,16 +404,16 @@ class CaseTypeService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.CaseTypeResponse:
         try:
-            if metadata is not None and metadata.model_id is not None:
+            if metadata is not None and metadata.schema_model_id is not None:
                 read_response = self.read(
-                    model_id=metadata.model_id,
+                    model_id=metadata.schema_model_id,
                     is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.model_id,
+                    metadata.schema_model_id,
                     schemas.CaseType,
                     schemas.CaseTypeResponse,
                     exclusions=["court_cases", "history_court_cases"],
@@ -558,16 +558,16 @@ class FilingTypeService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.FilingTypeResponse:
         try:
-            if metadata is not None and metadata.model_id is not None:
+            if metadata is not None and metadata.schema_model_id is not None:
                 read_response = self.read(
-                    model_id=metadata.model_id,
+                    model_id=metadata.schema_model_id,
                     is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.model_id,
+                    metadata.schema_model_id,
                     schemas.FilingType,
                     schemas.FilingTypeResponse,
                     exclusions=["filings", "history_filings"],
@@ -718,16 +718,16 @@ class HearingTypeService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.HearingTypeResponse:
         try:
-            if metadata is not None and metadata.model_id is not None:
+            if metadata is not None and metadata.schema_model_id is not None:
                 read_response = self.read(
-                    model_id=metadata.model_id,
+                    model_id=metadata.schema_model_id,
                     is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.model_id,
+                    metadata.schema_model_id,
                     schemas.HearingType,
                     schemas.HearingTypeResponse,
                     exclusions=["hearing_calendars", "history_hearing_calendars"],
@@ -878,16 +878,16 @@ class TaskTypeService(CrudService):
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.TaskTypeResponse:
         try:
-            if metadata is not None and metadata.model_id is not None:
+            if metadata is not None and metadata.schema_model_id is not None:
                 read_response = self.read(
-                    model_id=metadata.model_id,
+                    model_id=metadata.schema_model_id,
                     is_include_soft_deleted=metadata.is_include_deleted,
                 )
                 return get_ref_types_response(
                     read_response,
                     True,
                     request,
-                    metadata.model_id,
+                    metadata.schema_model_id,
                     schemas.TaskType,
                     schemas.TaskTypeResponse,
                     exclusions=["task_calendars", "history_task_calendars"],

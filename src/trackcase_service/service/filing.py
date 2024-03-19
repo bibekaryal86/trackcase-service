@@ -66,9 +66,9 @@ class FilingService(CrudService):
     ) -> schemas.FilingResponse:
         try:
             if request_metadata:
-                if request_metadata.model_id:
+                if request_metadata.schema_model_id:
                     read_response = self.read(
-                        model_id=request_metadata.model_id,
+                        model_id=request_metadata.schema_model_id,
                         is_include_soft_deleted=request_metadata.is_include_deleted,
                     )
                     response_data, response_metadata = get_read_response_data_metadata(
@@ -78,7 +78,7 @@ class FilingService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Filing Not Found By Id: {request_metadata.model_id}!!!",
+                            f"Filing Not Found By Id: {request_metadata.schema_model_id}!!!",
                         )
                 else:
                     read_response = self.read(
