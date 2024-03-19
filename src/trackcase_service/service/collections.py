@@ -12,6 +12,7 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils.commons import (
     check_active_component_status,
+    check_permissions,
     get_err_msg,
     get_read_response_data_metadata,
     raise_http_exception,
@@ -26,6 +27,7 @@ class CaseCollectionService(CrudService):
     def __init__(self, db_session: Session):
         super(CaseCollectionService, self).__init__(db_session, models.CaseCollection)
 
+    @check_permissions("collections_create")
     def create_case_collection(
         self, request: Request, request_object: schemas.CaseCollectionRequest
     ) -> schemas.CaseCollectionResponse:
@@ -64,6 +66,7 @@ class CaseCollectionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("collections_read")
     def read_case_collection(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.CaseCollectionResponse:
@@ -133,6 +136,7 @@ class CaseCollectionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("collections_update")
     def update_case_collection(
         self,
         model_id: int,
@@ -183,6 +187,7 @@ class CaseCollectionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("collections_delete")
     def delete_case_collection(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CaseCollectionResponse:
@@ -284,6 +289,7 @@ class CashCollectionService(CrudService):
     def __init__(self, db_session: Session):
         super(CashCollectionService, self).__init__(db_session, models.CashCollection)
 
+    @check_permissions("collections_create")
     def create_cash_collection(
         self, request: Request, request_object: schemas.CashCollectionRequest
     ) -> schemas.CashCollectionResponse:
@@ -320,6 +326,7 @@ class CashCollectionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("collections_read")
     def read_cash_collection(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.CashCollectionResponse:
@@ -386,6 +393,7 @@ class CashCollectionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("collections_update")
     def update_cash_collection(
         self,
         model_id: int,
@@ -429,6 +437,7 @@ class CashCollectionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("collections_delete")
     def delete_cash_collection(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CashCollectionResponse:

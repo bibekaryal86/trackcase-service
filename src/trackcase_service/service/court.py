@@ -11,6 +11,7 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils.commons import (
     check_active_component_status,
+    check_permissions,
     get_err_msg,
     get_read_response_data_metadata,
     raise_http_exception,
@@ -25,6 +26,7 @@ class CourtService(CrudService):
     def __init__(self, db_session: Session):
         super(CourtService, self).__init__(db_session, models.Court)
 
+    @check_permissions("courts_create")
     def create_court(
         self, request: Request, request_object: schemas.CourtRequest
     ) -> schemas.CourtResponse:
@@ -61,6 +63,7 @@ class CourtService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("courts_read")
     def read_court(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.CourtResponse:
@@ -126,6 +129,7 @@ class CourtService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("courts_update")
     def update_court(
         self,
         model_id: int,
@@ -174,6 +178,7 @@ class CourtService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("courts_delete")
     def delete_court(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CourtResponse:

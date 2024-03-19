@@ -11,6 +11,7 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils.commons import (
     check_active_component_status,
+    check_permissions,
     get_err_msg,
     get_read_response_data_metadata,
     raise_http_exception,
@@ -25,6 +26,7 @@ class FilingService(CrudService):
     def __init__(self, db_session: Session):
         super(FilingService, self).__init__(db_session, models.Filing)
 
+    @check_permissions("filings_create")
     def create_filing(
         self, request: Request, request_object: schemas.FilingRequest
     ) -> schemas.FilingResponse:
@@ -61,6 +63,7 @@ class FilingService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("filings_read")
     def read_filing(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.FilingResponse:
@@ -128,6 +131,7 @@ class FilingService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("filings_update")
     def update_filing(
         self,
         model_id: int,
@@ -176,6 +180,7 @@ class FilingService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("filings_delete")
     def delete_filing(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.FilingResponse:

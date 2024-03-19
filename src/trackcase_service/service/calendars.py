@@ -13,6 +13,7 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils.commons import (
     check_active_component_status,
+    check_permissions,
     get_err_msg,
     get_read_response_data_metadata,
     raise_http_exception,
@@ -32,6 +33,7 @@ class HearingCalendarService(CrudService):
     def __init__(self, db_session: Session):
         super(HearingCalendarService, self).__init__(db_session, models.HearingCalendar)
 
+    @check_permissions("calendars_create")
     def create_hearing_calendar(
         self, request: Request, request_object: schemas.HearingCalendarRequest
     ) -> schemas.HearingCalendarResponse:
@@ -71,6 +73,7 @@ class HearingCalendarService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("calendars_read")
     def read_hearing_calendar(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.HearingCalendarResponse:
@@ -140,6 +143,7 @@ class HearingCalendarService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("calendars_update")
     def update_hearing_calendar(
         self,
         model_id: int,
@@ -190,6 +194,7 @@ class HearingCalendarService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("calendars_delete")
     def delete_hearing_calendar(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.HearingCalendarResponse:
@@ -319,6 +324,7 @@ class TaskCalendarService(CrudService):
     def __init__(self, db_session: Session):
         super(TaskCalendarService, self).__init__(db_session, models.TaskCalendar)
 
+    @check_permissions("calendars_create")
     def create_task_calendar(
         self, request: Request, request_object: schemas.TaskCalendarRequest
     ) -> schemas.TaskCalendarResponse:
@@ -355,6 +361,7 @@ class TaskCalendarService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("calendars_read")
     def read_task_calendar(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.TaskCalendarResponse:
@@ -421,6 +428,7 @@ class TaskCalendarService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("calendars_update")
     def update_task_calendar(
         self,
         model_id: int,
@@ -464,6 +472,7 @@ class TaskCalendarService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("calendars_delete")
     def delete_task_calendar(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.TaskCalendarResponse:

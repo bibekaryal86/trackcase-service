@@ -11,6 +11,7 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils.commons import (
     check_active_component_status,
+    check_permissions,
     get_err_msg,
     get_read_response_data_metadata,
     raise_http_exception,
@@ -25,6 +26,7 @@ class JudgeService(CrudService):
     def __init__(self, db_session: Session):
         super(JudgeService, self).__init__(db_session, models.Judge)
 
+    @check_permissions("judges_create")
     def create_judge(
         self, request: Request, request_object: schemas.JudgeRequest
     ) -> schemas.JudgeResponse:
@@ -61,6 +63,7 @@ class JudgeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("judges_read")
     def read_judge(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.JudgeResponse:
@@ -126,6 +129,7 @@ class JudgeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("judges_update")
     def update_judge(
         self,
         model_id: int,
@@ -174,6 +178,7 @@ class JudgeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("judges_delete")
     def delete_judge(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.JudgeResponse:

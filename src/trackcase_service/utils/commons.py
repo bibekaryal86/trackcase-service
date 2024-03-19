@@ -78,6 +78,7 @@ async def initialize_caches():
     )
 
     request = Request(scope={"type": "http"})
+    request.state.user_details = {"roles": [{"name": "SUPERUSER"}]}
     db_session: Session = SessionLocal()
 
     get_ref_types_service(

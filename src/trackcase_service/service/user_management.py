@@ -18,6 +18,7 @@ from src.trackcase_service.utils.cache import (
     set_app_roles_cache,
 )
 from src.trackcase_service.utils.commons import (
+    check_permissions,
     decode_email_address,
     encode_auth_credentials,
     get_err_msg,
@@ -280,6 +281,7 @@ class AppUserService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("app_users_read")
     def read_app_user(
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppUserResponse:
@@ -341,6 +343,7 @@ class AppUserService(CrudService):
                 f"AppUser Not Found By Id: {model_id}!!!",
             )
 
+    @check_permissions("app_users_update")
     def update_app_user(
         self,
         model_id: int,
@@ -375,6 +378,7 @@ class AppUserService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("app_users_delete")
     def delete_app_user(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.AppUserResponse:
@@ -399,6 +403,7 @@ class AppRoleService(CrudService):
     def __init__(self, db_session: Session):
         super(AppRoleService, self).__init__(db_session, models.AppRole)
 
+    @check_permissions("app_roles_create")
     def create_app_role(
         self, request: Request, request_object: schemas.AppRoleRequest
     ) -> schemas.AppRoleResponse:
@@ -421,6 +426,7 @@ class AppRoleService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("app_roles_read")
     def read_app_role(
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppRoleResponse:
@@ -492,6 +498,7 @@ class AppRoleService(CrudService):
                 f"AppRole Not Found By Id: {model_id}!!!",
             )
 
+    @check_permissions("app_roles_update")
     def update_app_role(
         self,
         model_id: int,
@@ -523,6 +530,7 @@ class AppRoleService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("app_roles_delete")
     def delete_app_role(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.AppRoleResponse:
@@ -548,6 +556,7 @@ class AppPermissionService(CrudService):
     def __init__(self, db_session: Session):
         super(AppPermissionService, self).__init__(db_session, models.AppPermission)
 
+    @check_permissions("app_permissions_create")
     def create_app_permission(
         self, request: Request, request_object: schemas.AppPermissionRequest
     ) -> schemas.AppPermissionResponse:
@@ -572,6 +581,7 @@ class AppPermissionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("app_permissions_read")
     def read_app_permission(
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppPermissionResponse:
@@ -645,6 +655,7 @@ class AppPermissionService(CrudService):
                 f"AppPermission Not Found By Id: {model_id}!!!",
             )
 
+    @check_permissions("app_permissions_update")
     def update_app_permission(
         self,
         model_id: int,
@@ -675,6 +686,7 @@ class AppPermissionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("app_permissions_delete")
     def delete_app_permission(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.AppPermissionResponse:
@@ -699,6 +711,7 @@ class AppUserRoleService(CrudService):
     def __init__(self, db_session: Session):
         super(AppUserRoleService, self).__init__(db_session, models.AppUserRole)
 
+    @check_permissions("app_users_roles_create")
     def create_app_user_role(
         self, request: Request, request_object: schemas.AppUserRoleRequest
     ) -> schemas.AppUserRoleResponse:
@@ -722,6 +735,7 @@ class AppUserRoleService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("app_users_roles_read")
     def read_app_user_role(
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppUserRoleResponse:
@@ -785,6 +799,7 @@ class AppUserRoleService(CrudService):
                 f"AppUserRole Not Found By Id: {model_id}!!!",
             )
 
+    @check_permissions("app_users_roles_update")
     def update_app_user_role(
         self,
         model_id: int,
@@ -815,6 +830,7 @@ class AppUserRoleService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("app_users_roles_delete")
     def delete_app_user_role(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.AppUserRoleResponse:
@@ -841,6 +857,7 @@ class AppRolePermissionService(CrudService):
             db_session, models.AppRolePermission
         )
 
+    @check_permissions("app_roles_permissions_create")
     def create_app_role_permission(
         self, request: Request, request_object: schemas.AppRolePermissionRequest
     ) -> schemas.AppRolePermissionResponse:
@@ -866,6 +883,7 @@ class AppRolePermissionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("app_roles_permissions_read")
     def read_app_role_permission(
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.AppRolePermissionResponse:
@@ -931,6 +949,7 @@ class AppRolePermissionService(CrudService):
                 f"AppRolePermission Not Found By Id: {model_id}!!!",
             )
 
+    @check_permissions("app_roles_permissions_update")
     def update_app_role_permission(
         self,
         model_id: int,
@@ -963,6 +982,7 @@ class AppRolePermissionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("app_roles_permissions_delete")
     def delete_app_role_permission(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.AppRolePermissionResponse:
