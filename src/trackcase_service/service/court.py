@@ -26,7 +26,7 @@ class CourtService(CrudService):
     def __init__(self, db_session: Session):
         super(CourtService, self).__init__(db_session, models.Court)
 
-    @check_permissions("courts_create")
+    @check_permissions("COURTS_CREATE")
     def create_court(
         self, request: Request, request_object: schemas.CourtRequest
     ) -> schemas.CourtResponse:
@@ -63,7 +63,7 @@ class CourtService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("courts_read")
+    @check_permissions("COURTS_READ")
     def read_court(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.CourtResponse:
@@ -129,7 +129,7 @@ class CourtService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("courts_update")
+    @check_permissions("COURTS_UPDATE")
     def update_court(
         self,
         model_id: int,
@@ -178,7 +178,7 @@ class CourtService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("courts_delete")
+    @check_permissions("COURTS_DELETE")
     def delete_court(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CourtResponse:

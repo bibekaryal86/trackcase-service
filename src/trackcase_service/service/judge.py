@@ -26,7 +26,7 @@ class JudgeService(CrudService):
     def __init__(self, db_session: Session):
         super(JudgeService, self).__init__(db_session, models.Judge)
 
-    @check_permissions("judges_create")
+    @check_permissions("JUDGES_CREATE")
     def create_judge(
         self, request: Request, request_object: schemas.JudgeRequest
     ) -> schemas.JudgeResponse:
@@ -63,7 +63,7 @@ class JudgeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("judges_read")
+    @check_permissions("JUDGES_READ")
     def read_judge(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.JudgeResponse:
@@ -129,7 +129,7 @@ class JudgeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("judges_update")
+    @check_permissions("JUDGES_UPDATE")
     def update_judge(
         self,
         model_id: int,
@@ -178,7 +178,7 @@ class JudgeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("judges_delete")
+    @check_permissions("JUDGES_DELETE")
     def delete_judge(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.JudgeResponse:

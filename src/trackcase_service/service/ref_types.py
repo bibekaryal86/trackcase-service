@@ -28,7 +28,7 @@ class ComponentStatusService(CrudService):
     def __init__(self, db_session: Session):
         super(ComponentStatusService, self).__init__(db_session, models.ComponentStatus)
 
-    @check_permissions("ref_types_create")
+    @check_permissions("REF_TYPES_CREATE")
     def create_component_status(
         self, request: Request, request_object: schemas.ComponentStatusRequest
     ) -> schemas.ComponentStatusResponse:
@@ -54,7 +54,7 @@ class ComponentStatusService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_read")
+    @check_permissions("REF_TYPES_READ")
     def read_component_status(
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.ComponentStatusResponse:
@@ -161,7 +161,7 @@ class ComponentStatusService(CrudService):
                 f"ComponentStatus Not Found By Id: {model_id}!!!",
             )
 
-    @check_permissions("ref_types_update")
+    @check_permissions("REF_TYPES_UPDATE")
     def update_component_status(
         self,
         model_id: int,
@@ -193,7 +193,7 @@ class ComponentStatusService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_delete")
+    @check_permissions("REF_TYPES_DELETE")
     def delete_component_status(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.ComponentStatusResponse:
@@ -221,7 +221,7 @@ class CollectionMethodService(CrudService):
             db_session, models.CollectionMethod
         )
 
-    @check_permissions("ref_types_create")
+    @check_permissions("REF_TYPES_CREATE")
     def create_collection_method(
         self, request: Request, request_object: schemas.CollectionMethodRequest
     ) -> schemas.CollectionMethodResponse:
@@ -247,7 +247,7 @@ class CollectionMethodService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_read")
+    @check_permissions("REF_TYPES_READ")
     def read_collection_method(
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.CollectionMethodResponse:
@@ -330,7 +330,7 @@ class CollectionMethodService(CrudService):
                 f"CollectionMethod Not Found By Id: {model_id}!!!",
             )
 
-    @check_permissions("ref_types_update")
+    @check_permissions("REF_TYPES_UPDATE")
     def update_collection_method(
         self,
         model_id: int,
@@ -363,7 +363,7 @@ class CollectionMethodService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_delete")
+    @check_permissions("REF_TYPES_DELETE")
     def delete_collection_method(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CollectionMethodResponse:
@@ -389,7 +389,7 @@ class CaseTypeService(CrudService):
     def __init__(self, db_session: Session):
         super(CaseTypeService, self).__init__(db_session, models.CaseType)
 
-    @check_permissions("ref_types_create")
+    @check_permissions("REF_TYPES_CREATE")
     def create_case_type(
         self, request: Request, request_object: schemas.CaseTypeRequest
     ) -> schemas.CaseTypeResponse:
@@ -413,7 +413,7 @@ class CaseTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_read")
+    @check_permissions("REF_TYPES_READ")
     def read_case_type(
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.CaseTypeResponse:
@@ -488,7 +488,7 @@ class CaseTypeService(CrudService):
                 f"CaseType Not Found By Id: {model_id}!!!",
             )
 
-    @check_permissions("ref_types_update")
+    @check_permissions("REF_TYPES_UPDATE")
     def update_case_type(
         self,
         model_id: int,
@@ -521,7 +521,7 @@ class CaseTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_delete")
+    @check_permissions("REF_TYPES_DELETE")
     def delete_case_type(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CaseTypeResponse:
@@ -547,7 +547,7 @@ class FilingTypeService(CrudService):
     def __init__(self, db_session: Session):
         super(FilingTypeService, self).__init__(db_session, models.FilingType)
 
-    @check_permissions("ref_types_create")
+    @check_permissions("REF_TYPES_CREATE")
     def create_filing_type(
         self, request: Request, request_object: schemas.FilingTypeRequest
     ) -> schemas.FilingTypeResponse:
@@ -571,7 +571,7 @@ class FilingTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_read")
+    @check_permissions("REF_TYPES_READ")
     def read_filing_type(
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.FilingTypeResponse:
@@ -650,7 +650,7 @@ class FilingTypeService(CrudService):
                 f"FilingType Not Found By Id: {model_id}!!!",
             )
 
-    @check_permissions("ref_types_update")
+    @check_permissions("REF_TYPES_UPDATE")
     def update_filing_type(
         self,
         model_id: int,
@@ -683,7 +683,7 @@ class FilingTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_delete")
+    @check_permissions("REF_TYPES_DELETE")
     def delete_filing_type(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.FilingTypeResponse:
@@ -709,7 +709,7 @@ class HearingTypeService(CrudService):
     def __init__(self, db_session: Session):
         super(HearingTypeService, self).__init__(db_session, models.HearingType)
 
-    @check_permissions("ref_types_create")
+    @check_permissions("REF_TYPES_CREATE")
     def create_hearing_type(
         self, request: Request, request_object: schemas.HearingTypeRequest
     ) -> schemas.HearingTypeResponse:
@@ -735,7 +735,7 @@ class HearingTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_read")
+    @check_permissions("REF_TYPES_READ")
     def read_hearing_type(
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.HearingTypeResponse:
@@ -816,7 +816,7 @@ class HearingTypeService(CrudService):
                 f"HearingType Not Found By Id: {model_id}!!!",
             )
 
-    @check_permissions("ref_types_update")
+    @check_permissions("REF_TYPES_UPDATE")
     def update_hearing_type(
         self,
         model_id: int,
@@ -849,7 +849,7 @@ class HearingTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_delete")
+    @check_permissions("REF_TYPES_DELETE")
     def delete_hearing_type(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.HearingTypeResponse:
@@ -875,7 +875,7 @@ class TaskTypeService(CrudService):
     def __init__(self, db_session: Session):
         super(TaskTypeService, self).__init__(db_session, models.TaskType)
 
-    @check_permissions("ref_types_create")
+    @check_permissions("REF_TYPES_CREATE")
     def create_task_type(
         self, request: Request, request_object: schemas.TaskTypeRequest
     ) -> schemas.TaskTypeResponse:
@@ -899,7 +899,7 @@ class TaskTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_read")
+    @check_permissions("REF_TYPES_READ")
     def read_task_type(
         self, request: Request, metadata: schemas.RequestMetadata = None
     ) -> schemas.TaskTypeResponse:
@@ -974,7 +974,7 @@ class TaskTypeService(CrudService):
                 f"TaskType Not Found By Id: {model_id}!!!",
             )
 
-    @check_permissions("ref_types_update")
+    @check_permissions("REF_TYPES_UPDATE")
     def update_task_type(
         self,
         model_id: int,
@@ -1007,7 +1007,7 @@ class TaskTypeService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("ref_types_delete")
+    @check_permissions("REF_TYPES_DELETE")
     def delete_task_type(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.TaskTypeResponse:

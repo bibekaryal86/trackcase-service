@@ -26,7 +26,7 @@ class ClientService(CrudService):
     def __init__(self, db_session: Session):
         super(ClientService, self).__init__(db_session, models.Client)
 
-    @check_permissions("clients_create")
+    @check_permissions("CLIENTS_CREATE")
     def create_client(
         self, request: Request, request_object: schemas.ClientRequest
     ) -> schemas.ClientResponse:
@@ -63,7 +63,7 @@ class ClientService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("clients_read")
+    @check_permissions("CLIENTS_READ")
     def read_client(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.ClientResponse:
@@ -131,7 +131,7 @@ class ClientService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("clients_update")
+    @check_permissions("CLIENTS_UPDATE")
     def update_client(
         self,
         model_id: int,
@@ -180,7 +180,7 @@ class ClientService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("clients_delete")
+    @check_permissions("CLIENTS_DELETE")
     def delete_client(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.ClientResponse:

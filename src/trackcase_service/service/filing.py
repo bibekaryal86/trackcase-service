@@ -26,7 +26,7 @@ class FilingService(CrudService):
     def __init__(self, db_session: Session):
         super(FilingService, self).__init__(db_session, models.Filing)
 
-    @check_permissions("filings_create")
+    @check_permissions("FILINGS_CREATE")
     def create_filing(
         self, request: Request, request_object: schemas.FilingRequest
     ) -> schemas.FilingResponse:
@@ -63,7 +63,7 @@ class FilingService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("filings_read")
+    @check_permissions("FILINGS_READ")
     def read_filing(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.FilingResponse:
@@ -131,7 +131,7 @@ class FilingService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("filings_update")
+    @check_permissions("FILINGS_UPDATE")
     def update_filing(
         self,
         model_id: int,
@@ -180,7 +180,7 @@ class FilingService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    @check_permissions("filings_delete")
+    @check_permissions("FILINGS_DELETE")
     def delete_filing(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.FilingResponse:
