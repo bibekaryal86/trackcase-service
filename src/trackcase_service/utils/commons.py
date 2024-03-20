@@ -154,7 +154,7 @@ def request_metadata_example() -> str:
     "request_object_id": 1,
     "sort_config": {
         "column": "full_name",
-        "direction": "asc"
+        "direction": "ASC"
     },
     "filter_config": [
         {

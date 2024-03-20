@@ -726,8 +726,8 @@ class CalendarObjectTypes(str, Enum):
 
 
 class SortDirection(str, Enum):
-    ASC = "asc"
-    DESC = "desc"
+    ASC = "ASC"
+    DESC = "DESC"
 
 
 class FilterOperation(str, Enum):
@@ -739,44 +739,44 @@ class FilterOperation(str, Enum):
 
 
 class UserManagementServiceRegistry(str, Enum):
-    APP_USER = "app_user"
-    APP_ROLE = "app_role"
-    APP_PERMISSION = "app_permission"
-    APP_USER_ROLE = "app_user_role"
-    APP_ROLE_PERMISSION = "app_role_permission"
+    APP_USER = "APP_USER"
+    APP_ROLE = "APP_ROLE"
+    APP_PERMISSION = "APP_PERMISSION"
+    APP_USER_ROLE = "APP_USER_ROLE"
+    APP_ROLE_PERMISSION = "APP_ROLE_PERMISSION"
 
 
 class RefTypesServiceRegistry(str, Enum):
-    COMPONENT_STATUS = "component_status"
-    COLLECTION_METHOD = "collection_method"
-    CASE_TYPE = "case_type"
-    FILING_TYPE = "filing_type"
-    HEARING_TYPE = "hearing_type"
-    TASK_TYPE = "task_type"
+    COMPONENT_STATUS = "COMPONENT_STATUS"
+    COLLECTION_METHOD = "COLLECTION_METHOD"
+    CASE_TYPE = "CASE_TYPE"
+    FILING_TYPE = "FILING_TYPE"
+    HEARING_TYPE = "HEARING_TYPE"
+    TASK_TYPE = "TASK_TYPE"
 
 
 class CalendarServiceRegistry(str, Enum):
-    HEARING_CALENDAR = "hearing_calendar"
-    TASK_CALENDAR = "task_calendar"
+    HEARING_CALENDAR = "HEARING_CALENDAR"
+    TASK_CALENDAR = "TASK_CALENDAR"
 
 
 class CollectionServiceRegistry(str, Enum):
-    CASE_COLLECTION = "case_collection"
-    CASH_COLLECTION = "cash_collection"
+    CASE_COLLECTION = "CASE_COLLECTION"
+    CASH_COLLECTION = "CASH_COLLECTION"
 
 
 class ComponentStatusNames(str, Enum):
-    APP_USER = "app_user"
-    COURT = "court"
-    JUDGE = "judge"
-    CLIENT = "client"
-    COURT_CASE = "court_case"
-    CALENDAR = "calendars"
-    FILING = "filing"
-    COLLECTION = "collections"
+    APP_USER = "APP_USER"
+    COURT = "COURT"
+    JUDGE = "JUDGE"
+    CLIENT = "CLIENT"
+    COURT_CASE = "COURT_CASE"
+    CALENDAR = "CALENDARS"
+    FILING = "FILING"
+    COLLECTION = "COLLECTIONS"
 
 
 class ComponentStatusTypes(str, Enum):
-    ACTIVE = "active"
-    INACTIVE = "inactive"
-    ALL = "all"
+    ACTIVE = "ACTIVE"
+    INACTIVE = "INACTIVE"
+    ALL = "ALL"
