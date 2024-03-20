@@ -994,18 +994,6 @@ def upgrade() -> None:
     )
 
     op.execute(
-        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_CREATE', 'CAN ADD REF TYPES', False)"""  # noqa: E501
-    )
-    op.execute(
-        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_READ', 'CAN VIEW REF TYPES', False)"""  # noqa: E501
-    )
-    op.execute(
-        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_UPDATE', 'CAN UPDATE REF TYPES', False)"""  # noqa: E501
-    )
-    op.execute(
-        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_DELETE', 'CAN DELETE REF TYPES', False)"""  # noqa: E501
-    )
-    op.execute(
         """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'COURTS_CREATE', 'CAN ADD COURTS', False)"""  # noqa: E501
     )
     op.execute(
@@ -1088,6 +1076,18 @@ def upgrade() -> None:
     )
     op.execute(
         """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'COLLECTIONS_DELETE', 'CAN DELETE COLLECTIONS', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_CREATE', 'CAN ADD REF TYPES', False)"""   # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_READ', 'CAN VIEW REF TYPES', False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_UPDATE', 'CAN UPDATE REF TYPES', False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_DELETE', 'CAN DELETE REF TYPES', False)"""    # noqa: E501
     )
 
     op.execute(
