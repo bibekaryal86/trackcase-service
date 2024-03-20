@@ -11,5 +11,3 @@ backend service for trackcase
   * `alembic downgrade -1`
 * run as module
   * python -m src.trackcase_service.main
-* For History
-  * To retrieve history, use the `find_one` endpoint with `is_include_history=True`
