@@ -31,7 +31,6 @@ def get_all_ref_types(
         ]
 
     for component in component_list:
-        component = component.lower().strip()
         if component == schemas.RefTypesServiceRegistry.COMPONENT_STATUS:
             ref_types_response_data.component_statuses = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session

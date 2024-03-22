@@ -972,6 +972,39 @@ def upgrade() -> None:
         """INSERT INTO task_type (created, modified, name, description, is_deleted) VALUES (now(), now(), 'DUE AT HEARING', 'DUE AT HEARING', False)"""  # noqa: E501
     )
     op.execute(
+        """INSERT INTO task_type (created, modified, name, description, is_deleted) VALUES (now(), now(), 'DOCUMENT PREP', 'DOCUMENT PREPARATION', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO hearing_type (created, modified, name, description, is_deleted) VALUES (now(), now(), 'MASTER', 'MASTER HEARING', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO hearing_type (created, modified, name, description, is_deleted) VALUES (now(), now(), 'MERITS', 'MERITS HEARING', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO case_type (created, modified, name, description, is_deleted) VALUES (now(), now(), 'ASYLUM', 'FILING ASYLUM WITH USCIS/BIA', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO case_type (created, modified, name, description, is_deleted) VALUES (now(), now(), 'TPS', 'FILING TPS WITH USCIS/BIA', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO filing_type (created, modified, name, description, is_deleted) VALUES (now(), now(), 'I-589', 'APPLICATION FOR ASYLUM AND FOR WITHHOLDING OF REMOVAL', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO filing_type (created, modified, name, description, is_deleted) VALUES (now(), now(), 'I-765', 'APPLICATION FOR EMPLOYMENT AUTHORIZATION', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO collection_method (created, modified, name, description, is_deleted) VALUES (now(), now(), 'ZELLE', 'ZELLE TRANSFER', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO collection_method (created, modified, name, description, is_deleted) VALUES (now(), now(), 'MONEY ORDER', 'MONEY ORDER', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO collection_method (created, modified, name, description, is_deleted) VALUES (now(), now(), 'CHECK', 'PERSONAL CHECK', False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO collection_method (created, modified, name, description, is_deleted) VALUES (now(), now(), 'CASH', 'CASH PAYMENT', False)"""  # noqa: E501
+    )
+    op.execute(
         """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USER', 'ACTIVE', True, False)"""  # noqa: E501
     )
     op.execute(
@@ -1078,16 +1111,16 @@ def upgrade() -> None:
         """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'COLLECTIONS_DELETE', 'CAN DELETE COLLECTIONS', False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_CREATE', 'CAN ADD REF TYPES', False)"""   # noqa: E501
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_CREATE', 'CAN ADD REF TYPES', False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_READ', 'CAN VIEW REF TYPES', False)"""    # noqa: E501
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_READ', 'CAN VIEW REF TYPES', False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_UPDATE', 'CAN UPDATE REF TYPES', False)"""    # noqa: E501
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_UPDATE', 'CAN UPDATE REF TYPES', False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_DELETE', 'CAN DELETE REF TYPES', False)"""    # noqa: E501
+        """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'REF_TYPES_DELETE', 'CAN DELETE REF TYPES', False)"""  # noqa: E501
     )
 
     op.execute(
