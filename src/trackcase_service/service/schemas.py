@@ -15,11 +15,13 @@ class BaseSchema(BaseModel):
 
 
 class SortConfig(BaseSchema):
+    table: Optional[str] = None
     column: str
     direction: "SortDirection"
 
 
 class FilterConfig(BaseSchema):
+    table: Optional[str] = None
     column: str
     value: Union[str, int, float, datetime]
     operation: "FilterOperation"
@@ -105,7 +107,10 @@ class AppUserRoleBase:
 
 
 class AppUserRole(AppUserRoleBase, BaseModelSchema):
-    pass
+    # from raw sql
+    email: Optional[str] = None
+    full_name: Optional[str] = None
+    role_name: Optional[str] = None
 
 
 class AppUserRoleRequest(AppUserRoleBase, RequestBase):
@@ -123,7 +128,9 @@ class AppRolePermissionBase:
 
 
 class AppRolePermission(AppRolePermissionBase, BaseModelSchema):
-    pass
+    # from raw sql
+    role_name: Optional[str] = None
+    permission_name: Optional[str] = None
 
 
 class AppRolePermissionRequest(AppRolePermissionBase, RequestBase):
@@ -744,6 +751,7 @@ class UserManagementServiceRegistry(str, Enum):
     APP_PERMISSION = "APP_PERMISSION"
     APP_USER_ROLE = "APP_USER_ROLE"
     APP_ROLE_PERMISSION = "APP_ROLE_PERMISSION"
+    APP_USER_ROLE_PERMISSION = "APP_USER_ROLE_PERMISSION"
 
 
 class RefTypesServiceRegistry(str, Enum):

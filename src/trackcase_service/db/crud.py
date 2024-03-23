@@ -2,10 +2,11 @@ import math
 from datetime import datetime
 from typing import Dict, List, NamedTuple, Type, TypeVar, Union
 
-from sqlalchemy import asc, desc, func
+from sqlalchemy import asc, desc, func, text
 from sqlalchemy.orm import Query, Session
 
 from src.trackcase_service.db.models import Base
+from src.trackcase_service.service import schemas
 from src.trackcase_service.service.schemas import (
     FilterConfig,
     FilterOperation,
@@ -13,6 +14,7 @@ from src.trackcase_service.service.schemas import (
     SortConfig,
     SortDirection,
 )
+from src.trackcase_service.utils.convert import create_default_schema_instance
 
 ModelBase = TypeVar("ModelBase", bound=Base)
 DataKeys = NamedTuple("DataKeys", [("data", str), ("metadata", str)])
@@ -129,6 +131,53 @@ class CrudService:
             setattr(db_record, "is_deleted", True)
         self.db_session.commit()
         return True
+
+
+class CrudServiceRaw:
+    def __init__(self, db_session: Session):
+        self.db_session = db_session
+
+    def read(
+        self,
+        class_type: Type[schemas.BaseSchema],
+        sql_query: str,
+        page_number: int = 1,
+        per_page: int = 100,
+    ) -> Dict[str, Union[List[object], object]]:
+        if per_page > 1000:
+            per_page = 1000  # Cap per_page at 1000
+
+        total_items_query = f"SELECT COUNT(*) FROM ({sql_query}) as total_items_query"
+        total_items = self.db_session.execute(text(total_items_query)).scalar()
+        total_pages = math.ceil(total_items / per_page)
+
+        paginated_query = (
+            f"{sql_query} LIMIT {per_page} OFFSET {(page_number - 1) * per_page}"
+        )
+        result = self.db_session.execute(text(paginated_query))
+        column_names = result.keys()
+        data = [dict(zip(column_names, row)) for row in result.fetchall()]
+
+        metadata = ResponseMetadata(
+            total_items=total_items,
+            total_pages=total_pages,
+            page_number=page_number,
+            per_page=per_page,
+        )
+
+        class_objects = []
+        field_names = class_type.model_fields
+        for row in data:
+            obj = create_default_schema_instance(class_type)
+            for column_name, value in row.items():
+                if column_name in field_names:
+                    setattr(obj, column_name, value)
+            class_objects.append(obj)
+
+        return {
+            DataKeys.data: class_objects,
+            DataKeys.metadata: metadata,
+        }
 
 
 def _copy_key_values(model_data, db_record):

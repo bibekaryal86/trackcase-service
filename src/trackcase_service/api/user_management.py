@@ -219,6 +219,21 @@ def find_app_user_roles(
     ).read_app_user_role(request, request_metadata)
 
 
+@router.get(
+    "/app_user_roles/raw/",
+    response_model=schemas.AppUserRoleResponse,
+    status_code=HTTPStatus.OK,
+)
+def find_app_user_roles_raw(
+    request: Request,
+    request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
+    db_session: Session = Depends(get_db_session),
+):
+    return get_user_management_service(
+        schemas.UserManagementServiceRegistry.APP_USER_ROLE_PERMISSION, db_session
+    ).read_app_user_role_raw(request, request_metadata)
+
+
 @router.put(
     "/app_user_roles/{app_user_role_id}/",
     response_model=schemas.AppUserRoleResponse,
@@ -281,6 +296,21 @@ def find_app_role_permissions(
     return get_user_management_service(
         schemas.UserManagementServiceRegistry.APP_ROLE_PERMISSION, db_session
     ).read_app_role_permission(request, request_metadata)
+
+
+@router.get(
+    "/app_role_permissions/raw/",
+    response_model=schemas.AppRolePermissionResponse,
+    status_code=HTTPStatus.OK,
+)
+def find_app_role_permissions_raw(
+    request: Request,
+    request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
+    db_session: Session = Depends(get_db_session),
+):
+    return get_user_management_service(
+        schemas.UserManagementServiceRegistry.APP_USER_ROLE_PERMISSION, db_session
+    ).read_app_role_permission_raw(request, request_metadata)
 
 
 @router.put(

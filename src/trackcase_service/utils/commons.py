@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from functools import wraps
-from typing import Optional
+from typing import List, Optional
 
 import jwt
 from fastapi import HTTPException, Query, Request
@@ -338,3 +338,46 @@ def check_active_component_status(components: list, active_statuses: list[int]) 
         if component.component_status_id in active_statuses:
             return True
     return False
+
+
+def get_sort_config_raw(sort_config: schemas.SortConfig = None) -> str:
+    if sort_config and sort_config.column and sort_config.direction:
+        sort_table = sort_config.table
+        sort_column = sort_config.column
+        sort_direction = sort_config.direction.value
+        if sort_table:
+            return f" ORDER BY {sort_table}.{sort_column} {sort_direction}"
+        else:
+            return f" ORDER BY {sort_column} {sort_direction}"
+    return ""
+
+
+def get_filter_config_raw(filter_config: List[schemas.FilterConfig]) -> str:
+    filter_clauses = []
+    for filter_item in filter_config:
+        table = filter_item.table
+        column = filter_item.column
+        value = filter_item.value
+        operation = filter_item.operation
+        if isinstance(value, str):
+            value = f"'{value}'"
+        elif isinstance(value, datetime.datetime):
+            value = f"'{value.isoformat()}'"
+        if table:
+            filter_clauses.append(
+                f"{table}.{column} {get_operation_symbol(operation)} {value}"
+            )
+        else:
+            filter_clauses.append(f"{column} {get_operation_symbol(operation)} {value}")
+    return " AND ".join(filter_clauses)
+
+
+def get_operation_symbol(operation: schemas.FilterOperation) -> str:
+    operation_symbols = {
+        schemas.FilterOperation.EQUAL_TO: "=",
+        schemas.FilterOperation.GREATER_THAN: ">",
+        schemas.FilterOperation.LESS_THAN: "<",
+        schemas.FilterOperation.GREATER_THAN_OR_EQUAL_TO: ">=",
+        schemas.FilterOperation.LESS_THAN_OR_EQUAL_TO: "<=",
+    }
+    return operation_symbols[operation]

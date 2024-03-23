@@ -9,7 +9,7 @@ from fastapi import HTTPException, Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db import models
-from src.trackcase_service.db.crud import CrudService, DataKeys
+from src.trackcase_service.db.crud import CrudService, CrudServiceRaw, DataKeys
 from src.trackcase_service.service import schemas
 from src.trackcase_service.utils.cache import (
     get_app_permissions_cache,
@@ -22,6 +22,8 @@ from src.trackcase_service.utils.commons import (
     decode_email_address,
     encode_auth_credentials,
     get_err_msg,
+    get_filter_config_raw,
+    get_sort_config_raw,
     raise_http_exception,
 )
 from src.trackcase_service.utils.constants import (
@@ -1003,6 +1005,129 @@ class AppRolePermissionService(CrudService):
             )
 
 
+class AppUserRolePermissionService(CrudServiceRaw):
+    def __init__(self, db_session: Session):
+        super(AppUserRolePermissionService, self).__init__(db_session)
+
+    @check_permissions("APP_USERS_ROLES_READ")
+    def read_app_user_role_raw(
+        self, request: Request, metadata: schemas.RequestMetadata = None
+    ) -> schemas.AppUserRoleResponse:
+        page_number = 1
+        per_page = 100
+        is_where_used = False
+        try:
+            sql_query = (
+                "SELECT app_user_role.id, app_user_role.created, app_user_role.modified, "
+                "app_user_role.is_deleted, app_user_role.deleted_date, "
+                "app_user_role.app_user_id, app_user_role.app_role_id, "
+                "app_user.email, app_user.full_name, app_role.name as role_name "
+                "FROM app_user_role "
+                "INNER JOIN app_user ON app_user_role.app_user_id = app_user.id "
+                "INNER JOIN app_role on app_user_role.app_role_id = app_role.id"
+            )
+            if metadata is not None:
+                if metadata.schema_model_id is not None:
+                    is_where_used = True
+                    sql_query += f" WHERE app_user_role.id = {metadata.schema_model_id}"
+                elif metadata.filter_config:
+                    filter_config = get_filter_config_raw(metadata.filter_config)
+                    if filter_config:
+                        is_where_used = True
+                        sql_query += f" WHERE {filter_config}"
+
+                if metadata.is_include_deleted:
+                    pass
+                else:
+                    if is_where_used:
+                        sql_query += " AND app_user_role.is_deleted = false"
+                    else:
+                        sql_query += " WHERE app_user_role.is_deleted = false"
+
+                sort_config = get_sort_config_raw(metadata.sort_config)
+                if sort_config:
+                    sql_query += sort_config
+
+            read_response = self.read(
+                schemas.AppUserRole, sql_query, page_number, per_page
+            )
+            return schemas.AppUserRoleResponse(
+                **{
+                    "data": read_response.get(DataKeys.data),
+                    "metadata": read_response.get(DataKeys.metadata),
+                }
+            )
+        except Exception as ex:
+            raise_http_exception(
+                request,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                get_err_msg(
+                    "Error Retrieving AppUserRole. Please Try Again!!!", str(ex)
+                ),
+                exc_info=sys.exc_info(),
+            )
+
+    @check_permissions("APP_ROLES_PERMISSIONS_READ")
+    def read_app_role_permission_raw(
+        self, request: Request, metadata: schemas.RequestMetadata = None
+    ) -> schemas.AppRolePermissionResponse:
+        page_number = 1
+        per_page = 100
+        is_where_used = False
+        try:
+            sql_query = (
+                "SELECT app_role_permission.id, app_role_permission.created, app_role_permission.modified, "
+                "app_role_permission.is_deleted, app_role_permission.deleted_date, "
+                "app_role_permission.app_role_id, app_role_permission.app_permission_id, "
+                "app_role.name as role_name, app_permission.name as permission_name "
+                "FROM app_role_permission "
+                "INNER JOIN app_role ON app_role_permission.app_role_id = app_role.id "
+                "INNER JOIN app_permission on app_role_permission.app_permission_id = app_permission.id"
+            )
+            if metadata is not None:
+                if metadata.schema_model_id is not None:
+                    is_where_used = True
+                    sql_query += (
+                        f" WHERE app_role_permission.id = {metadata.schema_model_id}"
+                    )
+                elif metadata.filter_config:
+                    filter_config = get_filter_config_raw(metadata.filter_config)
+                    if filter_config:
+                        is_where_used = True
+                        sql_query += f" WHERE {filter_config}"
+
+                if metadata.is_include_deleted:
+                    pass
+                else:
+                    if is_where_used:
+                        sql_query += " AND app_role_permission.is_deleted = false"
+                    else:
+                        sql_query += " WHERE app_role_permission.is_deleted = false"
+
+                sort_config = get_sort_config_raw(metadata.sort_config)
+                if sort_config:
+                    sql_query += sort_config
+
+            read_response = self.read(
+                schemas.AppRolePermission, sql_query, page_number, per_page
+            )
+            return schemas.AppRolePermissionResponse(
+                **{
+                    "data": read_response.get(DataKeys.data),
+                    "metadata": read_response.get(DataKeys.metadata),
+                }
+            )
+        except Exception as ex:
+            raise_http_exception(
+                request,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                get_err_msg(
+                    "Error Retrieving AppUserRole. Please Try Again!!!", str(ex)
+                ),
+                exc_info=sys.exc_info(),
+            )
+
+
 def get_user_management_service(
     service_type: schemas.UserManagementServiceRegistry, db_session: Session
 ) -> (
@@ -1011,6 +1136,7 @@ def get_user_management_service(
     | AppPermissionService
     | AppUserRoleService
     | AppRolePermissionService
+    | AppUserRolePermissionService
 ):
     service_registry = {
         schemas.UserManagementServiceRegistry.APP_USER: AppUserService,
@@ -1018,6 +1144,7 @@ def get_user_management_service(
         schemas.UserManagementServiceRegistry.APP_PERMISSION: AppPermissionService,
         schemas.UserManagementServiceRegistry.APP_USER_ROLE: AppUserRoleService,
         schemas.UserManagementServiceRegistry.APP_ROLE_PERMISSION: AppRolePermissionService,  # noqa: E501
+        schemas.UserManagementServiceRegistry.APP_USER_ROLE_PERMISSION: AppUserRolePermissionService,  # noqa: E501
     }
     return service_registry.get(service_type)(db_session)
 
