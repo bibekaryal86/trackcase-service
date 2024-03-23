@@ -230,7 +230,7 @@ def _check_and_set_status(
         db_session=db_session,
     ).get_component_status(
         request,
-        schemas.ComponentStatusNames.CALENDAR,
+        schemas.ComponentStatusNames.CALENDARS,
         schemas.ComponentStatusTypes.INACTIVE,
     )
     calendar_inactive_statuses = [

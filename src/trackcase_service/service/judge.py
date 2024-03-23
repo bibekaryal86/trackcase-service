@@ -257,7 +257,7 @@ class JudgeService(CrudService):
             )
             judge_active_statuses = ref_types_service.get_component_status(
                 request,
-                schemas.ComponentStatusNames.JUDGE,
+                schemas.ComponentStatusNames.JUDGES,
                 schemas.ComponentStatusTypes.ACTIVE,
             )
             active_status_ids_judge = [
@@ -267,7 +267,7 @@ class JudgeService(CrudService):
             if status_new != status_old and status_new not in active_status_ids_judge:
                 client_active_statuses = ref_types_service.get_component_status(
                     request,
-                    schemas.ComponentStatusNames.CLIENT,
+                    schemas.ComponentStatusNames.CLIENTS,
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_client = [

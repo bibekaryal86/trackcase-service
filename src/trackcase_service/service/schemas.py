@@ -774,14 +774,14 @@ class CollectionServiceRegistry(str, Enum):
 
 
 class ComponentStatusNames(str, Enum):
-    APP_USER = "APP_USER"
-    COURT = "COURT"
-    JUDGE = "JUDGE"
-    CLIENT = "CLIENT"
-    COURT_CASE = "COURT_CASE"
-    CALENDAR = "CALENDARS"
-    FILING = "FILING"
-    COLLECTION = "COLLECTIONS"
+    APP_USERS = "APP_USERS"
+    COURTS = "COURTS"
+    JUDGES = "JUDGES"
+    CLIENTS = "CLIENTS"
+    COURT_CASES = "COURT_CASES"
+    CALENDARS = "CALENDARS"
+    FILINGS = "FILINGS"
+    COLLECTIONS = "COLLECTIONS"
 
 
 class ComponentStatusTypes(str, Enum):

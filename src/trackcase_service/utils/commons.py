@@ -84,7 +84,7 @@ async def initialize_caches():
     get_ref_types_service(
         schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
     ).get_component_status(
-        request=request, component_name=schemas.ComponentStatusNames.APP_USER
+        request=request, component_name=schemas.ComponentStatusNames.APP_USERS
     )
     get_ref_types_service(
         schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session

@@ -286,7 +286,7 @@ class CourtCaseService(CrudService):
         )
         court_case_active_statuses = ref_types_service.get_component_status(
             request,
-            schemas.ComponentStatusNames.COURT_CASE,
+            schemas.ComponentStatusNames.COURT_CASES,
             schemas.ComponentStatusTypes.ACTIVE,
         )
         active_status_ids_court_case = [
@@ -297,7 +297,7 @@ class CourtCaseService(CrudService):
             if court_case_old.filings:
                 filing_active_statuses = ref_types_service.get_component_status(
                     request,
-                    schemas.ComponentStatusNames.FILING,
+                    schemas.ComponentStatusNames.FILINGS,
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_filing = [
@@ -315,7 +315,7 @@ class CourtCaseService(CrudService):
             if court_case_old.case_collections:
                 collection_active_statuses = ref_types_service.get_component_status(
                     request,
-                    schemas.ComponentStatusNames.COLLECTION,
+                    schemas.ComponentStatusNames.COLLECTIONS,
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_collection = [
@@ -334,7 +334,7 @@ class CourtCaseService(CrudService):
             if court_case_old.hearing_calendars:
                 calendar_active_statuses = ref_types_service.get_component_status(
                     request,
-                    schemas.ComponentStatusNames.CALENDAR,
+                    schemas.ComponentStatusNames.CALENDARS,
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_calendar = [

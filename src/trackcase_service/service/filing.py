@@ -259,7 +259,7 @@ class FilingService(CrudService):
             )
             filing_active_statuses = ref_types_service.get_component_status(
                 request,
-                schemas.ComponentStatusNames.FILING,
+                schemas.ComponentStatusNames.FILINGS,
                 schemas.ComponentStatusTypes.ACTIVE,
             )
             active_status_ids_filing = [
@@ -268,7 +268,7 @@ class FilingService(CrudService):
             if status_new != status_old and status_new not in active_status_ids_filing:
                 calendar_active_statuses = ref_types_service.get_component_status(
                     request,
-                    schemas.ComponentStatusNames.CALENDAR,
+                    schemas.ComponentStatusNames.CALENDARS,
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_calendar = [

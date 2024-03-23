@@ -267,7 +267,7 @@ class CaseCollectionService(CrudService):
                 db_session=self.db_session,
             ).get_component_status(
                 request,
-                schemas.ComponentStatusNames.COLLECTION,
+                schemas.ComponentStatusNames.COLLECTIONS,
                 schemas.ComponentStatusTypes.ACTIVE,
             )
             active_status_ids = [
