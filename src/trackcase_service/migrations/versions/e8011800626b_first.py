@@ -1005,13 +1005,13 @@ def upgrade() -> None:
         """INSERT INTO collection_method (created, modified, name, description, is_deleted) VALUES (now(), now(), 'CASH', 'CASH PAYMENT', False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USER', 'ACTIVE', True, False)"""  # noqa: E501
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USERS', 'ACTIVE', True, False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USER', 'INACTIVE', True, False)"""  # noqa: E501
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USERS', 'INACTIVE', True, False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USER', 'DISABLED', True, False)"""  # noqa: E501
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USERS', 'DISABLED', True, False)"""  # noqa: E501
     )
     op.execute(
         """INSERT INTO app_role (created, modified, name, description, is_deleted) VALUES (now(), now(), 'SUPERUSER', 'USER HAS ALL ACCESS', False)"""  # noqa: E501
