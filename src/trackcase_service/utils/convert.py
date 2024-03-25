@@ -72,8 +72,9 @@ def convert_schema_to_model(
     app_user_id=None,
     history_object_id_key=None,
     history_object_id_value=None,
+    exclusions=None,
 ):
-    data_model = _copy_objects(request_schema, model_class, model_class())
+    data_model = _copy_objects(request_schema, model_class, model_class(), exclusions=exclusions)
     if history_object_id_key and history_object_id_value:
         setattr(data_model, "app_user_id", app_user_id)
         setattr(data_model, history_object_id_key, history_object_id_value)
