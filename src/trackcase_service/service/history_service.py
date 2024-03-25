@@ -29,7 +29,7 @@ class HistoryService(CrudService):
         parent_type: str,
         history_type: str,
     ):
-        app_user_id = get_auth_user_token(request).get("app_user_id")
+        app_user_id = get_auth_user_token(request).get("id")
         history_data_model = convert_schema_to_model(
             request_object,
             self.db_model,
