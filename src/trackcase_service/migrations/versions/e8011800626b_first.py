@@ -409,6 +409,9 @@ def upgrade() -> None:
             ondelete="RESTRICT",
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint(
+            "case_type_id", "client_id", name="court_case_case_type_client_id"
+        ),
     )
     op.create_table(
         "history_client",
@@ -1008,10 +1011,79 @@ def upgrade() -> None:
         """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USERS', 'ACTIVE', True, False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USERS', 'INACTIVE', True, False)"""  # noqa: E501
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USERS', 'INACTIVE', False, False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USERS', 'DISABLED', True, False)"""  # noqa: E501
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USERS', 'DISABLED', False, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COURTS', 'ACTIVE', True, False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COURTS', 'CLOSED', False, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'JUDGES', 'ACTIVE', True, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'JUDGES', 'RETIRED', False, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'JUDGES', 'INACTIVE', False, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CLIENTS', 'ACTIVE', True, False)"""     # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CLIENTS', 'INACTIVE', False, False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COURT_CASES', 'ACTIVE', True, False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COURT_CASES', 'CLOSED', False, False)"""     # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COURT_CASES', 'TRANSFERRED', False, False)"""       # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'FILINGS', 'PENDING', True, False)"""     # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'FILINGS', 'RECEIVED', True, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'FILINGS', 'PROCESSING', True, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'FILINGS', 'SUBMITTED', True, False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'FILINGS', 'EVIDENCE', True, False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'FILINGS', 'APPROVED', False, False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'FILINGS', 'DENIED', False, False)"""     # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CALENDARS', 'PENDING', True, False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CALENDARS', 'COMPLETED', False, False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CALENDARS', 'PAST_DUE', False, False)"""     # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COLLECTIONS', 'PENDING', True, False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COLLECTIONS', 'RECEIVED', False, False)"""    # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COLLECTIONS', 'WAIVED', False, False)"""     # noqa: E501
     )
     op.execute(
         """INSERT INTO app_role (created, modified, name, description, is_deleted) VALUES (now(), now(), 'SUPERUSER', 'USER HAS ALL ACCESS', False)"""  # noqa: E501
@@ -1025,7 +1097,6 @@ def upgrade() -> None:
     op.execute(
         """INSERT INTO app_role (created, modified, name, description, is_deleted) VALUES (now(), now(), 'GUEST', 'USER HAS VIEW ONLY ACCESS, NO REF DATA ACCESS', False)"""  # noqa: E501
     )
-
     op.execute(
         """INSERT INTO app_permission (created, modified, name, description, is_deleted) VALUES (now(), now(), 'COURTS_CREATE', 'CAN ADD COURTS', False)"""  # noqa: E501
     )

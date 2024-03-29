@@ -99,6 +99,14 @@ class AppUserRole(TableBase, Base):
         nullable=False,
     )
 
+    __table_args__ = (
+        UniqueConstraint(
+            "app_user_id",
+            "app_role_id",
+            name="app_user_role_ids",
+        ),
+    )
+
 
 class AppRolePermission(TableBase, Base):
     __tablename__ = "app_role_permission"
@@ -119,6 +127,13 @@ class AppRolePermission(TableBase, Base):
             name="app_role_permission_app_permission_id",
         ),
         nullable=False,
+    )
+    __table_args__ = (
+        UniqueConstraint(
+            "app_role_id",
+            "app_permission_id",
+            name="app_role_permission_ids",
+        ),
     )
 
 
@@ -500,6 +515,14 @@ class CourtCase(TableBase, Base):
     history_filings: Mapped[List["HistoryFiling"]] = relationship("HistoryFiling")
     history_case_collections: Mapped[List["HistoryCaseCollection"]] = relationship(
         "HistoryCaseCollection"
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "case_type_id",
+            "client_id",
+            name="court_case_case_type_client_id",
+        ),
     )
 
 
