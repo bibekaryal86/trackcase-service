@@ -477,9 +477,9 @@ class CourtCase(CourtCaseBase, BaseModelSchema):
     case_collections: list["CaseCollection"] = []
     hearing_calendars: list["HearingCalendar"] = []
     history_court_cases: list["HistoryCourtCase"] = []
-    history_hearing_calendars: list["HistoryHearingCalendar"] = None
-    history_filings: list["HistoryFiling"] = None
-    history_case_collections: list["HistoryCaseCollection"] = None
+    history_hearing_calendars: list["HistoryHearingCalendar"] = []
+    history_filings: list["HistoryFiling"] = []
+    history_case_collections: list["HistoryCaseCollection"] = []
 
 
 class HistoryCourtCase(CourtCase):
