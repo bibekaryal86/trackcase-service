@@ -625,7 +625,7 @@ class Filing(FilingBase, BaseModelSchema):
     court_case: Optional[CourtCase] = None
     task_calendars: list[TaskCalendar] = []
     history_filings: list["HistoryFiling"] = []
-    history_task_calendars: Optional[HistoryTaskCalendar] = []
+    history_task_calendars: list[HistoryTaskCalendar] = []
 
 
 class HistoryFiling(Filing):
