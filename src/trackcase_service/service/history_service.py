@@ -36,7 +36,7 @@ class HistoryService(CrudService):
             app_user_id,
             history_object_id_key,
             history_object_id_value,
-            exclusions=["id", "created", "modified"]
+            exclusions=["id", "created", "modified"],
         )
         try:
             super().create(history_data_model)

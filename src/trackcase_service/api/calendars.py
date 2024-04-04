@@ -34,11 +34,12 @@ def get_calendars(
     calendar_events = _get_calendar_events(
         hearing_calendars, task_calendars, request, db_session
     )
-    return schemas.CalendarResponse(
+    calendar_response_data = schemas.CalendarResponseData(
         hearing_calendars=hearing_calendars,
         task_calendars=task_calendars,
         calendar_events=calendar_events,
     )
+    return schemas.CalendarResponse(data=calendar_response_data)
 
 
 # hearing calendar
