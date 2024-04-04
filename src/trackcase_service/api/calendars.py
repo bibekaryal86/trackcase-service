@@ -186,7 +186,7 @@ def _get_calendar_events(
             type=hearing_calendar.hearing_type.name,
             date=hearing_calendar.hearing_date,
             status=_check_and_set_status(
-                hearing_calendar.status,
+                hearing_calendar.component_status_id,
                 hearing_calendar.hearing_date,
                 request,
                 db_session,

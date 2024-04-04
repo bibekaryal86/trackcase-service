@@ -264,7 +264,7 @@ class HearingCalendarService(CrudService):
             due_date=due_date,
             task_type_id=TASK_ID_DUE_AT_HEARING,
             hearing_calendar_id=hearing_calendar.id,
-            status=hearing_calendar.status,
+            component_status_id=hearing_calendar.component_status_id,
         )
         get_calendar_service(
             schemas.CalendarServiceRegistry.TASK_CALENDAR, db_session=self.db_session

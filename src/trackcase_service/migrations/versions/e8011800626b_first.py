@@ -1071,16 +1071,22 @@ def upgrade() -> None:
         """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'FILINGS', 'WITHDRAWN', False, False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CALENDARS', 'PENDING', True, False)"""  # noqa: E501
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CALENDARS', 'DUE', True, False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CALENDARS', 'COMPLETED', False, False)"""  # noqa: E501
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CALENDARS', 'DONE', False, False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CALENDARS', 'PAST_DUE', False, False)"""  # noqa: E501
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CALENDARS', 'PAST_DUE', True, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'CALENDARS', 'PAST_DONE', True, False)"""  # noqa: E501
     )
     op.execute(
         """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COLLECTIONS', 'PENDING', True, False)"""  # noqa: E501
+    )
+    op.execute(
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COLLECTIONS', 'PAST_DUE', True, False)"""  # noqa: E501
     )
     op.execute(
         """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COLLECTIONS', 'RECEIVED', False, False)"""  # noqa: E501

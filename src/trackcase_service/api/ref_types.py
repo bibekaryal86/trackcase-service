@@ -31,30 +31,41 @@ def get_all_ref_types(
         ]
 
     for component in component_list:
-        if component == schemas.RefTypesServiceRegistry.COMPONENT_STATUS:
-            ref_types_response_data.component_statuses = get_ref_types_service(
-                schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
-            ).read_component_status(request)
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
+
         if component == schemas.RefTypesServiceRegistry.COLLECTION_METHOD:
             ref_types_response_data.collection_methods = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
-            ).read_collection_method(request)
+            ).read_collection_method(request, request_metadata)
         if component == schemas.RefTypesServiceRegistry.CASE_TYPE:
             ref_types_response_data.case_types = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
-            ).read_case_type(request)
+            ).read_case_type(request, request_metadata)
         if component == schemas.RefTypesServiceRegistry.FILING_TYPE:
             ref_types_response_data.filing_types = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
-            ).read_filing_type(request)
+            ).read_filing_type(request, request_metadata)
         if component == schemas.RefTypesServiceRegistry.HEARING_TYPE:
             ref_types_response_data.hearing_types = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
-            ).read_hearing_type(request)
+            ).read_hearing_type(request, request_metadata)
         if component == schemas.RefTypesServiceRegistry.TASK_TYPE:
             ref_types_response_data.task_types = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
-            ).read_task_type(request)
+            ).read_task_type(request, request_metadata)
+        if component == schemas.RefTypesServiceRegistry.COMPONENT_STATUS:
+            request_metadata = schemas.RequestMetadata(
+                sort_config=schemas.SortConfig(
+                    column="component_name", direction=schemas.SortDirection.ASC
+                )
+            )
+            ref_types_response_data.component_statuses = get_ref_types_service(
+                schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+            ).read_component_status(request, request_metadata)
     return schemas.RefTypesResponse(data=ref_types_response_data)
 
 
@@ -84,6 +95,12 @@ def find_component_status(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="component_name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
     ).read_component_status(request, request_metadata)
@@ -150,6 +167,12 @@ def find_collection_method(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
     ).read_collection_method(request, request_metadata)
@@ -214,6 +237,12 @@ def find_case_type(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
     ).read_case_type(request, request_metadata)
@@ -278,6 +307,12 @@ def find_filing_type(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
     ).read_filing_type(request, request_metadata)
@@ -342,6 +377,12 @@ def find_hearing_type(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
     ).read_hearing_type(request, request_metadata)
@@ -404,6 +445,12 @@ def find_task_type(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
     ).read_task_type(request, request_metadata)
