@@ -206,12 +206,12 @@ def _get_calendar_events(
                 task_calendar.component_status_id, task_calendar.task_date, request, db_session
             ),
             title=(
-                task_calendar.form.court_case.client.name
+                task_calendar.filing.court_case.client.name
                 if task_calendar.filing_id
                 else task_calendar.hearing_calendar.court_case.client.name
             ),
             court_case_id=(
-                task_calendar.form.court_case_id
+                task_calendar.filing.court_case_id
                 if task_calendar.filing_id
                 else task_calendar.hearing_calendar.court_case_id
             ),
