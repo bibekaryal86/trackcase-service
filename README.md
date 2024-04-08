@@ -1,5 +1,8 @@
 # trackcase-service
-backend service for trackcase
+Provides backend services for track-case
+Create and manage app users
+Create and manage clients, cases, maintain calendars, track collections, etc
+Uses python, fastapi, sqlalchemy, alembic, postgresql
 
 * make changes to models, then run pip install (because it uses python module imports)
   * `pip install .`

@@ -203,7 +203,10 @@ def _get_calendar_events(
             type=task_calendar.task_type.name,
             date=task_calendar.task_date,
             status=_check_and_set_status(
-                task_calendar.component_status_id, task_calendar.task_date, request, db_session
+                task_calendar.component_status_id,
+                task_calendar.task_date,
+                request,
+                db_session,
             ),
             title=(
                 task_calendar.filing.court_case.client.name
