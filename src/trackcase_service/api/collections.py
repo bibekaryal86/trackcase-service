@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -51,11 +51,14 @@ def modify_case_collection(
     case_collection_id: int,
     request: Request,
     case_collection_request: schemas.CaseCollectionRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_collection_service(
         schemas.CollectionServiceRegistry.CASE_COLLECTION, db_session
-    ).update_case_collection(case_collection_id, request, case_collection_request)
+    ).update_case_collection(
+        case_collection_id, request, case_collection_request, is_restore
+    )
 
 
 @router.delete(
@@ -114,11 +117,14 @@ def modify_cash_collection(
     cash_collection_id: int,
     request: Request,
     cash_collection_request: schemas.CashCollectionRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_collection_service(
         schemas.CollectionServiceRegistry.CASH_COLLECTION, db_session
-    ).update_cash_collection(cash_collection_id, request, cash_collection_request)
+    ).update_cash_collection(
+        cash_collection_id, request, cash_collection_request, is_restore
+    )
 
 
 @router.delete(

@@ -4,18 +4,21 @@ import json
 import logging
 import os
 import sys
-from typing import Optional
+from functools import wraps
+from typing import List, Optional
 
 import jwt
 from fastapi import HTTPException, Query, Request
 from fastapi.security import HTTPAuthorizationCredentials
 from jwt import PyJWTError
 from pydantic import ValidationError
+from sqlalchemy.orm import Session
 
 import src.trackcase_service.service.schemas as schemas
 import src.trackcase_service.utils.constants as constants
 import src.trackcase_service.utils.logger as logger
 from src.trackcase_service.db.crud import DataKeys
+from src.trackcase_service.db.session import SessionLocal
 
 log = logger.Logger(logging.getLogger(__name__))
 
@@ -58,12 +61,66 @@ def validate_input():
         )
 
 
-def startup_app():
+async def startup_app():
     log.info("App Starting...")
+    # initialize caches
+    await initialize_caches()
 
 
 def shutdown_app():
     log.info("App Shutting Down...")
+
+
+async def initialize_caches():
+    from src.trackcase_service.service.ref_types import get_ref_types_service
+    from src.trackcase_service.service.user_management import (
+        get_user_management_service,
+    )
+
+    request = Request(scope={"type": "http"})
+    request.state.user_details = {"roles": [{"name": "SUPERUSER"}]}
+    db_session: Session = SessionLocal()
+
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+    ).get_component_status(
+        request=request, component_name=schemas.ComponentStatusNames.APP_USERS
+    )
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
+    ).get_collection_method(request)
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
+    ).get_case_type(request)
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
+    ).get_filing_type(request)
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
+    ).get_hearing_type(request)
+    get_ref_types_service(
+        schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
+    ).get_task_type(request)
+    get_user_management_service(
+        schemas.UserManagementServiceRegistry.APP_ROLE, db_session
+    ).get_app_role(request)
+    get_user_management_service(
+        schemas.UserManagementServiceRegistry.APP_PERMISSION, db_session
+    ).get_app_permission(request)
+    db_session.close()
+    await request.close()
+
+
+# def reset_caches():
+#     from src.trackcase_service.utils import cache
+#     cache.COMPONENT_STATUSES_CACHE.clear()
+#     cache.COLLECTION_METHODS_CACHE.clear()
+#     cache.CASE_TYPES_CACHE.clear()
+#     cache.FILING_TYPES_CACHE.clear()
+#     cache.HEARING_TYPES_CACHE.clear()
+#     cache.TASK_TYPES_CACHE.clear()
+#     cache.APP_ROLES_CACHE.clear()
+#     cache.APP_PERMISSIONS_CACHE.clear()
 
 
 def get_err_msg(msg: str, err_msg: str = ""):
@@ -97,7 +154,7 @@ def request_metadata_example() -> str:
     "request_object_id": 1,
     "sort_config": {
         "column": "full_name",
-        "direction": "asc"
+        "direction": "ASC"
     },
     "filter_config": [
         {
@@ -215,6 +272,51 @@ def decode_auth_credentials(
         )
 
 
+def has_permission(permission_name: str, request: Request):
+    user_details = getattr(request.state, "user_details", None)
+    if user_details is None:
+        return False
+
+    for role in user_details.get("roles", []):
+        if role.get("name") == "SUPERUSER":
+            return True
+        else:
+            permissions = role.get("permissions", [])
+            for permission in permissions:
+                if permission.get("name") == permission_name:
+                    return True
+
+    return False
+
+
+def check_permissions(permission_name: str):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            request = None
+            for arg in args:
+                if isinstance(arg, Request):
+                    request = arg
+                    break
+            if not request:
+                raise_http_exception(
+                    request=Request(scope={"type": "http"}),
+                    sts_code=http.HTTPStatus.FORBIDDEN,
+                    error="Request object not found...",
+                )
+            if not has_permission(permission_name, request):
+                raise_http_exception(
+                    request=request,
+                    sts_code=http.HTTPStatus.FORBIDDEN,
+                    error="Insufficient permissions...",
+                )
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
 def read_file(file_name):
     script_dir = os.path.dirname(os.path.realpath(__file__))
     file_path = os.path.join(script_dir, file_name)
@@ -236,3 +338,46 @@ def check_active_component_status(components: list, active_statuses: list[int]) 
         if component.component_status_id in active_statuses:
             return True
     return False
+
+
+def get_sort_config_raw(sort_config: schemas.SortConfig = None) -> str:
+    if sort_config and sort_config.column and sort_config.direction:
+        sort_table = sort_config.table
+        sort_column = sort_config.column
+        sort_direction = sort_config.direction.value
+        if sort_table:
+            return f" ORDER BY {sort_table}.{sort_column} {sort_direction}"
+        else:
+            return f" ORDER BY {sort_column} {sort_direction}"
+    return ""
+
+
+def get_filter_config_raw(filter_config: List[schemas.FilterConfig]) -> str:
+    filter_clauses = []
+    for filter_item in filter_config:
+        table = filter_item.table
+        column = filter_item.column
+        value = filter_item.value
+        operation = filter_item.operation
+        if isinstance(value, str):
+            value = f"'{value}'"
+        elif isinstance(value, datetime.datetime):
+            value = f"'{value.isoformat()}'"
+        if table:
+            filter_clauses.append(
+                f"{table}.{column} {get_operation_symbol(operation)} {value}"
+            )
+        else:
+            filter_clauses.append(f"{column} {get_operation_symbol(operation)} {value}")
+    return " AND ".join(filter_clauses)
+
+
+def get_operation_symbol(operation: schemas.FilterOperation) -> str:
+    operation_symbols = {
+        schemas.FilterOperation.EQUAL_TO: "=",
+        schemas.FilterOperation.GREATER_THAN: ">",
+        schemas.FilterOperation.LESS_THAN: "<",
+        schemas.FilterOperation.GREATER_THAN_OR_EQUAL_TO: ">=",
+        schemas.FilterOperation.LESS_THAN_OR_EQUAL_TO: "<=",
+    }
+    return operation_symbols[operation]

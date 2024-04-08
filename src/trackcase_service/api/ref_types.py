@@ -31,31 +31,41 @@ def get_all_ref_types(
         ]
 
     for component in component_list:
-        component = component.lower().strip()
-        if component == schemas.RefTypesServiceRegistry.COMPONENT_STATUS:
-            ref_types_response_data.component_statuses = get_ref_types_service(
-                schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
-            ).read_component_status(request)
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
+
         if component == schemas.RefTypesServiceRegistry.COLLECTION_METHOD:
             ref_types_response_data.collection_methods = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
-            ).read_collection_method(request)
+            ).read_collection_method(request, request_metadata)
         if component == schemas.RefTypesServiceRegistry.CASE_TYPE:
             ref_types_response_data.case_types = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
-            ).read_case_type(request)
+            ).read_case_type(request, request_metadata)
         if component == schemas.RefTypesServiceRegistry.FILING_TYPE:
             ref_types_response_data.filing_types = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
-            ).read_filing_type(request)
+            ).read_filing_type(request, request_metadata)
         if component == schemas.RefTypesServiceRegistry.HEARING_TYPE:
             ref_types_response_data.hearing_types = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
-            ).read_hearing_type(request)
+            ).read_hearing_type(request, request_metadata)
         if component == schemas.RefTypesServiceRegistry.TASK_TYPE:
             ref_types_response_data.task_types = get_ref_types_service(
                 schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
-            ).read_task_type(request)
+            ).read_task_type(request, request_metadata)
+        if component == schemas.RefTypesServiceRegistry.COMPONENT_STATUS:
+            request_metadata = schemas.RequestMetadata(
+                sort_config=schemas.SortConfig(
+                    column="component_name", direction=schemas.SortDirection.ASC
+                )
+            )
+            ref_types_response_data.component_statuses = get_ref_types_service(
+                schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+            ).read_component_status(request, request_metadata)
     return schemas.RefTypesResponse(data=ref_types_response_data)
 
 
@@ -85,6 +95,12 @@ def find_component_status(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="component_name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
     ).read_component_status(request, request_metadata)
@@ -99,11 +115,14 @@ def modify_component_status(
     component_status_id: int,
     request: Request,
     component_status_request: schemas.ComponentStatusRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
         schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
-    ).update_component_status(component_status_id, request, component_status_request)
+    ).update_component_status(
+        component_status_id, request, component_status_request, is_restore
+    )
 
 
 @router.delete(
@@ -134,7 +153,7 @@ def insert_collection_method(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
     ).create_collection_method(request, collection_method_request)
 
 
@@ -148,8 +167,14 @@ def find_collection_method(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
     ).read_collection_method(request, request_metadata)
 
 
@@ -162,11 +187,14 @@ def modify_collection_method(
     collection_method_id: int,
     request: Request,
     collection_method_request: schemas.CollectionMethodRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
-    ).update_collection_method(collection_method_id, request, collection_method_request)
+        schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
+    ).update_collection_method(
+        collection_method_id, request, collection_method_request, is_restore
+    )
 
 
 @router.delete(
@@ -181,7 +209,7 @@ def remove_collection_method(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.COLLECTION_METHOD, db_session
     ).delete_collection_method(collection_method_id, is_hard_delete, request)
 
 
@@ -197,7 +225,7 @@ def insert_case_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
     ).create_case_type(request, case_type_request)
 
 
@@ -209,8 +237,14 @@ def find_case_type(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
     ).read_case_type(request, request_metadata)
 
 
@@ -223,11 +257,12 @@ def modify_case_type(
     case_type_id: int,
     request: Request,
     case_type_request: schemas.CaseTypeRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
-    ).update_case_type(case_type_id, request, case_type_request)
+        schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
+    ).update_case_type(case_type_id, request, case_type_request, is_restore)
 
 
 @router.delete(
@@ -242,7 +277,7 @@ def remove_case_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.CASE_TYPE, db_session
     ).delete_case_type(case_type_id, is_hard_delete, request)
 
 
@@ -258,7 +293,7 @@ def insert_filing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
     ).create_filing_type(request, filing_type_request)
 
 
@@ -272,8 +307,14 @@ def find_filing_type(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
     ).read_filing_type(request, request_metadata)
 
 
@@ -286,11 +327,12 @@ def modify_filing_type(
     filing_type_id: int,
     request: Request,
     filing_type_request: schemas.FilingTypeRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
-    ).update_filing_type(filing_type_id, request, filing_type_request)
+        schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
+    ).update_filing_type(filing_type_id, request, filing_type_request, is_restore)
 
 
 @router.delete(
@@ -305,7 +347,7 @@ def remove_filing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.FILING_TYPE, db_session
     ).delete_filing_type(filing_type_id, is_hard_delete, request)
 
 
@@ -321,7 +363,7 @@ def insert_hearing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
     ).create_hearing_type(request, hearing_type_request)
 
 
@@ -335,8 +377,14 @@ def find_hearing_type(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
     ).read_hearing_type(request, request_metadata)
 
 
@@ -349,11 +397,12 @@ def modify_hearing_type(
     hearing_type_id: int,
     request: Request,
     hearing_type_request: schemas.HearingTypeRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
-    ).update_hearing_type(hearing_type_id, request, hearing_type_request)
+        schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
+    ).update_hearing_type(hearing_type_id, request, hearing_type_request, is_restore)
 
 
 @router.delete(
@@ -368,7 +417,7 @@ def remove_hearing_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.HEARING_TYPE, db_session
     ).delete_hearing_type(hearing_type_id, is_hard_delete, request)
 
 
@@ -384,7 +433,7 @@ def insert_task_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
     ).create_task_type(request, task_type_request)
 
 
@@ -396,8 +445,14 @@ def find_task_type(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
     ).read_task_type(request, request_metadata)
 
 
@@ -410,11 +465,12 @@ def modify_task_type(
     task_type_id: int,
     request: Request,
     task_type_request: schemas.TaskTypeRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
-    ).update_task_type(task_type_id, request, task_type_request)
+        schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
+    ).update_task_type(task_type_id, request, task_type_request, is_restore)
 
 
 @router.delete(
@@ -429,5 +485,5 @@ def remove_task_type(
     db_session: Session = Depends(get_db_session),
 ):
     return get_ref_types_service(
-        schemas.RefTypesServiceRegistry.COMPONENT_STATUS, db_session
+        schemas.RefTypesServiceRegistry.TASK_TYPE, db_session
     ).delete_task_type(task_type_id, is_hard_delete, request)

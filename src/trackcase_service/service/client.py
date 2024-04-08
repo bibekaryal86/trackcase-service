@@ -11,6 +11,7 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils.commons import (
     check_active_component_status,
+    check_permissions,
     get_err_msg,
     get_read_response_data_metadata,
     raise_http_exception,
@@ -25,6 +26,7 @@ class ClientService(CrudService):
     def __init__(self, db_session: Session):
         super(ClientService, self).__init__(db_session, models.Client)
 
+    @check_permissions("CLIENTS_CREATE")
     def create_client(
         self, request: Request, request_object: schemas.ClientRequest
     ) -> schemas.ClientResponse:
@@ -56,18 +58,22 @@ class ClientService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Inserting Client. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("CLIENTS_READ")
     def read_client(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.ClientResponse:
         try:
             if request_metadata:
-                if request_metadata.model_id:
-                    read_response = self.read(model_id=request_metadata.model_id)
+                if request_metadata.schema_model_id:
+                    read_response = self.read(
+                        model_id=request_metadata.schema_model_id,
+                        is_include_soft_deleted=request_metadata.is_include_deleted,
+                    )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
                     )
@@ -75,7 +81,7 @@ class ClientService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Client Not Found By Id: {request_metadata.model_id}!!!",
+                            f"Client Not Found By Id: {request_metadata.schema_model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(
@@ -120,18 +126,20 @@ class ClientService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Retrieving Client. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("CLIENTS_UPDATE")
     def update_client(
         self,
         model_id: int,
         request: Request,
         request_object: schemas.ClientRequest,
+        is_restore: bool = False,
     ) -> schemas.ClientResponse:
-        client_old = self.check_client_exists(model_id, request)
+        client_old = self.check_client_exists(model_id, request, is_restore)
         self.check_client_dependents_statuses(
             request, request_object.component_status_id, client_old
         )
@@ -140,7 +148,7 @@ class ClientService(CrudService):
             data_model: models.Client = convert_schema_to_model(
                 request_object, models.Client
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryClient
             ).add_to_history(
@@ -164,7 +172,7 @@ class ClientService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Client By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -172,10 +180,11 @@ class ClientService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("CLIENTS_DELETE")
     def delete_client(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.ClientResponse:
-        client_old = self.check_client_exists(model_id, request)
+        client_old = self.check_client_exists(model_id, request, is_hard_delete)
         if client_old.court_cases:
             raise_http_exception(
                 request,
@@ -211,7 +220,7 @@ class ClientService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Client By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -219,9 +228,13 @@ class ClientService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_client_exists(self, model_id: int, request: Request) -> schemas.Client:
+    def check_client_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ) -> schemas.Client:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         client_response = self.read_client(request, request_metadata)
         if not client_response or not client_response.data:
@@ -246,7 +259,7 @@ class ClientService(CrudService):
             )
             client_active_statuses = ref_types_service.get_component_status(
                 request,
-                schemas.ComponentStatusNames.CLIENT,
+                schemas.ComponentStatusNames.CLIENTS,
                 schemas.ComponentStatusTypes.ACTIVE,
             )
             active_status_ids_client = [
@@ -256,7 +269,7 @@ class ClientService(CrudService):
             if status_new != status_old and status_new not in active_status_ids_client:
                 court_case_active_statuses = ref_types_service.get_component_status(
                     request,
-                    schemas.ComponentStatusNames.COURT_CASE,
+                    schemas.ComponentStatusNames.COURT_CASES,
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_court_case = [

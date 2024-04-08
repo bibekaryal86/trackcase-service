@@ -2,10 +2,11 @@ import math
 from datetime import datetime
 from typing import Dict, List, NamedTuple, Type, TypeVar, Union
 
-from sqlalchemy import asc, desc, func
+from sqlalchemy import asc, desc, func, text
 from sqlalchemy.orm import Query, Session
 
 from src.trackcase_service.db.models import Base
+from src.trackcase_service.service import schemas
 from src.trackcase_service.service.schemas import (
     FilterConfig,
     FilterOperation,
@@ -13,6 +14,7 @@ from src.trackcase_service.service.schemas import (
     SortConfig,
     SortDirection,
 )
+from src.trackcase_service.utils.convert import create_default_schema_instance
 
 ModelBase = TypeVar("ModelBase", bound=Base)
 DataKeys = NamedTuple("DataKeys", [("data", str), ("metadata", str)])
@@ -43,28 +45,27 @@ class CrudService:
         is_include_soft_deleted: bool = False,
     ) -> Dict[str, Union[List[ModelBase], ResponseMetadata]]:
         if model_id and model_id > 0:
-            data = (
-                self.db_session.query(self.db_model)
-                .filter(
-                    self.db_model.id == model_id,
-                    self.db_model.is_deleted == False,  # noqa: E501, E712
-                )
-                .first()
+            query = self.db_session.query(self.db_model).filter(
+                self.db_model.id == model_id
             )
+            if not is_include_soft_deleted:
+                query = query.filter(
+                    self.db_model.is_deleted == False  # noqa: E501, E712
+                )
+            data = query.first()
             return {
                 DataKeys.data: [data] if data else [],
                 DataKeys.metadata: None,
             }
         elif model_ids and len(model_ids) > 0:
-            data = (
-                self.db_session.query(self.db_model)
-                .filter()
-                .filter(
-                    self.db_model.id.in_(model_ids),
-                    self.db_model.is_deleted == False,  # noqa: E501, E712
-                )
-                .all()
+            query = self.db_session.query(self.db_model).filter(
+                self.db_model.id.in_(model_ids)
             )
+            if not is_include_soft_deleted:
+                query = query.filter(
+                    self.db_model.is_deleted == False  # noqa: E501, E712
+                )
+            data = query.all()
             return {
                 DataKeys.data: data,
                 DataKeys.metadata: None,
@@ -104,10 +105,16 @@ class CrudService:
             DataKeys.metadata: metadata,
         }
 
-    def update(self, model_id: int, model_data: ModelBase) -> ModelBase:
+    def update(
+        self, model_id: int, model_data: ModelBase, is_restore: bool = False
+    ) -> ModelBase:
         db_record = self.db_session.query(self.db_model).get(model_id)
         # exists check done in controller/api for better messaging, so no need again
-        db_record = _copy_key_values(model_data, db_record)
+        if is_restore:
+            setattr(db_record, "deleted_date", None)
+            setattr(db_record, "is_deleted", False)
+        else:
+            db_record = _copy_key_values(model_data, db_record)
         setattr(db_record, "modified", func.now())
         self.db_session.commit()
         self.db_session.refresh(db_record)
@@ -124,6 +131,53 @@ class CrudService:
             setattr(db_record, "is_deleted", True)
         self.db_session.commit()
         return True
+
+
+class CrudServiceRaw:
+    def __init__(self, db_session: Session):
+        self.db_session = db_session
+
+    def read(
+        self,
+        class_type: Type[schemas.BaseSchema],
+        sql_query: str,
+        page_number: int = 1,
+        per_page: int = 100,
+    ) -> Dict[str, Union[List[object], object]]:
+        if per_page > 1000:
+            per_page = 1000  # Cap per_page at 1000
+
+        total_items_query = f"SELECT COUNT(*) FROM ({sql_query}) as total_items_query"
+        total_items = self.db_session.execute(text(total_items_query)).scalar()
+        total_pages = math.ceil(total_items / per_page)
+
+        paginated_query = (
+            f"{sql_query} LIMIT {per_page} OFFSET {(page_number - 1) * per_page}"
+        )
+        result = self.db_session.execute(text(paginated_query))
+        column_names = result.keys()
+        data = [dict(zip(column_names, row)) for row in result.fetchall()]
+
+        metadata = ResponseMetadata(
+            total_items=total_items,
+            total_pages=total_pages,
+            page_number=page_number,
+            per_page=per_page,
+        )
+
+        class_objects = []
+        field_names = class_type.model_fields
+        for row in data:
+            obj = create_default_schema_instance(class_type)
+            for column_name, value in row.items():
+                if column_name in field_names:
+                    setattr(obj, column_name, value)
+            class_objects.append(obj)
+
+        return {
+            DataKeys.data: class_objects,
+            DataKeys.metadata: metadata,
+        }
 
 
 def _copy_key_values(model_data, db_record):

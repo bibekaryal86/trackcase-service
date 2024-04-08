@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -34,6 +34,12 @@ def find_court(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_court_service(db_session).read_court(request, request_metadata)
 
 
@@ -46,9 +52,12 @@ def modify_court(
     court_id: int,
     request: Request,
     court_request: schemas.CourtRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
-    return get_court_service(db_session).update_court(court_id, request, court_request)
+    return get_court_service(db_session).update_court(
+        court_id, request, court_request, is_restore
+    )
 
 
 @router.delete(

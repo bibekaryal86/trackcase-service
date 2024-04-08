@@ -11,6 +11,7 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils.commons import (
     check_active_component_status,
+    check_permissions,
     get_err_msg,
     get_read_response_data_metadata,
     raise_http_exception,
@@ -25,6 +26,7 @@ class FilingService(CrudService):
     def __init__(self, db_session: Session):
         super(FilingService, self).__init__(db_session, models.Filing)
 
+    @check_permissions("FILINGS_CREATE")
     def create_filing(
         self, request: Request, request_object: schemas.FilingRequest
     ) -> schemas.FilingResponse:
@@ -56,18 +58,22 @@ class FilingService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Inserting Filing. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("FILINGS_READ")
     def read_filing(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.FilingResponse:
         try:
             if request_metadata:
-                if request_metadata.model_id:
-                    read_response = self.read(model_id=request_metadata.model_id)
+                if request_metadata.schema_model_id:
+                    read_response = self.read(
+                        model_id=request_metadata.schema_model_id,
+                        is_include_soft_deleted=request_metadata.is_include_deleted,
+                    )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
                     )
@@ -75,7 +81,7 @@ class FilingService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Filing Not Found By Id: {request_metadata.model_id}!!!",
+                            f"Filing Not Found By Id: {request_metadata.schema_model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(
@@ -120,18 +126,20 @@ class FilingService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Retrieving Filing. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("FILINGS_UPDATE")
     def update_filing(
         self,
         model_id: int,
         request: Request,
         request_object: schemas.FilingRequest,
+        is_restore: bool = False,
     ) -> schemas.FilingResponse:
-        filing_old = self.check_filing_exists(model_id, request)
+        filing_old = self.check_filing_exists(model_id, request, is_restore)
         self.check_filing_dependents_statuses(
             request, request_object.component_status_id, filing_old
         )
@@ -140,7 +148,7 @@ class FilingService(CrudService):
             data_model: models.Filing = convert_schema_to_model(
                 request_object, models.Filing
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryFiling
             ).add_to_history(
@@ -164,7 +172,7 @@ class FilingService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Filing By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -172,10 +180,11 @@ class FilingService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("FILINGS_DELETE")
     def delete_filing(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.FilingResponse:
-        filing_old = self.check_filing_exists(model_id, request)
+        filing_old = self.check_filing_exists(model_id, request, is_hard_delete)
         if filing_old.task_calendars:
             raise_http_exception(
                 request,
@@ -211,7 +220,7 @@ class FilingService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Filing By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -219,9 +228,13 @@ class FilingService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
-    def check_filing_exists(self, model_id: int, request: Request) -> schemas.Filing:
+    def check_filing_exists(
+        self, model_id: int, request: Request, is_include_deleted: bool = False
+    ) -> schemas.Filing:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         filing_response = self.read_filing(request, request_metadata)
         if not filing_response or not filing_response.data:
@@ -246,7 +259,7 @@ class FilingService(CrudService):
             )
             filing_active_statuses = ref_types_service.get_component_status(
                 request,
-                schemas.ComponentStatusNames.FILING,
+                schemas.ComponentStatusNames.FILINGS,
                 schemas.ComponentStatusTypes.ACTIVE,
             )
             active_status_ids_filing = [
@@ -255,7 +268,7 @@ class FilingService(CrudService):
             if status_new != status_old and status_new not in active_status_ids_filing:
                 calendar_active_statuses = ref_types_service.get_component_status(
                     request,
-                    schemas.ComponentStatusNames.CALENDAR,
+                    schemas.ComponentStatusNames.CALENDARS,
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_calendar = [

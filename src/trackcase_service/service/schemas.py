@@ -15,18 +15,20 @@ class BaseSchema(BaseModel):
 
 
 class SortConfig(BaseSchema):
+    table: Optional[str] = None
     column: str
     direction: "SortDirection"
 
 
 class FilterConfig(BaseSchema):
+    table: Optional[str] = None
     column: str
     value: Union[str, int, float, datetime]
     operation: "FilterOperation"
 
 
 class RequestMetadata(BaseSchema):
-    model_id: Optional[int] = None
+    schema_model_id: Optional[int] = None
     sort_config: Optional[SortConfig] = None
     filter_config: list[FilterConfig] = []
     page_number: Optional[int] = 1
@@ -66,7 +68,7 @@ class RequestBase(BaseSchema):
 
 class ResponseBase(BaseSchema):
     delete_count: Optional[int] = None
-    error_detail: Optional[ErrorDetail] = None
+    error: Optional[ErrorDetail] = None
     metadata: Optional[ResponseMetadata] = None
 
 
@@ -105,7 +107,10 @@ class AppUserRoleBase:
 
 
 class AppUserRole(AppUserRoleBase, BaseModelSchema):
-    pass
+    # from raw sql
+    email: Optional[str] = None
+    full_name: Optional[str] = None
+    role_name: Optional[str] = None
 
 
 class AppUserRoleRequest(AppUserRoleBase, RequestBase):
@@ -123,7 +128,9 @@ class AppRolePermissionBase:
 
 
 class AppRolePermission(AppRolePermissionBase, BaseModelSchema):
-    pass
+    # from raw sql
+    role_name: Optional[str] = None
+    permission_name: Optional[str] = None
 
 
 class AppRolePermissionRequest(AppRolePermissionBase, RequestBase):
@@ -161,14 +168,26 @@ class AppUser(AppUserBase, BaseModelSchema):
                 ),
             },
             "roles": [
-                {"name": role.id, "description": role.name} for role in self.app_roles
+                {
+                    "name": role.name,
+                    "permissions": (
+                        [
+                            {"name": permission.name}
+                            for permission in role.app_permissions
+                        ]
+                        if role.app_permissions
+                        else []
+                    ),
+                }
+                for role in self.app_roles
             ],
         }
 
 
 class AppUserRequest(AppUserBase, RequestBase):
-    # Required for insert, Optional for update, enforced in user_management
+    # Password is required for insert, Optional for update
     password: Optional[str] = None
+    is_guest_user: Optional[str] = None
 
 
 class AppUserResponse(ResponseBase):
@@ -318,12 +337,12 @@ class CaseTypeResponse(ResponseBase):
 
 # common ref types
 class RefTypesResponseData(BaseSchema):
-    component_statuses: list[ComponentStatus] = []
-    collection_methods: list[CollectionMethod] = []
-    case_types: list[CaseType] = []
-    filing_types: list[FilingType] = []
-    hearing_types: list[HearingType] = []
-    task_types: list[TaskType] = []
+    component_statuses: Optional[ComponentStatusResponse] = None
+    collection_methods: Optional[CollectionMethodResponse] = None
+    case_types: Optional[CaseTypeResponse] = None
+    filing_types: Optional[FilingTypeResponse] = None
+    hearing_types: Optional[HearingTypeResponse] = None
+    task_types: Optional[TaskTypeResponse] = None
 
 
 class RefTypesResponse(ResponseBase):
@@ -458,9 +477,9 @@ class CourtCase(CourtCaseBase, BaseModelSchema):
     case_collections: list["CaseCollection"] = []
     hearing_calendars: list["HearingCalendar"] = []
     history_court_cases: list["HistoryCourtCase"] = []
-    history_hearing_calendars: list["HistoryHearingCalendar"] = None
-    history_filings: list["HistoryFiling"] = None
-    history_case_collections: list["HistoryCaseCollection"] = None
+    history_hearing_calendars: list["HistoryHearingCalendar"] = []
+    history_filings: list["HistoryFiling"] = []
+    history_case_collections: list["HistoryCaseCollection"] = []
 
 
 class HistoryCourtCase(CourtCase):
@@ -606,7 +625,7 @@ class Filing(FilingBase, BaseModelSchema):
     court_case: Optional[CourtCase] = None
     task_calendars: list[TaskCalendar] = []
     history_filings: list["HistoryFiling"] = []
-    history_task_calendars: Optional[HistoryTaskCalendar] = []
+    history_task_calendars: list[HistoryTaskCalendar] = []
 
 
 class HistoryFiling(Filing):
@@ -714,8 +733,8 @@ class CalendarObjectTypes(str, Enum):
 
 
 class SortDirection(str, Enum):
-    ASC = "asc"
-    DESC = "desc"
+    ASC = "ASC"
+    DESC = "DESC"
 
 
 class FilterOperation(str, Enum):
@@ -727,44 +746,45 @@ class FilterOperation(str, Enum):
 
 
 class UserManagementServiceRegistry(str, Enum):
-    APP_USER = "app_user"
-    APP_ROLE = "app_role"
-    APP_PERMISSION = "app_permission"
-    APP_USER_ROLE = "app_user_role"
-    APP_ROLE_PERMISSION = "app_role_permission"
+    APP_USER = "APP_USER"
+    APP_ROLE = "APP_ROLE"
+    APP_PERMISSION = "APP_PERMISSION"
+    APP_USER_ROLE = "APP_USER_ROLE"
+    APP_ROLE_PERMISSION = "APP_ROLE_PERMISSION"
+    APP_USER_ROLE_PERMISSION = "APP_USER_ROLE_PERMISSION"
 
 
 class RefTypesServiceRegistry(str, Enum):
-    COMPONENT_STATUS = "component_status"
-    COLLECTION_METHOD = "collection_method"
-    CASE_TYPE = "case_type"
-    FILING_TYPE = "filing_type"
-    HEARING_TYPE = "hearing_type"
-    TASK_TYPE = "task_type"
+    COMPONENT_STATUS = "COMPONENT_STATUS"
+    COLLECTION_METHOD = "COLLECTION_METHOD"
+    CASE_TYPE = "CASE_TYPE"
+    FILING_TYPE = "FILING_TYPE"
+    HEARING_TYPE = "HEARING_TYPE"
+    TASK_TYPE = "TASK_TYPE"
 
 
 class CalendarServiceRegistry(str, Enum):
-    HEARING_CALENDAR = "hearing_calendar"
-    TASK_CALENDAR = "task_calendar"
+    HEARING_CALENDAR = "HEARING_CALENDAR"
+    TASK_CALENDAR = "TASK_CALENDAR"
 
 
 class CollectionServiceRegistry(str, Enum):
-    CASE_COLLECTION = "case_collection"
-    CASH_COLLECTION = "cash_collection"
+    CASE_COLLECTION = "CASE_COLLECTION"
+    CASH_COLLECTION = "CASH_COLLECTION"
 
 
 class ComponentStatusNames(str, Enum):
-    APP_USER = "app_user"
-    COURT = "court"
-    JUDGE = "judge"
-    CLIENT = "client"
-    COURT_CASE = "court_case"
-    CALENDAR = "calendars"
-    FILING = "filing"
-    COLLECTION = "collections"
+    APP_USERS = "APP_USERS"
+    COURTS = "COURTS"
+    JUDGES = "JUDGES"
+    CLIENTS = "CLIENTS"
+    COURT_CASES = "COURT_CASES"
+    CALENDARS = "CALENDARS"
+    FILINGS = "FILINGS"
+    COLLECTIONS = "COLLECTIONS"
 
 
 class ComponentStatusTypes(str, Enum):
-    ACTIVE = "active"
-    INACTIVE = "inactive"
-    ALL = "all"
+    ACTIVE = "ACTIVE"
+    INACTIVE = "INACTIVE"
+    ALL = "ALL"

@@ -13,6 +13,7 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils.commons import (
     check_active_component_status,
+    check_permissions,
     get_err_msg,
     get_read_response_data_metadata,
     raise_http_exception,
@@ -32,6 +33,7 @@ class HearingCalendarService(CrudService):
     def __init__(self, db_session: Session):
         super(HearingCalendarService, self).__init__(db_session, models.HearingCalendar)
 
+    @check_permissions("CALENDARS_CREATE")
     def create_hearing_calendar(
         self, request: Request, request_object: schemas.HearingCalendarRequest
     ) -> schemas.HearingCalendarResponse:
@@ -64,20 +66,24 @@ class HearingCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting Hearing Calendar. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("CALENDARS_READ")
     def read_hearing_calendar(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.HearingCalendarResponse:
         try:
             if request_metadata:
-                if request_metadata.model_id:
-                    read_response = self.read(model_id=request_metadata.model_id)
+                if request_metadata.schema_model_id:
+                    read_response = self.read(
+                        model_id=request_metadata.schema_model_id,
+                        is_include_soft_deleted=request_metadata.is_include_deleted,
+                    )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
                     )
@@ -85,7 +91,7 @@ class HearingCalendarService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Hearing Calendar Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
+                            f"Hearing Calendar Not Found By Id: {request_metadata.schema_model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(
@@ -130,20 +136,24 @@ class HearingCalendarService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving Hearing Calendar. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("CALENDARS_UPDATE")
     def update_hearing_calendar(
         self,
         model_id: int,
         request: Request,
         request_object: schemas.HearingCalendarRequest,
+        is_restore: bool = False,
     ) -> schemas.HearingCalendarResponse:
-        hearing_calendar_old = self.check_hearing_calendar_exists(model_id, request)
+        hearing_calendar_old = self.check_hearing_calendar_exists(
+            model_id, request, is_restore
+        )
         self.check_hearing_calendar_dependents_statuses(
             request, request_object.component_status_id, hearing_calendar_old
         )
@@ -152,7 +162,7 @@ class HearingCalendarService(CrudService):
             data_model: models.HearingCalendar = convert_schema_to_model(
                 request_object, models.HearingCalendar
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryHearingCalendar
             ).add_to_history(
@@ -176,7 +186,7 @@ class HearingCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Hearing Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -184,10 +194,13 @@ class HearingCalendarService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("CALENDARS_DELETE")
     def delete_hearing_calendar(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.HearingCalendarResponse:
-        hearing_calendar_old = self.check_hearing_calendar_exists(model_id, request)
+        hearing_calendar_old = self.check_hearing_calendar_exists(
+            model_id, request, is_hard_delete
+        )
         if hearing_calendar_old.task_calendars:
             raise_http_exception(
                 request,
@@ -223,7 +236,7 @@ class HearingCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Hearing Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -251,17 +264,19 @@ class HearingCalendarService(CrudService):
             due_date=due_date,
             task_type_id=TASK_ID_DUE_AT_HEARING,
             hearing_calendar_id=hearing_calendar.id,
-            status=hearing_calendar.status,
+            component_status_id=hearing_calendar.component_status_id,
         )
         get_calendar_service(
             schemas.CalendarServiceRegistry.TASK_CALENDAR, db_session=self.db_session
         ).create_task_calendar(request, task_calendar_request)
 
     def check_hearing_calendar_exists(
-        self, model_id: int, request: Request
+        self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.HearingCalendar:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         hearing_calendar_response = self.read_hearing_calendar(
             request, request_metadata
@@ -287,7 +302,7 @@ class HearingCalendarService(CrudService):
                 db_session=self.db_session,
             ).get_component_status(
                 request,
-                schemas.ComponentStatusNames.CALENDAR,
+                schemas.ComponentStatusNames.CALENDARS,
                 schemas.ComponentStatusTypes.ACTIVE,
             )
             active_status_ids = [
@@ -309,6 +324,7 @@ class TaskCalendarService(CrudService):
     def __init__(self, db_session: Session):
         super(TaskCalendarService, self).__init__(db_session, models.TaskCalendar)
 
+    @check_permissions("CALENDARS_CREATE")
     def create_task_calendar(
         self, request: Request, request_object: schemas.TaskCalendarRequest
     ) -> schemas.TaskCalendarResponse:
@@ -338,20 +354,24 @@ class TaskCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting Task Calendar. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("CALENDARS_READ")
     def read_task_calendar(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.TaskCalendarResponse:
         try:
             if request_metadata:
-                if request_metadata.model_id:
-                    read_response = self.read(model_id=request_metadata.model_id)
+                if request_metadata.schema_model_id:
+                    read_response = self.read(
+                        model_id=request_metadata.schema_model_id,
+                        is_include_soft_deleted=request_metadata.is_include_deleted,
+                    )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
                     )
@@ -359,7 +379,7 @@ class TaskCalendarService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Task Calendar Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
+                            f"Task Calendar Not Found By Id: {request_metadata.schema_model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(
@@ -401,26 +421,28 @@ class TaskCalendarService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving Task Calendar. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("CALENDARS_UPDATE")
     def update_task_calendar(
         self,
         model_id: int,
         request: Request,
         request_object: schemas.TaskCalendarRequest,
+        is_restore: bool = False,
     ) -> schemas.TaskCalendarResponse:
-        self.check_task_calendar_exists(model_id, request)
+        self.check_task_calendar_exists(model_id, request, is_restore)
 
         try:
             data_model: models.TaskCalendar = convert_schema_to_model(
                 request_object, models.TaskCalendar
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryTaskCalendar
             ).add_to_history(
@@ -442,7 +464,7 @@ class TaskCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Task Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -450,10 +472,13 @@ class TaskCalendarService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("CALENDARS_DELETE")
     def delete_task_calendar(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.TaskCalendarResponse:
-        task_calendar_old = self.check_task_calendar_exists(model_id, request)
+        task_calendar_old = self.check_task_calendar_exists(
+            model_id, request, is_hard_delete
+        )
 
         if is_hard_delete:
             get_history_service(
@@ -483,7 +508,7 @@ class TaskCalendarService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Task Calendar By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -492,10 +517,12 @@ class TaskCalendarService(CrudService):
             )
 
     def check_task_calendar_exists(
-        self, model_id: int, request: Request
+        self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.TaskCalendar:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         task_calendar_response = self.read_task_calendar(request, request_metadata)
         if not task_calendar_response or not task_calendar_response.data:

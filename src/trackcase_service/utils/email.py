@@ -21,10 +21,8 @@ class Email:
 
     def app_user_validation_email(self, request: Request, user_name: str):
         email_html_content = read_file("email_validate_user.html")
-        activation_link = (
-            "{}trackcase-service/users/na/validate/?to_validate={}".format(
-                request.base_url, encode_email_address(user_name, 15)
-            )
+        activation_link = "{}users/na/app_users/validate_exit/?to_validate={}".format(
+            request.base_url, encode_email_address(user_name, 15)
         )
         email_html_content = email_html_content.format(activation_link=activation_link)
         data = {
@@ -32,12 +30,12 @@ class Email:
                 {
                     "From": {
                         "Email": self.api_email,
-                        "Name": f"TrackCase Service {self.api_email}",
+                        "Name": f"[TrackCase Service] {self.api_email}",
                     },
                     "To": [
                         {
                             "Email": user_name,
-                            "Name": f"TrackCase Service {user_name}",
+                            "Name": f"[TrackCase Service] {user_name}",
                         }
                     ],
                     "Subject": "TrackCase Service (Activate)",
@@ -55,7 +53,7 @@ class Email:
 
     def app_user_reset_email(self, request: Request, user_name: str):
         email_html_content = read_file("email_reset_user.html")
-        reset_link = "{}trackcase-service/users/na/reset_exit/?to_reset={}".format(
+        reset_link = "{}users/na/app_users/reset_mid/?to_reset={}".format(
             request.base_url, encode_email_address(user_name, 15)
         )
         email_html_content = email_html_content.format(reset_link=reset_link)

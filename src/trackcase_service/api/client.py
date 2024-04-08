@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -34,6 +34,12 @@ def find_client(
     request_metadata: schemas.RequestMetadata = Depends(parse_request_metadata),
     db_session: Session = Depends(get_db_session),
 ):
+    if not request_metadata:
+        request_metadata = schemas.RequestMetadata(
+            sort_config=schemas.SortConfig(
+                column="name", direction=schemas.SortDirection.ASC
+            )
+        )
     return get_client_service(db_session).read_client(request, request_metadata)
 
 
@@ -46,10 +52,11 @@ def modify_client(
     client_id: int,
     request: Request,
     client_request: schemas.ClientRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_client_service(db_session).update_client(
-        client_id, request, client_request
+        client_id, request, client_request, is_restore
     )
 
 

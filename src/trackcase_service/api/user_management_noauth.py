@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -56,10 +56,22 @@ def login_app_user(
 
 
 @router.get(
-    "/app_users/validate/",
+    "/app_users/validate_init/",
     include_in_schema=False,
 )
-def validate_app_user(
+def validate_app_user_init(
+    request: Request,
+    to_validate: str,
+):
+    get_email_service().app_user_validation_email(request, to_validate)
+    return JSONResponse(content={})
+
+
+@router.get(
+    "/app_users/validate_exit/",
+    include_in_schema=False,
+)
+def validate_app_user_exit(
     request: Request,
     to_validate: str,
     db_session: Session = Depends(get_db_session),
@@ -84,29 +96,42 @@ def reset_app_user_init(
     to_reset: str,
 ):
     get_email_service().app_user_reset_email(request, to_reset)
-    url = _get_redirect_base_url()
-    url = f"{url}?is_reset_email_sent=true"
-    return RedirectResponse(url=url)
+    return JSONResponse(content={})
 
 
 @router.get(
-    "/app_users/reset_exit/",
+    "/app_users/reset_mid/",
     include_in_schema=False,
 )
-def reset_app_user_exit(
+def reset_app_user_mid(
     request: Request,
     to_reset: str,
     db_session: Session = Depends(get_db_session),
 ):
     url = _get_redirect_base_url()
     try:
-        user_model_id = get_user_password_service(
+        user_to_reset = get_user_password_service(
             plain_password=None, user_name=to_reset
         ).validate_reset_user(request, db_session, False)
-        url = f"{url}/reset_password/{user_model_id}"
-    except Exception as ex:
-        url = f"{url}/reset_password/0/?error={str(ex)}"
+        url = f"{url}?is_reset=true&to_reset={user_to_reset}"
+    except Exception:
+        url = f"{url}?is_reset=false"
     return RedirectResponse(url=url)
+
+
+@router.post(
+    "/app_users/reset_exit/",
+    include_in_schema=False,
+)
+def reset_app_user_exit(
+    request: Request,
+    reset_request: schemas.AppUserLoginRequest,
+    db_session: Session = Depends(get_db_session),
+):
+    get_user_password_service(
+        plain_password=reset_request.password, user_name=reset_request.username
+    ).reset_user_password(request, db_session)
+    return JSONResponse(content={})
 
 
 def _get_redirect_base_url():

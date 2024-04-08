@@ -12,6 +12,7 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils.commons import (
     check_active_component_status,
+    check_permissions,
     get_err_msg,
     get_read_response_data_metadata,
     raise_http_exception,
@@ -26,6 +27,7 @@ class CaseCollectionService(CrudService):
     def __init__(self, db_session: Session):
         super(CaseCollectionService, self).__init__(db_session, models.CaseCollection)
 
+    @check_permissions("COLLECTIONS_CREATE")
     def create_case_collection(
         self, request: Request, request_object: schemas.CaseCollectionRequest
     ) -> schemas.CaseCollectionResponse:
@@ -57,20 +59,24 @@ class CaseCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting Case Collection. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("COLLECTIONS_READ")
     def read_case_collection(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.CaseCollectionResponse:
         try:
             if request_metadata:
-                if request_metadata.model_id:
-                    read_response = self.read(model_id=request_metadata.model_id)
+                if request_metadata.schema_model_id:
+                    read_response = self.read(
+                        model_id=request_metadata.schema_model_id,
+                        is_include_soft_deleted=request_metadata.is_include_deleted,
+                    )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
                     )
@@ -78,7 +84,7 @@ class CaseCollectionService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Case Collection Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
+                            f"Case Collection Not Found By Id: {request_metadata.schema_model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(
@@ -123,20 +129,24 @@ class CaseCollectionService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving Case Collection. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("COLLECTIONS_UPDATE")
     def update_case_collection(
         self,
         model_id: int,
         request: Request,
         request_object: schemas.CaseCollectionRequest,
+        is_restore: bool = False,
     ) -> schemas.CaseCollectionResponse:
-        case_collection_old = self.check_case_collection_exists(model_id, request)
+        case_collection_old = self.check_case_collection_exists(
+            model_id, request, is_restore
+        )
         self.check_case_collection_dependents_statuses(
             request, request_object.component_status_id, case_collection_old
         )
@@ -145,7 +155,7 @@ class CaseCollectionService(CrudService):
             data_model: models.CaseCollection = convert_schema_to_model(
                 request_object, models.CaseCollection
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryCaseCollection
             ).add_to_history(
@@ -169,7 +179,7 @@ class CaseCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Case Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -177,10 +187,13 @@ class CaseCollectionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("COLLECTIONS_DELETE")
     def delete_case_collection(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CaseCollectionResponse:
-        case_collection_old = self.check_case_collection_exists(model_id, request)
+        case_collection_old = self.check_case_collection_exists(
+            model_id, request, is_hard_delete
+        )
         if case_collection_old.cash_collections:
             raise_http_exception(
                 request,
@@ -216,7 +229,7 @@ class CaseCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Case Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -225,10 +238,12 @@ class CaseCollectionService(CrudService):
             )
 
     def check_case_collection_exists(
-        self, model_id: int, request: Request
+        self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.CaseCollection:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         case_collection_response = self.read_case_collection(request, request_metadata)
         if not case_collection_response or not case_collection_response.data:
@@ -252,7 +267,7 @@ class CaseCollectionService(CrudService):
                 db_session=self.db_session,
             ).get_component_status(
                 request,
-                schemas.ComponentStatusNames.COLLECTION,
+                schemas.ComponentStatusNames.COLLECTIONS,
                 schemas.ComponentStatusTypes.ACTIVE,
             )
             active_status_ids = [
@@ -274,6 +289,7 @@ class CashCollectionService(CrudService):
     def __init__(self, db_session: Session):
         super(CashCollectionService, self).__init__(db_session, models.CashCollection)
 
+    @check_permissions("COLLECTIONS_CREATE")
     def create_cash_collection(
         self, request: Request, request_object: schemas.CashCollectionRequest
     ) -> schemas.CashCollectionResponse:
@@ -303,20 +319,24 @@ class CashCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Inserting Cash Collection. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("COLLECTIONS_READ")
     def read_cash_collection(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.CashCollectionResponse:
         try:
             if request_metadata:
-                if request_metadata.model_id:
-                    read_response = self.read(model_id=request_metadata.model_id)
+                if request_metadata.schema_model_id:
+                    read_response = self.read(
+                        model_id=request_metadata.schema_model_id,
+                        is_include_soft_deleted=request_metadata.is_include_deleted,
+                    )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
                     )
@@ -324,7 +344,7 @@ class CashCollectionService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Cash Collection Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
+                            f"Cash Collection Not Found By Id: {request_metadata.schema_model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(
@@ -366,26 +386,28 @@ class CashCollectionService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     "Error Retrieving Cash Collection. Please Try Again!!!", str(ex)
                 ),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("COLLECTIONS_UPDATE")
     def update_cash_collection(
         self,
         model_id: int,
         request: Request,
         request_object: schemas.CashCollectionRequest,
+        is_restore: bool = False,
     ) -> schemas.CashCollectionResponse:
-        self.check_cash_collection_exists(model_id, request)
+        self.check_cash_collection_exists(model_id, request, is_restore)
 
         try:
             data_model: models.CashCollection = convert_schema_to_model(
                 request_object, models.CashCollection
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryCashCollection
             ).add_to_history(
@@ -407,7 +429,7 @@ class CashCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating Cash Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -415,10 +437,13 @@ class CashCollectionService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("COLLECTIONS_DELETE")
     def delete_cash_collection(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CashCollectionResponse:
-        cash_collection_old = self.check_cash_collection_exists(model_id, request)
+        cash_collection_old = self.check_cash_collection_exists(
+            model_id, request, is_hard_delete
+        )
 
         if is_hard_delete:
             get_history_service(
@@ -448,7 +473,7 @@ class CashCollectionService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting Cash Collection By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -457,10 +482,12 @@ class CashCollectionService(CrudService):
             )
 
     def check_cash_collection_exists(
-        self, model_id: int, request: Request
+        self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.CashCollection:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         cash_collection_response = self.read_cash_collection(request, request_metadata)
         if not cash_collection_response or not cash_collection_response.data:

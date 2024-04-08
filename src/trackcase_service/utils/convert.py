@@ -24,7 +24,7 @@ def _get_default_value(field: FieldInfo):
 
 # this is required because Pydantic doesn't allow creating empty instance
 # so create an instance with default empty values according to type
-def _create_default_schema_instance(destination_class):
+def create_default_schema_instance(destination_class):
     fields = destination_class.__fields__
     required_fields = {
         name: _get_default_value(field) for name, field in fields.items()
@@ -45,7 +45,7 @@ def _copy_objects(
     if source_object is None:
         return None
     if destination_object is None:
-        destination_object = _create_default_schema_instance(destination_class)
+        destination_object = create_default_schema_instance(destination_class)
     common_attributes = set(dir(source_object)) & set(dir(destination_object))
     for attr in common_attributes:
         if (
@@ -72,8 +72,11 @@ def convert_schema_to_model(
     app_user_id=None,
     history_object_id_key=None,
     history_object_id_value=None,
+    exclusions=None,
 ):
-    data_model = _copy_objects(request_schema, model_class, model_class())
+    data_model = _copy_objects(
+        request_schema, model_class, model_class(), exclusions=exclusions
+    )
     if history_object_id_key and history_object_id_value:
         setattr(data_model, "app_user_id", app_user_id)
         setattr(data_model, history_object_id_key, history_object_id_value)

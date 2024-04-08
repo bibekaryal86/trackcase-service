@@ -33,7 +33,7 @@ log = logger.Logger(logging.getLogger(__name__))
 @asynccontextmanager
 async def lifespan(application: FastAPI):
     commons.validate_input()
-    commons.startup_app()
+    await commons.startup_app()
     yield
     commons.shutdown_app()
 

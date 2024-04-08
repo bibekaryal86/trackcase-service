@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from src.trackcase_service.db.session import get_db_session
@@ -48,10 +48,11 @@ def modify_court_case(
     court_case_id: int,
     request: Request,
     court_case_request: schemas.CourtCaseRequest,
+    is_restore: bool = Query(default=False),
     db_session: Session = Depends(get_db_session),
 ):
     return get_court_case_service(db_session).update_court_case(
-        court_case_id, request, court_case_request
+        court_case_id, request, court_case_request, is_restore
     )
 
 

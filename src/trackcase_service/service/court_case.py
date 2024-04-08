@@ -11,6 +11,7 @@ from src.trackcase_service.service.history_service import get_history_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils.commons import (
     check_active_component_status,
+    check_permissions,
     get_err_msg,
     get_read_response_data_metadata,
     raise_http_exception,
@@ -25,6 +26,7 @@ class CourtCaseService(CrudService):
     def __init__(self, db_session: Session):
         super(CourtCaseService, self).__init__(db_session, models.CourtCase)
 
+    @check_permissions("COURT_CASES_CREATE")
     def create_court_case(
         self, request: Request, request_object: schemas.CourtCaseRequest
     ) -> schemas.CourtCaseResponse:
@@ -60,18 +62,22 @@ class CourtCaseService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Inserting CourtCase. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("COURT_CASES_READ")
     def read_court_case(
         self, request: Request, request_metadata: schemas.RequestMetadata = None
     ) -> schemas.CourtCaseResponse:
         try:
             if request_metadata:
-                if request_metadata.model_id:
-                    read_response = self.read(model_id=request_metadata.model_id)
+                if request_metadata.schema_model_id:
+                    read_response = self.read(
+                        model_id=request_metadata.schema_model_id,
+                        is_include_soft_deleted=request_metadata.is_include_deleted,
+                    )
                     response_data, response_metadata = get_read_response_data_metadata(
                         read_response
                     )
@@ -79,7 +85,7 @@ class CourtCaseService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"CourtCase Not Found By Id: {request_metadata.model_id}!!!",  # noqa: E501
+                            f"CourtCase Not Found By Id: {request_metadata.schema_model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(
@@ -132,18 +138,20 @@ class CourtCaseService(CrudService):
                 raise
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg("Error Retrieving CourtCase. Please Try Again!!!", str(ex)),
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("COURT_CASES_UPDATE")
     def update_court_case(
         self,
         model_id: int,
         request: Request,
         request_object: schemas.CourtCaseRequest,
+        is_restore: bool = False,
     ) -> schemas.CourtCaseResponse:
-        court_case_old = self.check_court_case_exists(model_id, request)
+        court_case_old = self.check_court_case_exists(model_id, request, is_restore)
         self.check_court_case_dependents_statuses(
             request, request_object.component_status_id, court_case_old
         )
@@ -152,7 +160,7 @@ class CourtCaseService(CrudService):
             data_model: models.CourtCase = convert_schema_to_model(
                 request_object, models.CourtCase
             )
-            data_model = self.update(model_id, data_model)
+            data_model = self.update(model_id, data_model, is_restore)
             get_history_service(
                 db_session=self.db_session, db_model=models.HistoryCourtCase
             ).add_to_history(
@@ -180,7 +188,7 @@ class CourtCaseService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Updating CourtCase By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -188,10 +196,11 @@ class CourtCaseService(CrudService):
                 exc_info=sys.exc_info(),
             )
 
+    @check_permissions("COURT_CASES_DELETE")
     def delete_court_case(
         self, model_id: int, is_hard_delete: bool, request: Request
     ) -> schemas.CourtCaseResponse:
-        court_case_old = self.check_court_case_exists(model_id, request)
+        court_case_old = self.check_court_case_exists(model_id, request, is_hard_delete)
         if court_case_old.filings:
             raise_http_exception(
                 request,
@@ -239,7 +248,7 @@ class CourtCaseService(CrudService):
         except Exception as ex:
             raise_http_exception(
                 request,
-                HTTPStatus.SERVICE_UNAVAILABLE,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 get_err_msg(
                     f"Error Deleting CourtCase By Id: {model_id}. Please Try Again!!!",  # noqa: E501
                     str(ex),
@@ -248,10 +257,12 @@ class CourtCaseService(CrudService):
             )
 
     def check_court_case_exists(
-        self, model_id: int, request: Request
+        self, model_id: int, request: Request, is_include_deleted: bool = False
     ) -> schemas.CourtCase:
         request_metadata = schemas.RequestMetadata(
-            model_id=model_id, is_include_extra=True
+            model_id=model_id,
+            is_include_extra=True,
+            is_include_deleted=is_include_deleted,
         )
         court_case_response = self.read_court_case(request, request_metadata)
         if not court_case_response or not court_case_response.data:
@@ -275,7 +286,7 @@ class CourtCaseService(CrudService):
         )
         court_case_active_statuses = ref_types_service.get_component_status(
             request,
-            schemas.ComponentStatusNames.COURT_CASE,
+            schemas.ComponentStatusNames.COURT_CASES,
             schemas.ComponentStatusTypes.ACTIVE,
         )
         active_status_ids_court_case = [
@@ -286,7 +297,7 @@ class CourtCaseService(CrudService):
             if court_case_old.filings:
                 filing_active_statuses = ref_types_service.get_component_status(
                     request,
-                    schemas.ComponentStatusNames.FILING,
+                    schemas.ComponentStatusNames.FILINGS,
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_filing = [
@@ -304,7 +315,7 @@ class CourtCaseService(CrudService):
             if court_case_old.case_collections:
                 collection_active_statuses = ref_types_service.get_component_status(
                     request,
-                    schemas.ComponentStatusNames.COLLECTION,
+                    schemas.ComponentStatusNames.COLLECTIONS,
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_collection = [
@@ -323,7 +334,7 @@ class CourtCaseService(CrudService):
             if court_case_old.hearing_calendars:
                 calendar_active_statuses = ref_types_service.get_component_status(
                     request,
-                    schemas.ComponentStatusNames.CALENDAR,
+                    schemas.ComponentStatusNames.CALENDARS,
                     schemas.ComponentStatusTypes.ACTIVE,
                 )
                 active_status_ids_calendar = [
