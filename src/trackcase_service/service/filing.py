@@ -81,7 +81,7 @@ class FilingService(CrudService):
                         raise_http_exception(
                             request,
                             HTTPStatus.NOT_FOUND,
-                            f"Filing Not Found By Id: {request_metadata.schema_model_id}!!!",
+                            f"Filing Not Found By Id: {request_metadata.schema_model_id}!!!",  # noqa: E501
                         )
                 else:
                     read_response = self.read(

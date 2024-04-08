@@ -1018,7 +1018,7 @@ class AppUserRolePermissionService(CrudServiceRaw):
         is_where_used = False
         try:
             sql_query = (
-                "SELECT app_user_role.id, app_user_role.created, app_user_role.modified, "
+                "SELECT app_user_role.id, app_user_role.created, app_user_role.modified, "  # noqa: E501
                 "app_user_role.is_deleted, app_user_role.deleted_date, "
                 "app_user_role.app_user_id, app_user_role.app_role_id, "
                 "app_user.email, app_user.full_name, app_role.name as role_name "
@@ -1076,13 +1076,13 @@ class AppUserRolePermissionService(CrudServiceRaw):
         is_where_used = False
         try:
             sql_query = (
-                "SELECT app_role_permission.id, app_role_permission.created, app_role_permission.modified, "
+                "SELECT app_role_permission.id, app_role_permission.created, app_role_permission.modified, "  # noqa: E501
                 "app_role_permission.is_deleted, app_role_permission.deleted_date, "
-                "app_role_permission.app_role_id, app_role_permission.app_permission_id, "
+                "app_role_permission.app_role_id, app_role_permission.app_permission_id, "  # noqa: E501
                 "app_role.name as role_name, app_permission.name as permission_name "
                 "FROM app_role_permission "
                 "INNER JOIN app_role ON app_role_permission.app_role_id = app_role.id "
-                "INNER JOIN app_permission on app_role_permission.app_permission_id = app_permission.id"
+                "INNER JOIN app_permission on app_role_permission.app_permission_id = app_permission.id"  # noqa: E501
             )
             if metadata is not None:
                 if metadata.schema_model_id is not None:
