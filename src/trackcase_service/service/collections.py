@@ -121,6 +121,9 @@ class CaseCollectionService(CrudService):
                 )
                 for data_model in response_data
             ]
+
+            self.calculate_remaining_balance(schema_models)
+
             return schemas.CaseCollectionResponse(
                 data=schema_models, metadata=response_metadata
             )
@@ -283,6 +286,19 @@ class CaseCollectionService(CrudService):
                         HTTPStatus.UNPROCESSABLE_ENTITY,
                         f"Cannot Update Case Collection {case_collection_old.id} Status to {status_new}, There are Active Cash Collections!",  # noqa: E501
                     )
+
+    @staticmethod
+    def calculate_remaining_balance(case_collections: list[schemas.CaseCollection]):
+        for case_collection in case_collections:
+            collected_total = sum(
+                cash.collected_amount for cash in case_collection.cash_collections if cash.collected_amount > 0
+            )
+            waived_total = sum(
+                cash.waived_amount for cash in case_collection.cash_collections if cash.waived_amount > 0
+            )
+            case_collection.balance_amount = (
+                case_collection.quote_amount - collected_total - waived_total
+            )
 
 
 class CashCollectionService(CrudService):
