@@ -652,10 +652,10 @@ class CaseCollectionBase:
     court_case_id: int
     component_status_id: int
     comments: Optional[str] = None
-    balance_amount: Optional[condecimal(max_digits=7, decimal_places=2)] = None
 
 
 class CaseCollection(CaseCollectionBase, BaseModelSchema):
+    balance_amount: Optional[condecimal(max_digits=7, decimal_places=2)] = None
     # model_config = ConfigDict(from_attributes=True, extra="ignore")
     component_status: Optional[ComponentStatus] = None
     court_case: Optional[CourtCase] = None
