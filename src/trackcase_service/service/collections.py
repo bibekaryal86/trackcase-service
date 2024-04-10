@@ -291,10 +291,14 @@ class CaseCollectionService(CrudService):
     def calculate_remaining_balance(case_collections: list[schemas.CaseCollection]):
         for case_collection in case_collections:
             collected_total = sum(
-                cash.collected_amount for cash in case_collection.cash_collections if cash.collected_amount > 0
+                cash.collected_amount
+                for cash in case_collection.cash_collections
+                if cash.collected_amount > 0
             )
             waived_total = sum(
-                cash.waived_amount for cash in case_collection.cash_collections if cash.waived_amount > 0
+                cash.waived_amount
+                for cash in case_collection.cash_collections
+                if cash.waived_amount > 0
             )
             case_collection.balance_amount = (
                 case_collection.quote_amount - collected_total - waived_total

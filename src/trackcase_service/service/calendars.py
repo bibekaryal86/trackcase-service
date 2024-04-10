@@ -20,8 +20,9 @@ from src.trackcase_service.utils.commons import (
 )
 from src.trackcase_service.utils.constants import (
     DEFAULT_HEARING_TO_TASK_CALENDAR_DATE,
+    DEFAULT_TASK_CALENDAR_DUE_DATE,
     HEARING_TO_TASK_CALENDAR_DATE,
-    TASK_ID_DUE_AT_HEARING, DEFAULT_TASK_CALENDAR_DUE_DATE,
+    TASK_ID_DUE_AT_HEARING,
 )
 from src.trackcase_service.utils.convert import (
     convert_model_to_schema,
@@ -254,7 +255,9 @@ class HearingCalendarService(CrudService):
         task_date: datetime = hearing_calendar.hearing_date - timedelta(
             days=task_date_diff
         )
-        due_date: datetime = hearing_calendar.hearing_date - timedelta(days=DEFAULT_TASK_CALENDAR_DUE_DATE)
+        due_date: datetime = hearing_calendar.hearing_date - timedelta(
+            days=DEFAULT_TASK_CALENDAR_DUE_DATE
+        )
         current_date = datetime.now()
         if task_date < current_date:
             task_date = current_date
