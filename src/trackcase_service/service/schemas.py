@@ -621,7 +621,7 @@ class Filing(FilingBase, BaseModelSchema):
     component_status: Optional[ComponentStatus] = None
     filing_type: Optional[FilingType] = None
     court_case: Optional[CourtCase] = None
-    filing_rfes: list["FilingRfe"] = None
+    filing_rfes: list["FilingRfe"] = []
     task_calendars: list[TaskCalendar] = []
     history_filings: list["HistoryFiling"] = []
     history_filing_rfes: list["HistoryFilingRfe"] = []
