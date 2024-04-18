@@ -251,6 +251,7 @@ class Court(TableBase, AddressBase, Base):
     __tablename__ = "court"
     name = Column(String(100), unique=True, nullable=False)
     dhs_address = Column(String(1000), nullable=True)
+    court_url = Column(String(500), nullable=False)
     component_status_id = Column(
         ForeignKey(
             "component_status.id",
@@ -289,6 +290,7 @@ class HistoryCourt(TableBase, AddressBase, Base):
     )
     name = Column(String(100), nullable=True)
     dhs_address = Column(String(1000), nullable=True)
+    court_url = Column(String(500), nullable=True)
     component_status_id = Column(
         ForeignKey(
             "component_status.id",

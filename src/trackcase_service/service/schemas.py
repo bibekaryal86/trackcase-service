@@ -353,6 +353,7 @@ class RefTypesResponse(ResponseBase):
 class CourtBase(AddressBase):
     name: str
     dhs_address: Optional[str] = None
+    court_url: str
     component_status_id: int
     comments: Optional[str] = None
 
@@ -372,6 +373,7 @@ class HistoryCourt(Court):
     app_user: Optional[AppUser] = None
     court: Optional[Court] = None
     # make NOT optional inherited fields optional in history
+    court_url: Optional[str] = None
     component_status_id: Optional[int] = None
     name: Optional[str] = None
 
