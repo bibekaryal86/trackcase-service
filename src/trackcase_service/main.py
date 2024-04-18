@@ -21,6 +21,7 @@ from src.trackcase_service.api import (
     filing,
     judge,
     ref_types,
+    scraper,
     user_management,
     user_management_noauth,
 )
@@ -103,6 +104,7 @@ app.include_router(
 app.include_router(
     user_management_noauth.router,
 )
+app.include_router(scraper.router)      # TODO add validate_credentials
 
 
 @app.middleware("http")
