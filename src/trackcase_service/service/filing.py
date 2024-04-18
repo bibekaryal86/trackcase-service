@@ -366,7 +366,6 @@ class FilingRfeService(CrudService):
                     schema_class=schemas.FilingRfe,
                     is_include_extra=request_metadata.is_include_extra,
                     is_include_history=request_metadata.is_include_history,
-                    extra_to_include=["filing_rfes", "task_calendars"],
                     history_to_include=["history_filing_rfes"],
                 )
                 for data_model in response_data
