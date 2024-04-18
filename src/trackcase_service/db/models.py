@@ -165,6 +165,9 @@ class AppUser(TableBase, AddressBase, Base):
         "HistoryCourtCase"
     )
     history_filings: Mapped[List["HistoryFiling"]] = relationship("HistoryFiling")
+    history_filing_rfes: Mapped[List["HistoryFilingRfe"]] = relationship(
+        "HistoryFilingRfe"
+    )
     history_hearing_calendars: Mapped[List["HistoryHearingCalendar"]] = relationship(
         "HistoryHearingCalendar"
     )
@@ -828,8 +831,6 @@ class Filing(TableBase, Base):
     receipt_date = Column(DateTime, nullable=True)
     receipt_number = Column(String(100), nullable=True)
     priority_date = Column(DateTime, nullable=True)
-    rfe_date = Column(DateTime, nullable=True)
-    rfe_submit_date = Column(DateTime, nullable=True)
     decision_date = Column(DateTime, nullable=True)
     filing_type_id = Column(
         ForeignKey(
@@ -862,8 +863,12 @@ class Filing(TableBase, Base):
     component_status: Mapped[ComponentStatus] = relationship(back_populates="filings")
     filing_type: Mapped[FilingType] = relationship(back_populates="filings")
     court_case: Mapped[CourtCase] = relationship(back_populates="filings")
+    filing_rfes: Mapped[List["FilingRfe"]] = relationship(back_populates="filing")
     task_calendars: Mapped[List["TaskCalendar"]] = relationship(back_populates="filing")
     history_filings: Mapped[List["HistoryFiling"]] = relationship(
+        back_populates="filing"
+    )
+    history_filing_rfes: Mapped[List["HistoryFilingRfe"]] = relationship(
         back_populates="filing"
     )
     history_task_calendars: Mapped[List["HistoryTaskCalendar"]] = relationship(
@@ -895,8 +900,6 @@ class HistoryFiling(TableBase, Base):
     receipt_date = Column(DateTime, nullable=True)
     receipt_number = Column(String(100), nullable=True)
     priority_date = Column(DateTime, nullable=True)
-    rfe_date = Column(DateTime, nullable=True)
-    rfe_submit_date = Column(DateTime, nullable=True)
     decision_date = Column(DateTime, nullable=True)
     filing_type_id = Column(
         ForeignKey(
@@ -942,6 +945,65 @@ class HistoryFiling(TableBase, Base):
     filing: Mapped[Filing] = relationship(back_populates="history_filings")
     filing_type: Mapped[FilingType] = relationship(back_populates="history_filings")
     court_case: Mapped[CourtCase] = relationship(back_populates="history_filings")
+
+
+class FilingRfe(TableBase, Base):
+    __tablename__ = "filing_rfe"
+    filing_id = Column(
+        ForeignKey(
+            "filing.id",
+            onupdate="NO ACTION",
+            ondelete="RESTRICT",
+            name="filing_rfe_filing_id",
+        ),
+        nullable=False,
+    )
+    rfe_date = Column(DateTime, nullable=False)
+    rfe_submit_date = Column(DateTime, nullable=True)
+    rfe_reason = Column(String(3000), nullable=True)
+    comments = Column(String(10000), nullable=True)
+    filing: Mapped[Filing] = relationship(back_populates="filing_rfes")
+    history_filing_rfes: Mapped[List["HistoryFilingRfe"]] = relationship(
+        back_populates="filing_rfe"
+    )
+
+
+class HistoryFilingRfe(TableBase, Base):
+    __tablename__ = "history_filing_rfe"
+    app_user_id = Column(
+        ForeignKey(
+            "app_user.id",
+            onupdate="NO ACTION",
+            ondelete="RESTRICT",
+            name="history_filing_rfe_app_user_id",
+        ),
+        nullable=False,
+    )
+    filing_rfe_id = Column(
+        ForeignKey(
+            "filing_rfe.id",
+            onupdate="NO ACTION",
+            ondelete="RESTRICT",
+            name="history_filing_rfe_filing_rfe_id",
+        ),
+        nullable=False,
+    )
+    filing_id = Column(
+        ForeignKey(
+            "filing.id",
+            onupdate="NO ACTION",
+            ondelete="RESTRICT",
+            name="history_filing_rfe_filing_id",
+        ),
+        nullable=False,
+    )
+    rfe_date = Column(DateTime, nullable=True)
+    rfe_submit_date = Column(DateTime, nullable=True)
+    rfe_reason = Column(String(3000), nullable=True)
+    comments = Column(String(10000), nullable=True)
+    app_user: Mapped[AppUser] = relationship(back_populates="history_filing_rfes")
+    filing_rfe: Mapped[FilingRfe] = relationship(back_populates="history_filing_rfes")
+    filing: Mapped[Filing] = relationship(back_populates="history_filing_rfes")
 
 
 class CaseCollection(TableBase, Base):

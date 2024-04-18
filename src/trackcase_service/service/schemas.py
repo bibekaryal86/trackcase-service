@@ -611,8 +611,6 @@ class FilingBase:
     receipt_date: Optional[datetime] = None
     receipt_number: Optional[str] = None
     priority_date: Optional[datetime] = None
-    rfe_date: Optional[datetime] = None
-    rfe_submit_date: Optional[datetime] = None
     decision_date: Optional[datetime] = None
     component_status_id: int
     comments: Optional[str] = None
@@ -623,8 +621,10 @@ class Filing(FilingBase, BaseModelSchema):
     component_status: Optional[ComponentStatus] = None
     filing_type: Optional[FilingType] = None
     court_case: Optional[CourtCase] = None
+    filing_rfes: list["FilingRfe"] = []
     task_calendars: list[TaskCalendar] = []
     history_filings: list["HistoryFiling"] = []
+    history_filing_rfes: list["HistoryFilingRfe"] = []
     history_task_calendars: list[HistoryTaskCalendar] = []
 
 
@@ -644,6 +644,41 @@ class FilingRequest(FilingBase, RequestBase):
 
 class FilingResponse(ResponseBase):
     data: list[Filing] = []
+
+
+# filing
+class FilingRfeBase:
+    filing_id: int
+    rfe_date: datetime
+    rfe_submit_date: Optional[datetime] = None
+    rfe_reason: str
+    comments: Optional[str] = None
+
+
+class FilingRfe(FilingRfeBase, BaseModelSchema):
+    # model_config = ConfigDict(from_attributes=True, extra="ignore")
+    filing: Optional[Filing] = None
+    history_filing_rfes: list["HistoryFilingRfe"] = []
+
+
+class HistoryFilingRfe(FilingRfe):
+    app_user_id: int
+    filing_rfe_id: int
+    app_user: Optional[AppUser] = None
+    filing_rfe: Optional[FilingRfe] = None
+    filing: Optional[Filing] = None
+    # make NOT optional inherited fields optional in history
+    filing_id: Optional[int] = None
+    rfe_date: Optional[datetime] = None
+    rfe_reason: Optional[str] = None
+
+
+class FilingRfeRequest(FilingRfeBase, RequestBase):
+    pass
+
+
+class FilingRfeResponse(ResponseBase):
+    data: list[FilingRfe] = []
 
 
 # case_collection
