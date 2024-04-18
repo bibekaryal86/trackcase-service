@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "e8011800626b"
+revision: str = "2efaf725cf08"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -143,6 +143,9 @@ def upgrade() -> None:
             ondelete="RESTRICT",
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint(
+            "app_role_id", "app_permission_id", name="app_role_permission_ids"
+        ),
     )
     op.create_table(
         "app_user",
@@ -223,6 +226,7 @@ def upgrade() -> None:
             ondelete="RESTRICT",
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("app_user_id", "app_role_id", name="app_user_role_ids"),
     )
     op.create_table(
         "history_court",
@@ -497,8 +501,6 @@ def upgrade() -> None:
         sa.Column("receipt_date", sa.DateTime(), nullable=True),
         sa.Column("receipt_number", sa.String(length=100), nullable=True),
         sa.Column("priority_date", sa.DateTime(), nullable=True),
-        sa.Column("rfe_date", sa.DateTime(), nullable=True),
-        sa.Column("rfe_submit_date", sa.DateTime(), nullable=True),
         sa.Column("decision_date", sa.DateTime(), nullable=True),
         sa.Column("filing_type_id", sa.Integer(), nullable=False),
         sa.Column("court_case_id", sa.Integer(), nullable=False),
@@ -838,8 +840,6 @@ def upgrade() -> None:
         sa.Column("receipt_date", sa.DateTime(), nullable=True),
         sa.Column("receipt_number", sa.String(length=100), nullable=True),
         sa.Column("priority_date", sa.DateTime(), nullable=True),
-        sa.Column("rfe_date", sa.DateTime(), nullable=True),
-        sa.Column("rfe_submit_date", sa.DateTime(), nullable=True),
         sa.Column("decision_date", sa.DateTime(), nullable=True),
         sa.Column("filing_type_id", sa.Integer(), nullable=True),
         sa.Column("court_case_id", sa.Integer(), nullable=True),
