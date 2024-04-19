@@ -40,7 +40,7 @@ def create_csv(file_name, csv_data):
             writer.writerow(data)
 
 
-class Scraper:
+class WebScraper:
     def __init__(self, url_to_scrape: str):
         self.url_to_scrape = url_to_scrape
 
@@ -114,17 +114,17 @@ def extract_judge_table(court_table_row, court_statuses):
 
 
 # does not have phone number or dhs address data
-class CourtScraper:
+class CourtsImport:
     def __init__(self, db_session: Session, request: Request):
         self.db_session = db_session
         self.request = request
 
-    def scrape_for_courts(self):
+    def import_courts(self):
         court_statuses = get_component_status_map(
             self.db_session, self.request, schemas.ComponentStatusNames.COURTS
         )
         url = "https://www.justice.gov/eoir/immigration-court-operational-status"
-        soup = Scraper(url_to_scrape=url).scrape()
+        soup = WebScraper(url_to_scrape=url).scrape()
         court_table = soup.find("table", class_="usa-table")
         courts_data = []
 
@@ -177,17 +177,17 @@ class CourtScraper:
             log.info("COURTS IMPORT NO CSV DATA")
 
 
-class JudgeScraper:
+class JudgesImport:
     def __init__(self, db_session: Session, request: Request):
         self.db_session = db_session
         self.request = request
 
-    def scrape_for_judges(self):
+    def import_judges(self):
         judge_statuses = get_component_status_map(
             self.db_session, self.request, schemas.ComponentStatusNames.JUDGES
         )
         url = "https://www.justice.gov/eoir/find-immigration-court-and-access-internet-based-hearings"  # noqa: E501
-        soup = Scraper(url_to_scrape=url).scrape()
+        soup = WebScraper(url_to_scrape=url).scrape()
         judges_table = soup.find(
             "table", class_="usa-table"
         )  # TODO, class_ needs fixing
@@ -239,9 +239,9 @@ class JudgeScraper:
             log.info("JUDGES IMPORT NO CSV DATA")
 
 
-def get_court_scraper_service(db_session: Session, request: Request) -> CourtScraper:
-    return CourtScraper(db_session, request)
+def get_courts_import_service(db_session: Session, request: Request) -> CourtsImport:
+    return CourtsImport(db_session, request)
 
 
-def get_judge_scraper_service(db_session: Session, request: Request) -> JudgeScraper:
-    return JudgeScraper(db_session, request)
+def get_judges_import_service(db_session: Session, request: Request) -> JudgesImport:
+    return JudgesImport(db_session, request)
