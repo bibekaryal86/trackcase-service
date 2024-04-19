@@ -104,7 +104,7 @@ app.include_router(
 app.include_router(
     user_management_noauth.router,
 )
-app.include_router(scraper.router)      # TODO add validate_credentials
+app.include_router(scraper.router)  # TODO add validate_credentials
 
 
 @app.middleware("http")

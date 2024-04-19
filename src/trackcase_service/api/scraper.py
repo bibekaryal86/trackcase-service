@@ -17,5 +17,5 @@ def courts_scraper(
     request: Request,
     db_session: Session = Depends(get_db_session),
 ):
-    get_court_scraper_service(db_session).scrape_for_courts(request)
+    get_court_scraper_service(db_session, request).scrape_for_courts()
     return {"scrape": "successful"}
