@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from src.trackcase_service.service import schemas
 from src.trackcase_service.service.court import get_court_service
+from src.trackcase_service.service.judge import get_judge_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
 from src.trackcase_service.utils import logger
 
@@ -107,6 +108,11 @@ def extract_court_table(court_table_row, court_statuses):
     return None
 
 
+def extract_judge_table(court_table_row, court_statuses):
+    print("in extract judge table")  # TODO
+    return None
+
+
 # does not have phone number or dhs address data
 class CourtScraper:
     def __init__(self, db_session: Session, request: Request):
@@ -168,8 +174,74 @@ class CourtScraper:
             else:
                 create_csv("courts_import_failures.csv", csv_data)
         else:
-            print("NO CSV DATA")
+            log.info("COURTS IMPORT NO CSV DATA")
+
+
+class JudgeScraper:
+    def __init__(self, db_session: Session, request: Request):
+        self.db_session = db_session
+        self.request = request
+
+    def scrape_for_judges(self):
+        judge_statuses = get_component_status_map(
+            self.db_session, self.request, schemas.ComponentStatusNames.JUDGES
+        )
+        url = "https://www.justice.gov/eoir/find-immigration-court-and-access-internet-based-hearings"  # noqa: E501
+        soup = Scraper(url_to_scrape=url).scrape()
+        judges_table = soup.find(
+            "table", class_="usa-table"
+        )  # TODO, class_ needs fixing
+        judges_data = []
+
+        if judges_table:
+            # skip header (index 0) and begin with 1st data row (index 1):
+            for row in judges_table.find_all("tr")[1:]:
+                judge = extract_judge_table(row, judge_statuses)
+                if judge:
+                    judges_data.append(judge)
+                else:
+                    log.error(msg="Judge is None", extra=row)
+        self.insert_judge_data(judges_data)
+
+    def insert_judge_data(self, judge_requests):
+        successes = []
+        failures = []
+        for judge_request in judge_requests:
+            try:
+                get_judge_service(db_session=self.db_session).create_judge(
+                    self.request, judge_request
+                )
+                successes.append(judge_request)
+            except Exception as ex:
+                log.error(msg="Error Inserting Judge", extra=ex)
+                failures.append(judge_request)
+        self.create_csv_data(successes, True)
+        self.create_csv_data(failures, False)
+
+    @staticmethod
+    def create_csv_data(successes_or_failures, is_success):
+        csv_data = []
+        for success_or_failure in successes_or_failures:
+            csv_data.append(
+                {
+                    "name": success_or_failure.name,
+                    "webex": success_or_failure.webex,
+                    "component_status_id": success_or_failure.component_status_id,
+                    "court_id": success_or_failure.court_id,
+                }
+            )
+        if len(csv_data) > 0:
+            if is_success:
+                create_csv("judges_import_successes.csv", csv_data)
+            else:
+                create_csv("judges_import_failures.csv", csv_data)
+        else:
+            log.info("JUDGES IMPORT NO CSV DATA")
 
 
 def get_court_scraper_service(db_session: Session, request: Request) -> CourtScraper:
     return CourtScraper(db_session, request)
+
+
+def get_judge_scraper_service(db_session: Session, request: Request) -> JudgeScraper:
+    return JudgeScraper(db_session, request)
