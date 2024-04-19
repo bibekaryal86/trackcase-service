@@ -1,4 +1,5 @@
 import csv
+import logging
 
 import requests
 from bs4 import BeautifulSoup
@@ -8,6 +9,9 @@ from sqlalchemy.orm import Session
 from src.trackcase_service.service import schemas
 from src.trackcase_service.service.court import get_court_service
 from src.trackcase_service.service.ref_types import get_ref_types_service
+from src.trackcase_service.utils import logger
+
+log = logger.Logger(logging.getLogger(__name__))
 
 
 def get_component_status_map(
@@ -46,49 +50,61 @@ class Scraper:
             return BeautifulSoup(response.content, "html.parser")
         else:
             raise RuntimeError(
-                f"Invalid Response code of {response.status_code} scraping url: {self.url_to_scrape}"
+                f"Invalid Response code of {response.status_code} scraping url: {self.url_to_scrape}"  # noqa: E501
             )
 
 
 def extract_court_table(court_table_row, court_statuses):
     court_name = court_table_row.find("td", class_="views-field-nothing")
-    name = court_name.find("a").text.strip() + " Immigration Court"
-    court_url = court_name.find("a")["href"]
+    if court_name:
+        name = court_name.find("a")
+        if name:
+            name = name.text.strip() + " Immigration Court"
+            court_url = court_name.find("a")["href"]
 
-    # Extract address information from the nested <p> tag
-    address_data = court_name.find("p", class_="address")
-    street_address = ", ".join(
-        [
-            line.text.strip()
-            for line in address_data.find_all(
-                "span",
-                class_=lambda class_: class_ in ["address-line1", "address-line2"],
+            # Extract address information from the nested <p> tag
+            address_data = court_name.find("p", class_="address")
+            street_address = ", ".join(
+                [
+                    line.text.strip()
+                    for line in address_data.find_all(
+                        "span",
+                        class_=lambda class_: class_
+                        in ["address-line1", "address-line2"],
+                    )
+                ]
             )
-        ]
-    )
-    city = address_data.find("span", class_="locality").text.strip()
-    state = address_data.find("span", class_="administrative-area").text.strip()
-    zip_code = address_data.find("span", class_="postal-code").text.strip()
-    court_status_str = court_table_row.find(
-        "td", class_="views-field-field-eoir-court-status"
-    ).text.strip()
-    court_status = court_statuses.get(court_status_str)
+            city = address_data.find("span", class_="locality").text.strip()
+            state = address_data.find("span", class_="administrative-area").text.strip()
+            zip_code = address_data.find("span", class_="postal-code").text.strip()
+            court_status_str = court_table_row.find(
+                "td", class_="views-field-field-eoir-court-status"
+            ).text.strip()
+            court_status = court_statuses.get(court_status_str)
 
-    if court_status is None:
-        if court_status_str.startswith("OPEN"):
-            court_status = court_statuses.get("OPEN")
-        elif court_status_str.startswith("CLOSED"):
-            court_status = court_statuses.get("CLOSED")
+            if court_status is None:
+                if court_status_str.startswith("OPEN"):
+                    court_status = court_statuses.get("OPEN")
+                elif court_status_str.startswith("CLOSED"):
+                    court_status = court_statuses.get("CLOSED")
+                elif "OPEN" in court_status_str:
+                    court_status = court_statuses.get("OPEN")
+                elif "CLOSED" in court_status_str:
+                    court_status = court_statuses.get("CLOSED")
 
-    return schemas.CourtRequest(
-        name=name,
-        court_url=court_url,
-        component_status_id=court_status,
-        street_address=street_address,
-        city=city,
-        state=state,
-        zip_code=zip_code,
-    )
+            if court_status is None:
+                log.error(msg="Court Status is None", extra=court_name)
+            else:
+                return schemas.CourtRequest(
+                    name=name,
+                    court_url=court_url,
+                    component_status_id=court_status,
+                    street_address=street_address,
+                    city=city,
+                    state=state,
+                    zip_code=zip_code,
+                )
+    return None
 
 
 # does not have phone number or dhs address data
@@ -104,13 +120,17 @@ class CourtScraper:
         url = "https://www.justice.gov/eoir/immigration-court-operational-status"
         soup = Scraper(url_to_scrape=url).scrape()
         court_table = soup.find("table", class_="usa-table")
+        courts_data = []
 
         if court_table:
-            # Extract table data
-            courts_data = []
             # skip header (index 0) and begin with 1st data row (index 1):
             for row in court_table.find_all("tr")[1:]:
-                courts_data.append(extract_court_table(row, court_statuses))
+                court = extract_court_table(row, court_statuses)
+                if court:
+                    courts_data.append(court)
+                else:
+                    log.error(msg="Court is None", extra=row)
+        self.insert_court_data(courts_data)
 
     def insert_court_data(self, court_requests):
         successes = []
@@ -122,7 +142,8 @@ class CourtScraper:
                 )
                 successes.append(court_request)
             except Exception as ex:
-                failures.append({"court_request": court_request, "error": str(ex)})
+                log.error(msg="Error Inserting Court", extra=ex)
+                failures.append(court_request)
         self.create_csv_data(successes, True)
         self.create_csv_data(failures, False)
 
@@ -143,9 +164,9 @@ class CourtScraper:
             )
         if len(csv_data) > 0:
             if is_success:
-                create_csv(f"courts_import_successes.csv", csv_data)
+                create_csv("courts_import_successes.csv", csv_data)
             else:
-                create_csv(f"courts_import_failures.csv", csv_data)
+                create_csv("courts_import_failures.csv", csv_data)
         else:
             print("NO CSV DATA")
 
