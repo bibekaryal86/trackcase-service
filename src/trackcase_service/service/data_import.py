@@ -48,7 +48,7 @@ def get_judges_active_status(
     ).get("ACTIVE")
     if judge_active_status:
         return judge_active_status
-    raise RuntimeError("Judge Active Status not Found!")
+    raise RuntimeError("Judges Active Status not Found!")
 
 
 def get_courts_map(db_session: Session, request: Request):
