@@ -15,22 +15,6 @@ from src.trackcase_service.utils import logger
 log = logger.Logger(logging.getLogger(__name__))
 
 
-def get_component_status_map(
-    db_session: Session, request: Request, component_name: schemas.ComponentStatusNames
-):
-    court_status_list = get_ref_types_service(
-        service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
-        db_session=db_session,
-    ).get_component_status(
-        request,
-        component_name,
-    )
-    if court_status_list:
-        return {status.status_name: status.id for status in court_status_list}
-
-    raise RuntimeError(f"No Component Status for {component_name}")
-
-
 def create_csv(file_name, csv_data):
     fieldnames = list(csv_data[0].keys())
     with open(file_name, "w") as outfile:
@@ -40,22 +24,35 @@ def create_csv(file_name, csv_data):
             writer.writerow(data)
 
 
-class WebScraper:
-    def __init__(self, url_to_scrape: str):
-        self.url_to_scrape = url_to_scrape
+def get_component_status_map(
+    db_session: Session, request: Request, component_name: schemas.ComponentStatusNames
+):
+    component_statuses = get_ref_types_service(
+        service_type=schemas.RefTypesServiceRegistry.COMPONENT_STATUS,
+        db_session=db_session,
+    ).get_component_status(
+        request,
+        component_name,
+    )
+    if component_statuses:
+        return {status.status_name: status.id for status in component_statuses}
+    raise RuntimeError(f"Component Status not Found for {component_name}")
 
-    def scrape(self):
-        response = requests.get(self.url_to_scrape)
 
-        if response.status_code == 200:
-            return BeautifulSoup(response.content, "html.parser")
-        else:
-            raise RuntimeError(
-                f"Invalid Response code of {response.status_code} scraping url: {self.url_to_scrape}"  # noqa: E501
-            )
+def get_court_status(court_status_str, court_statuses):
+    court_status = None
+    if court_status_str.startswith("OPEN"):
+        court_status = court_statuses.get("OPEN")
+    elif court_status_str.startswith("CLOSED"):
+        court_status = court_statuses.get("CLOSED")
+    elif "OPEN" in court_status_str:
+        court_status = court_statuses.get("OPEN")
+    elif "CLOSED" in court_status_str:
+        court_status = court_statuses.get("CLOSED")
+    return court_status
 
 
-def extract_court_table(court_table_row, court_statuses):
+def extract_courts_details(court_table_row, court_statuses):
     court_name = court_table_row.find("td", class_="views-field-nothing")
     if court_name:
         name = court_name.find("a")
@@ -63,7 +60,6 @@ def extract_court_table(court_table_row, court_statuses):
             name = name.text.strip() + " Immigration Court"
             court_url = court_name.find("a")["href"]
 
-            # Extract address information from the nested <p> tag
             address_data = court_name.find("p", class_="address")
             street_address = ", ".join(
                 [
@@ -84,17 +80,11 @@ def extract_court_table(court_table_row, court_statuses):
             court_status = court_statuses.get(court_status_str)
 
             if court_status is None:
-                if court_status_str.startswith("OPEN"):
-                    court_status = court_statuses.get("OPEN")
-                elif court_status_str.startswith("CLOSED"):
-                    court_status = court_statuses.get("CLOSED")
-                elif "OPEN" in court_status_str:
-                    court_status = court_statuses.get("OPEN")
-                elif "CLOSED" in court_status_str:
-                    court_status = court_statuses.get("CLOSED")
+                court_status = get_court_status(court_status_str, court_statuses)
 
             if court_status is None:
                 log.error(msg="Court Status is None", extra=court_name)
+                return None
             else:
                 return schemas.CourtRequest(
                     name=name,
@@ -108,9 +98,25 @@ def extract_court_table(court_table_row, court_statuses):
     return None
 
 
-def extract_judge_table(court_table_row, court_statuses):
+def extract_judge_table(court_table_row, judge_statuses):
     print("in extract judge table")  # TODO
+    judge_status = judge_statuses.get("ACTIVE")
     return None
+
+
+class WebScraper:
+    def __init__(self, url_to_scrape: str):
+        self.url_to_scrape = url_to_scrape
+
+    def scrape(self):
+        response = requests.get(self.url_to_scrape)
+
+        if response.status_code == 200:
+            return BeautifulSoup(response.content, "html.parser")
+        else:
+            raise RuntimeError(
+                f"Invalid Response code of {response.status_code} scraping url: {self.url_to_scrape}"  # noqa: E501
+            )
 
 
 # does not have phone number or dhs address data
@@ -131,7 +137,7 @@ class CourtsImport:
         if court_table:
             # skip header (index 0) and begin with 1st data row (index 1):
             for row in court_table.find_all("tr")[1:]:
-                court = extract_court_table(row, court_statuses)
+                court = extract_courts_details(row, court_statuses)
                 if court:
                     courts_data.append(court)
                 else:
