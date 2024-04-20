@@ -36,7 +36,26 @@ def get_component_status_map(
     )
     if component_statuses:
         return {status.status_name: status.id for status in component_statuses}
-    raise RuntimeError(f"Component Status not Found for {component_name}")
+    raise RuntimeError(f"Component Status not Found for {component_name}!")
+
+
+def get_judges_active_status(
+    db_session: Session,
+    request: Request,
+):
+    judge_active_status = get_component_status_map(
+        db_session, request, schemas.ComponentStatusNames.JUDGES
+    ).get("ACTIVE")
+    if judge_active_status:
+        return judge_active_status
+    raise RuntimeError("Judge Active Status not Found!")
+
+
+def get_courts_map(db_session: Session, request: Request):
+    courts = get_court_service(db_session).read_court(request).data
+    if courts:
+        return {court.name: court.id for court in courts}
+    raise RuntimeError("Courts List Not Found!")
 
 
 def get_court_status(court_status_str, court_statuses):
@@ -52,7 +71,7 @@ def get_court_status(court_status_str, court_statuses):
     return court_status
 
 
-def extract_courts_details(court_table_row, court_statuses):
+def extract_court_details(court_table_row, court_statuses):
     court_name = court_table_row.find("td", class_="views-field-nothing")
     if court_name:
         name = court_name.find("a")
@@ -98,9 +117,24 @@ def extract_courts_details(court_table_row, court_statuses):
     return None
 
 
-def extract_judge_table(court_table_row, judge_statuses):
-    print("in extract judge table")  # TODO
-    judge_status = judge_statuses.get("ACTIVE")
+def extract_judge_details(court_tag, courts_map, judge_status):
+    court_name = court_tag.text.strip()
+    judge_table = court_tag.find_next_sibling("table")
+    rows = judge_table.find_all("tr")[1:]
+
+    for row in rows:
+        cells = row.find_all("td")
+        if cells:
+            name = cells[0].text.strip()
+            webex = cells[1].find("a")["href"]
+            # access_code = cells[2].text.strip()
+            court_id = courts_map.get(court_name.upper())
+            return schemas.JudgeRequest(
+                name=name,
+                webex=webex,
+                court_id=court_id,
+                component_status_id=judge_status,
+            )
     return None
 
 
@@ -137,7 +171,7 @@ class CourtsImport:
         if court_table:
             # skip header (index 0) and begin with 1st data row (index 1):
             for row in court_table.find_all("tr")[1:]:
-                court = extract_courts_details(row, court_statuses)
+                court = extract_court_details(row, court_statuses)
                 if court:
                     courts_data.append(court)
                 else:
@@ -189,24 +223,20 @@ class JudgesImport:
         self.request = request
 
     def import_judges(self):
-        judge_statuses = get_component_status_map(
-            self.db_session, self.request, schemas.ComponentStatusNames.JUDGES
-        )
+        judge_active_status = get_judges_active_status(self.db_session, self.request)
+        courts_map = get_courts_map(self.db_session, self.request)
+
+        judges_data = []
         url = "https://www.justice.gov/eoir/find-immigration-court-and-access-internet-based-hearings"  # noqa: E501
         soup = WebScraper(url_to_scrape=url).scrape()
-        judges_table = soup.find(
-            "table", class_="usa-table"
-        )  # TODO, class_ needs fixing
-        judges_data = []
 
-        if judges_table:
-            # skip header (index 0) and begin with 1st data row (index 1):
-            for row in judges_table.find_all("tr")[1:]:
-                judge = extract_judge_table(row, judge_statuses)
-                if judge:
-                    judges_data.append(judge)
-                else:
-                    log.error(msg="Judge is None", extra=row)
+        court_tags = soup.find_all("h3")
+        for court_tag in court_tags:
+            judge = extract_judge_details(court_tag, courts_map, judge_active_status)
+            if judge:
+                judges_data.append(judge)
+            else:
+                log.error(msg="Court is None", extra=court_tag)
         self.insert_judge_data(judges_data)
 
     def insert_judge_data(self, judge_requests):
