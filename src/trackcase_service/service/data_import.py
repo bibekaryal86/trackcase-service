@@ -114,6 +114,10 @@ def extract_court_details(court_table_row, court_statuses):
                     state=state,
                     zip_code=zip_code,
                 )
+        else:
+            log.error(msg="Court's Name is None", extra=court_name)
+    else:
+        log.error(msg="Court Name is None", extra=court_name)
     return None
 
 
@@ -122,6 +126,7 @@ def extract_judge_details(court_tag, courts_map, judge_status):
     judge_table = court_tag.find_next_sibling("table")
     rows = judge_table.find_all("tr")[1:]
 
+    judges = []
     for row in rows:
         cells = row.find_all("td")
         if cells:
@@ -129,13 +134,17 @@ def extract_judge_details(court_tag, courts_map, judge_status):
             webex = cells[1].find("a")["href"]
             # access_code = cells[2].text.strip()
             court_id = courts_map.get(court_name.upper())
-            return schemas.JudgeRequest(
-                name=name,
-                webex=webex,
-                court_id=court_id,
-                component_status_id=judge_status,
-            )
-    return None
+
+            if court_id:
+                judges.append(schemas.JudgeRequest(
+                    name=name,
+                    webex=webex,
+                    court_id=court_id,
+                    component_status_id=judge_status,
+                ))
+            else:
+                log.error(msg="Court ID is None", extra=court_name)
+    return judges
 
 
 class WebScraper:
@@ -236,7 +245,7 @@ class JudgesImport:
             if judge:
                 judges_data.append(judge)
             else:
-                log.error(msg="Court is None", extra=court_tag)
+                log.error(msg="Judge is None", extra=court_tag)
         self.insert_judge_data(judges_data)
 
     def insert_judge_data(self, judge_requests):
