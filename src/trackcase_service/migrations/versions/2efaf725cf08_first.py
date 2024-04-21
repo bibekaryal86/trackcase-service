@@ -1019,7 +1019,7 @@ def upgrade() -> None:
         """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'APP_USERS', 'DISABLED', False, False)"""  # noqa: E501
     )
     op.execute(
-        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COURTS', 'ACTIVE', True, False)"""  # noqa: E501
+        """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COURTS', 'OPEN', True, False)"""  # noqa: E501
     )
     op.execute(
         """INSERT INTO component_status (created, modified, component_name, status_name, is_active, is_deleted) VALUES (now(), now(), 'COURTS', 'CLOSED', False, False)"""  # noqa: E501

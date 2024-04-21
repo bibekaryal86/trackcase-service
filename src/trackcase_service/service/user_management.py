@@ -85,7 +85,7 @@ class AppUserPasswordService:
                             "Logging successful, but last_login not updated for email: [ {} ]".format(  # noqa: E501
                                 self.user_name
                             ),
-                            extra=str(ex),
+                            extra=ex,
                             exc_info=sys.exc_info(),
                         )
 

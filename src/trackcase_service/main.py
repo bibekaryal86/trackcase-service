@@ -18,6 +18,7 @@ from src.trackcase_service.api import (
     collections,
     court,
     court_case,
+    data_import,
     filing,
     judge,
     ref_types,
@@ -102,6 +103,10 @@ app.include_router(
 )
 app.include_router(
     user_management_noauth.router,
+)
+app.include_router(
+    data_import.router,
+    dependencies=[Depends(validate_credentials)],
 )
 
 
