@@ -121,7 +121,7 @@ def extract_court_details(court_table_row, court_statuses):
     return None
 
 
-def extract_judge_details(court_tag, courts_map, judge_status):
+def extract_judges_details(court_tag, courts_map, judge_status):
     court_name = court_tag.text.strip()
     judge_table = court_tag.find_next_sibling("table")
     rows = judge_table.find_all("tr")[1:]
@@ -136,15 +136,33 @@ def extract_judge_details(court_tag, courts_map, judge_status):
             court_id = courts_map.get(court_name.upper())
 
             if court_id:
-                judges.append(schemas.JudgeRequest(
-                    name=name,
-                    webex=webex,
-                    court_id=court_id,
-                    component_status_id=judge_status,
-                ))
+                judges.append(
+                    schemas.JudgeRequest(
+                        name=name,
+                        webex=webex,
+                        court_id=court_id,
+                        component_status_id=judge_status,
+                    )
+                )
             else:
                 log.error(msg="Court ID is None", extra=court_name)
     return judges
+
+
+def dedupe_judge_requests(judge_requests):
+    seen_names = set()
+    seen_webexes = set()
+    unique_judge_requests = []
+
+    for judge_request in judge_requests:
+        name = judge_request.name
+        webex = judge_request.webex
+
+        if name not in seen_names and webex not in seen_webexes:
+            seen_names.add(name)
+            seen_webexes.add(webex)
+            unique_judge_requests.append(judge_request)
+    return unique_judge_requests
 
 
 class WebScraper:
@@ -196,9 +214,11 @@ class CourtsImport:
                     self.request, court_request
                 )
                 successes.append(court_request)
+                self.db_session.commit()
             except Exception as ex:
                 log.error(msg="Error Inserting Court", extra=ex)
                 failures.append(court_request)
+                self.db_session.rollback()
         self.create_csv_data(successes, True)
         self.create_csv_data(failures, False)
 
@@ -241,25 +261,27 @@ class JudgesImport:
 
         court_tags = soup.find_all("h3")
         for court_tag in court_tags:
-            judge = extract_judge_details(court_tag, courts_map, judge_active_status)
-            if judge:
-                judges_data.append(judge)
+            judges = extract_judges_details(court_tag, courts_map, judge_active_status)
+            if judges:
+                judges_data.extend(judges)
             else:
-                log.error(msg="Judge is None", extra=court_tag)
+                log.error(msg="Judges is None", extra=court_tag)
         self.insert_judge_data(judges_data)
 
     def insert_judge_data(self, judge_requests):
         successes = []
         failures = []
-        for judge_request in judge_requests:
+        for judge_request in dedupe_judge_requests(judge_requests):
             try:
                 get_judge_service(db_session=self.db_session).create_judge(
                     self.request, judge_request
                 )
                 successes.append(judge_request)
+                self.db_session.commit()
             except Exception as ex:
                 log.error(msg="Error Inserting Judge", extra=ex)
                 failures.append(judge_request)
+                self.db_session.rollback()
         self.create_csv_data(successes, True)
         self.create_csv_data(failures, False)
 
