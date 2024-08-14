@@ -10,4 +10,4 @@ pyjwt==2.9.0
 pytz==2024.1
 requests==2.32.3
 sqlalchemy==2.0.32
-uvicorn==0.30.5
+uvicorn==0.30.6
