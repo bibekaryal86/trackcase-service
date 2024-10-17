@@ -1,4 +1,4 @@
-FROM python:3.11.4-alpine3.18
+FROM python:3.13.0-alpine
 WORKDIR /code
 COPY ./src /code/src
 COPY .env /code
