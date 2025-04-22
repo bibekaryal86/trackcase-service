@@ -1,4 +1,4 @@
-runtime: java21
+runtime: python312
 env: standard
 instance_class: F1
 handlers:
