@@ -1,4 +1,4 @@
-runtime: python312
+runtime: python313
 env: standard
 instance_class: F1
 handlers:
