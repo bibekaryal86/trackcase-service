@@ -8,7 +8,7 @@ version = '1.0.1'
 description = 'Backend Service for System to Track Legal Immigration Cases'
 authors = [{name = "Bibek Aryal"}]
 readme = 'README.md'
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 classifiers = [
     "License :: Personal Use Only",
     "Natural Language :: English",
@@ -23,7 +23,7 @@ dependencies = {file = [ "requirements.txt", "requirements-dev.txt" ]}
 profile = "black"
 
 [tool.black]
-target-version = ['py313']
+target-version = ['py314']
 line-length = 88    # match max-line-length of flake8 a few lines below
 
 [tool.flake8]
