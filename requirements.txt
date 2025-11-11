@@ -5,7 +5,7 @@ fastapi==0.121.1
 mailjet-rest==1.5.1
 psycopg2-binary==2.9.11
 pydantic==2.12.4
-pydantic_settings==2.11.0
+pydantic_settings==2.12.0
 pyjwt==2.10.1
 pytz==2025.2
 requests==2.32.5
