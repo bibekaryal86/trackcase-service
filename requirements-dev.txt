@@ -4,7 +4,7 @@ black==26.3.1
 flake8==7.3.0
 Flake8-pyproject==1.2.4
 # test
-pytest==9.0.2
+pytest==9.0.3
 pytest-cov==7.1.0
 pytest-env==1.6.0
 httpx==0.28.1
