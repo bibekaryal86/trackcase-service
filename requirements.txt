@@ -4,7 +4,7 @@ bcrypt==5.0.0
 fastapi==0.136.1
 mailjet-rest==1.6.0
 psycopg2-binary==2.9.12
-pydantic==2.13.3
+pydantic==2.13.4
 pydantic_settings==2.14.0
 pyjwt==2.12.1
 pytz==2026.2
