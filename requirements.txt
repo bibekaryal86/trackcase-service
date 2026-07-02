@@ -1,7 +1,7 @@
 alembic==1.18.5
 beautifulsoup4==4.15.0
 bcrypt==5.0.0
-fastapi==0.138.2
+fastapi==0.139.0
 mailjet-rest==1.7.0
 psycopg2-binary==2.9.12
 pydantic==2.13.4
