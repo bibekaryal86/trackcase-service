@@ -9,5 +9,5 @@ pydantic_settings==2.15.0
 pyjwt==2.14.0
 pytz==2026.3.post1
 requests==2.34.2
-sqlalchemy==2.0.53
+sqlalchemy==2.0.54
 uvicorn==0.53.0
