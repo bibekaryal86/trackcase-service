@@ -1,7 +1,7 @@
 # lint
 isort==9.0.1
 black==26.5.1
-flake8==7.4.0
+flake8==7.4.1
 Flake8-pyproject==1.2.4
 # test
 pytest==9.1.1
