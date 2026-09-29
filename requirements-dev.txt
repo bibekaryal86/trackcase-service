@@ -1,5 +1,5 @@
 # lint
-isort==9.0.1
+isort==9.0.2
 black==26.5.1
 flake8==7.4.1
 Flake8-pyproject==1.2.4
