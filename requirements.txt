@@ -1,13 +1,13 @@
 alembic==1.20.0
 beautifulsoup4==4.15.0
 bcrypt==5.0.0
-fastapi==0.142.2
-mailjet-rest==1.9.0
+fastapi==0.142.4
+mailjet-rest==1.9.1
 psycopg2-binary==2.9.13
 pydantic==2.13.5
 pydantic_settings==2.15.0
 pyjwt==2.15.1
 pytz==2026.5
 requests==2.34.2
-sqlalchemy==2.1.3
+sqlalchemy==2.1.4
 uvicorn==0.54.0
