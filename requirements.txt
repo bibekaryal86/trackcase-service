@@ -1,11 +1,11 @@
 alembic==1.20.1
 beautifulsoup4==4.15.0
 bcrypt==5.0.0
-fastapi==0.162.5
+fastapi==0.162.7
 mailjet-rest==1.9.1
 psycopg2-binary==2.9.13
 pydantic==2.14.3
-pydantic_settings==2.16.2
+pydantic_settings==2.16.3
 pyjwt==2.15.1
 pytz==2026.6
 requests==2.34.2
